@@ -5,7 +5,7 @@ on:
     branches: [ humh-a1-minimal-workload-deadline-r7 ]
     paths:
       - '.github/workflows/humh_a1_minimal_workload_deadline_r7.yml'
-      - 'scripts/humh_a1_minimal_workload_deadline_r7.py'
+      - 'scripts/humh_a1_minimal_workload_deadline_r7_consistency.py'
 
 permissions:
   contents: write
@@ -18,8 +18,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: humh-a1-minimal-workload-deadline-r7
-      - name: Apply minimal workload and deadline freeze
-        run: python scripts/humh_a1_minimal_workload_deadline_r7.py
+      - name: Apply R7 consistency patch
+        run: python scripts/humh_a1_minimal_workload_deadline_r7_consistency.py
       - name: Verify materialized tree
         run: |
           cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
@@ -32,6 +32,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No changes to commit.'
           else
-            git commit -m 'freeze K_C=2 and canonical preferred L_A=1'
+            git commit -m 'align R7 deadline freeze and pending parameter list'
             git push origin humh-a1-minimal-workload-deadline-r7
           fi
