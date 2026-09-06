@@ -5,6 +5,7 @@ on:
     branches: [ humh-a1b-freeze-r3 ]
     paths:
       - '.github/workflows/humh_a1b_freeze_r3.yml'
+      - 'scripts/humh_a1b_freeze_r3_consistency.py'
 
 permissions:
   contents: write
@@ -17,8 +18,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: humh-a1b-freeze-r3
-      - name: Apply A1b freeze R3
-        run: python scripts/humh_a1b_freeze_r3.py
+      - name: Apply R3 consistency patch
+        run: python scripts/humh_a1b_freeze_r3_consistency.py
       - name: Verify materialized tree
         run: |
           cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
@@ -31,6 +32,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No changes to commit.'
           else
-            git commit -m 'freeze A1b assignment semantics and eta admissibility criterion'
+            git commit -m 'align A1b R3 freeze status and pending levels'
             git push origin humh-a1b-freeze-r3
           fi
