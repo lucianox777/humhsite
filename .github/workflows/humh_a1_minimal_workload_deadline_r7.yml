@@ -1,0 +1,37 @@
+name: HUMH A1 minimal workload deadline R7
+
+on:
+  push:
+    branches: [ humh-a1-minimal-workload-deadline-r7 ]
+    paths:
+      - '.github/workflows/humh_a1_minimal_workload_deadline_r7.yml'
+      - 'scripts/humh_a1_minimal_workload_deadline_r7.py'
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: humh-a1-minimal-workload-deadline-r7
+      - name: Apply minimal workload and deadline freeze
+        run: python scripts/humh_a1_minimal_workload_deadline_r7.py
+      - name: Verify materialized tree
+        run: |
+          cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
+          python 03_integridade/verify.py
+      - name: Commit frozen state
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add source/HUMH.Api/wwwroot/content/experimentos/atencao
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'freeze K_C=2 and canonical preferred L_A=1'
+            git push origin humh-a1-minimal-workload-deadline-r7
+          fi
