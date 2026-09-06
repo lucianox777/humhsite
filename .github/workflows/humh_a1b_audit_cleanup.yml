@@ -18,7 +18,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Apply prepublication cleanup
-        run: python scripts/humh_a1b_cleanup_prepublication.py
+        run: |
+          sed -i 's/resolver observer_microdynamic_contract/resolver a microdinâmica do observador/g' scripts/humh_a1b_cleanup_prepublication.py
+          python scripts/humh_a1b_cleanup_prepublication.py
       - name: Verify materialized tree
         run: |
           cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
