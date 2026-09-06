@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_A1B_ASSIGNMENT_AND_ETA_BOUND_R3",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_PARAMETER_IDENTIFIABILITY_AND_PROVENANCE_R4",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "58764cb3ae01b09622db6f5e52c0946539c5f3aee8eacf551761214f2a18a298"
+      "sha256": "7afdcf2fe140c1082c3348ea65685a84b14c7cb526eb2fd83148e57e21d08d8e"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "019931d0caa37af72eda3b09b93fd1f453e4f96625f8aa3c711f1e9e8937226f"
+      "sha256": "bb017f8f4fbdaafe610b81af6f3c419277017b89a5d105b9f8f57fcf9d194e49"
     }
   ],
   "active_canonical_dependencies": [
@@ -48,5 +48,8 @@
   ],
   "A1b_confirmatory_authorized": false,
   "A1b_structural_audit": "CONDITIONAL_DISCRIMINATIVE",
-  "A1b_assignment_semantics": "FROZEN_FIXED_PREASSIGNED_STRATA"
+  "A1b_assignment_semantics": "FROZEN_FIXED_PREASSIGNED_STRATA",
+  "parameter_identifiability": "FROZEN_ETA_EH0_PLUS_LAMBDA_STATE",
+  "demand_generation": "FROZEN_D_i_EQUALS_W",
+  "parameter_provenance_policy": "FROZEN_PRE_BENCHMARK"
 }

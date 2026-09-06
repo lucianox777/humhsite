@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_A1B_ASSIGNMENT_AND_ETA_BOUND_FREEZE`  
+**Status:** `PRE_CODE_PARAMETER_IDENTIFIABILITY_AND_PROVENANCE_FREEZE`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. Em A1b, `D` permanece candidato canônico sob auditoria estrutural. Estão congelados o regime basal/B homogêneo do primeiro A1, a barreira síncrona do ciclo lógico, o critério analítico de admissibilidade de `eta0` e a semântica exógena de estratos HIGH/LOW com massa global de oportunidades pareada por ciclo. Os valores numéricos e a classificação final de `ADIST0` permanecem pendentes e devem ser fechados antes de qualquer trajetória científica.
+**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. Em A1b, `D` permanece candidato canônico sob auditoria estrutural. A geração de demanda do primeiro A1 passa a ser fechada em uma requisição exógena por observador por ciclo (`D_i(W)=W`), e a dinâmica basal é reparametrizada apenas para fins numéricos pelos dois graus identificáveis `eta_EH0` e `lambda_state`, sem inventar valores separados de `omega`, `iota_obs` e `kappa` que A1 não identifica. A proveniência permitida para cada número fica congelada antes de qualquer benchmark ou trajetória científica.
 
 ---
 
@@ -135,6 +135,44 @@ t_{complete}\le t+L_A.
 \]
 
 `L_A` é comum aos braços e independente de atenção, `EH`, inércia e outcome.
+
+## 4.1.1 Geração de demanda do primeiro A1 — CONGELADA
+
+A definição canônica §11 dá como forma preferencial do primeiro A1 uma requisição
+observacional elegível por observador por ciclo lógico. Nesta v2.0.0 essa preferência passa
+a ser o contrato executável:
+
+\[
+\boxed{D_i(W)=W}
+\]
+
+sem ciclos inelegíveis no horizonte primário.
+
+Para cada `observer_id=i` e ciclo `n` é criada exatamente uma demanda:
+
+```text
+demand_id = deterministic(observer_id, logical_cycle)
+arrival_cycle = n
+eligible = true
+```
+
+A identidade, conteúdo, `required_work` e deadline dessa demanda são definidos sem consultar
+o braço e permanecem idênticos nos braços pareados. O scheduler pode alterar somente as
+oportunidades de execução, nunca a geração da demanda.
+
+Status:
+
+```text
+FIRST_A1_DEMAND_GENERATION = ONE_ELIGIBLE_REQUEST_PER_OBSERVER_PER_LOGICAL_CYCLE
+D_i(W) = W
+INELIGIBLE_PRIMARY_CYCLES = NONE
+DEMAND_GENERATION_ARM_BLIND = TRUE
+```
+
+Esta regra operacionaliza diretamente os §§8–11 da definição canônica e elimina um grau de
+liberdade que não precisa ser escolhido numericamente.
+
+---
 
 ## 4.2 Atenção coletiva
 
@@ -1104,6 +1142,62 @@ Status:
 BASAL_ETA0_BOUND_ADMISSIBILITY = FROZEN_ANALYTIC
 POST_HOC_CLAMPING = FORBIDDEN
 ```
+
+### 7.1.2.2. Reparametrização identificável da dinâmica basal — CONGELADA
+
+A teoria permanece escrita nas variáveis conceituais:
+
+\[
+\eta^{(0)}(h)=\frac{\omega}{1+\iota_{obs}+\kappa h},\qquad h=EH\in[0,1].
+\]
+
+Entretanto, no regime homogêneo do primeiro A1, a trajetória `p` não identifica
+`omega`, `iota_obs` e `kappa` separadamente. Ela depende apenas de dois compostos:
+
+\[
+\boxed{\eta_{EH0}=\frac{\omega}{1+\iota_{obs}}}
+\]
+
+\[
+\boxed{\lambda_{state}=\frac{\kappa}{1+\iota_{obs}}}
+\]
+
+pois:
+
+\[
+\boxed{
+\eta^{(0)}(h)=\frac{\eta_{EH0}}{1+\lambda_{state}h}
+}.
+\]
+
+`eta_EH0` e `lambda_state` são marcados como
+`AUXILIARY_EXPERIMENTAL_REPARAMETERIZATION`: não substituem `omega`, `iota_obs` ou `kappa`
+na ontologia da teoria e não são novas hipóteses científicas. Servem somente para não
+atribuir precisão fictícia a uma decomposição que A1 não observa.
+
+No primeiro A1:
+
+```text
+INDIVIDUAL_OMEGA_IOTA_KAPPA_DECOMPOSITION = NOT_IDENTIFIED_BY_A1
+NUMERIC_BASAL_PARAMETERIZATION = eta_EH0 + lambda_state
+```
+
+Para a interpretação de resistência estrutural adotada na teoria, usa-se o domínio:
+
+```text
+0 < eta_EH0 <= 1
+lambda_state >= 0
+```
+
+`lambda_state = 0` permanece admissível como submodelo sem resistência estrutural dependente
+de `EH`; ele não pode ser excluído apenas porque torna o outcome `D` derivacional em A1b.
+Qualquer valor positivo também deve ser congelado prospectivamente por regra independente de
+outcomes.
+
+Com `lambda_state>=0`, o critério de preservação reduz-se a `0<eta_EH0<=1`, pois o maior
+valor de `eta0` ocorre em `EH=0`.
+
+---
 
 ### 7.1.3. Ausência explícita de atenção na regra
 
@@ -2240,6 +2334,83 @@ A escolha deve ser feita antes de nova coleta e documentada como operacionaliza�
 
 ---
 
+# 25.1. Proveniência e identificabilidade dos parâmetros — CONGELADA
+
+Nenhum valor numérico pode ser preenchido apenas por conveniência ou porque produz um efeito
+científico mais nítido. Antes de qualquer benchmark, congela-se a classe de proveniência
+admissível de cada grupo:
+
+```text
+CANONICAL_FIXED
+  D_i(W)=W
+  deadline inclusivo t_complete <= t+L_A
+  uma demanda elegível por observador/ciclo
+  massa global A1b igual por ciclo
+  barreira síncrona
+
+THEORY_CONSTRAINED_NOT_FITTED
+  eta_EH0 in (0,1]
+  lambda_state >= 0
+  p, p_target in [0,1]
+  alvo estacionário por episódio
+
+BLIND_INSTRUMENT_CALIBRATION_ABENCH0
+  observer_buffer_capacity_value
+  required_work rule/range
+  L_grid e L_A
+  regras/níveis de oportunidades
+  q_H, q_L e proporção instrumental A1b
+```
+
+A classe `BLIND_INSTRUMENT_CALIBRATION_ABENCH0` só pode usar saídas autorizadas pelos
+§§17–20 da definição de atenção: `D_i`, `U_i`, `A_i`, latências, misses, timing de fila/
+serviço e metadados de runtime. É proibido consultar `p_i(t)`, `EH`, `eta_hat`, `D`
+coletivo, consenso ou qualquer outcome A1 para escolher esses números.
+
+```text
+SYNTHETIC_INTEGRITY_OR_POWER_ONLY
+  N / tamanho amostral
+  competência AETA0/ACOMP0
+  regras inferenciais e margens
+```
+
+Esses itens podem usar apenas modelos sintéticos/adversariais prospectivos independentes da
+trajetória científica e nunca resultados v1.0.x.
+
+```text
+SCIENTIFIC_DESIGN_PRECOMMITTED
+  eta_EH0_value
+  lambda_state_value
+  p_A, p_B, p_0
+  episódios A/B e W científico
+```
+
+Esses valores alteram a própria dinâmica científica e portanto **não** podem ser escolhidos
+por ABENCH0 olhando `A`, nem por piloto que exporte `p/EH/outcome`. Devem ser fixados por
+regra matemática/teórica prospectiva ou por grade de sensibilidade fechada antes do run.
+
+Finalmente:
+
+```text
+omega_value
+individual iota_obs_value
+individual kappa_value
+```
+
+não são números obrigatórios do primeiro A1 enquanto a implementação utilizar a forma
+algebricamente equivalente `eta_EH0/(1+lambda_state*EH)`. A1 não separa esses três
+componentes; inventar uma decomposição seria falsa identificação.
+
+Status:
+
+```text
+PARAMETER_PROVENANCE_POLICY = FROZEN
+OUTCOME_GUIDED_PARAMETER_SELECTION = FORBIDDEN
+INDIVIDUAL_BASAL_DECOMPOSITION = NOT_REQUIRED_AND_NOT_IDENTIFIED
+```
+
+---
+
 # 26. Itens de desenho e números ainda NÃO congelados
 
 Já estão congelados prospectivamente no primeiro A1:
@@ -2249,6 +2420,8 @@ observer_basal_parameter_regime = HOMOGENEOUS
 observer_buffer_capacity_heterogeneity_regime = HOMOGENEOUS
 logical_cycle_commit = SYNCHRONOUS_SNAPSHOT_BARRIER
 A1b_global_opportunity_mass = MATCHED_PER_LOGICAL_CYCLE
+first_A1_demand_generation = D_i(W)=W
+parameter_provenance_policy = FROZEN
 ```
 
 Permanecem `UNFROZEN_REQUIRED_BEFORE_RUN`:
@@ -2256,9 +2429,8 @@ Permanecem `UNFROZEN_REQUIRED_BEFORE_RUN`:
 ```text
 N
 W
-omega_value
-iota_obs_value
-kappa_value
+eta_EH0_value
+lambda_state_resistance_value
 observer_buffer_capacity_value
 required_work_rule
 required_work_range_or_distribution
@@ -2307,8 +2479,8 @@ A ordem prospectiva passa a ser:
 
 1. preservar a microdinâmica basal já congelada e `ANBC0=FAIL_DERIVATIONAL`;
 2. preservar o regime homogêneo e a barreira síncrona já congelados por isolamento;
-3. congelar `omega`, `iota_obs`, `kappa`, `B`, `p_A`, `p_B`, `p_0` e os demais números
-   basais por critérios teóricos/técnicos independentes de outcomes A1;
+3. congelar `eta_EH0`, `lambda_state`, `B`, `p_A`, `p_B`, `p_0` e os demais números
+   por suas classes de proveniência prospectivamente autorizadas, sem inventar decomposição separada de `omega/iota_obs/kappa`;
 4. verificar que os valores congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
 5. congelar os níveis numéricos A1b (`q_H`, `q_L`, proporção dos estratos e discretização por ciclo) sob a semântica de atribuição já congelada e com massa global de oportunidades igual em cada ciclo;
 6. repetir `ADIST0.DERIVATIONAL_CONTENT_AUDIT` com o regime completo congelado;

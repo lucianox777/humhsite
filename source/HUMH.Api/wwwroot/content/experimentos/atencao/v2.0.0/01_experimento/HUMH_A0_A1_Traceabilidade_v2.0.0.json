@@ -8,7 +8,7 @@
     "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
     "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
   },
-  "status": "V2_0_0_A1B_ASSIGNMENT_SEMANTICS_AND_ETA_ADMISSIBILITY_FROZEN_PREPUBLICATION",
+  "status": "V2_0_0_PARAMETER_IDENTIFIABILITY_AND_PROVENANCE_FROZEN_PREPUBLICATION",
   "scientific_run_authorized": false,
   "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
   "canonical_variables": [
@@ -1118,9 +1118,8 @@
   "unfrozen_required_before_run": [
     "N",
     "W",
-    "omega_value",
-    "iota_obs_value",
-    "kappa_value",
+    "eta_EH0_value",
+    "lambda_state_resistance_value",
     "observer_buffer_capacity_value",
     "required_work_rule",
     "required_work_range_or_distribution",
@@ -1458,13 +1457,17 @@
       "is_maximum_task_size": false,
       "scientific_outcome_or_rescue_variable": false,
       "heterogeneity_regime": {
-        "status": "UNFROZEN_REQUIRED_BEFORE_RUN",
+        "status": "FROZEN_HOMOGENEOUS_FOR_FIRST_A1",
         "allowed_regimes": [
           "HOMOGENEOUS",
           "PROSPECTIVELY_FROZEN_HETEROGENEOUS"
         ],
         "paired_arm_requirement": "same observer_id must retain identical B_i across all paired arms",
-        "causal_comparability_rule": "Primary causal comparison preserves within-observer pairing. If heterogeneous, aggregate summaries must not assume equal B_i across observers."
+        "causal_comparability_rule": "Primary causal comparison preserves within-observer pairing. If heterogeneous, aggregate summaries must not assume equal B_i across observers.",
+        "allowed_regimes_for_first_A1": [
+          "HOMOGENEOUS"
+        ],
+        "heterogeneous_regime_disposition": "SUCCESSOR_OR_ROBUSTNESS_ONLY"
       }
     },
     "task_work": {
@@ -1991,14 +1994,16 @@
   },
   "first_A1_baseline_regime": {
     "status": "FROZEN_HOMOGENEOUS_FOR_FIRST_A1",
-    "omega_i": "omega common to all observers; numeric value pending",
-    "iota_obs_i": "iota_obs common to all observers; numeric value pending",
-    "kappa": "common system parameter; numeric value pending",
+    "omega_i": "conceptual theory variable; common across observers; not separately identified numerically by A1",
+    "iota_obs_i": "conceptual theory variable; common across observers; not separately identified numerically by A1",
+    "kappa": "conceptual theory variable; common system coefficient; not separately identified numerically by A1",
     "initial_state": "p_i(0)=p_0 common within paired episode; numeric value pending",
     "observer_buffer_capacity": "B_i=B common to all observers; numeric value pending",
     "scientific_role": "EXPERIMENTAL_ISOLATION_CHOICE",
     "not_theory_claim_of_real_observer_homogeneity": true,
-    "outcome_based_selection_forbidden": true
+    "outcome_based_selection_forbidden": true,
+    "numeric_execution_parameterization": "eta_EH0 + lambda_state",
+    "individual_decomposition_status": "NOT_IDENTIFIED_BY_A1_AND_NOT_REQUIRED_FOR_EXECUTION"
   },
   "logical_cycle_commit_semantics": {
     "status": "FROZEN_SYNCHRONOUS_SNAPSHOT_BARRIER",
@@ -2074,5 +2079,160 @@
     "per_cycle_global_mass_constraint": "sum_i Pobs_i_uniform[n] == sum_i Pobs_i_heterogeneous[n] for every n",
     "reactive_reallocation_forbidden": true,
     "scientific_role": "A1B_INSTRUMENT_ISOLATION_RULE"
+  },
+  "demand_generation_contract": {
+    "status": "FROZEN_ONE_ELIGIBLE_REQUEST_PER_OBSERVER_PER_LOGICAL_CYCLE",
+    "formula": "D_i(W)=W",
+    "ineligible_primary_cycles": "NONE",
+    "demand_id_rule": "deterministic(observer_id, logical_cycle)",
+    "arm_blind": true,
+    "paired_identity_required": true,
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 8,
+        "clause_or_statement": "D_i is exogenous observational demand."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 9,
+        "clause_or_statement": "Changing attention arm cannot change number, identity or content of requests."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 11,
+        "clause_or_statement": "Preferred first A1 demand generation is one eligible request per observer per logical cycle, yielding D_i(W)=W."
+      }
+    ]
+  },
+  "basal_identifiable_reparameterization": {
+    "status": "FROZEN_AUXILIARY_EXPERIMENTAL_REPARAMETERIZATION",
+    "canonical_form": "eta0(EH)=omega/(1+iota_obs+kappa*EH)",
+    "eta_EH0": "omega/(1+iota_obs)",
+    "lambda_state": "kappa/(1+iota_obs)",
+    "execution_equivalent_form": "eta0(EH)=eta_EH0/(1+lambda_state*EH)",
+    "individual_decomposition_identified_by_A1": false,
+    "individual_omega_iota_kappa_values_required_for_execution": false,
+    "admissible_domain": {
+      "eta_EH0": "0 < eta_EH0 <= 1",
+      "lambda_state": "lambda_state >= 0"
+    },
+    "lambda_zero_is_allowed_nested_submodel": true,
+    "anti_rescue": "lambda_state=0 cannot be excluded merely to avoid a derivational A1b classification.",
+    "scientific_role": "AUXILIARY_EXPERIMENTAL_REPARAMETERIZATION",
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_THEORY_CANONICAL",
+        "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+        "section": "4.2.3-4.2.5",
+        "clause_or_statement": "Basal convergence uses eta=omega/(1+iota_obs+iota_ord), with proposed iota_ord=kappa*EH and observer/structural resistances conceptually distinct."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 37,
+        "clause_or_statement": "Basal attention-free dynamics eta0=omega/(1+iota_obs+kappa*EH)."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 33,
+        "clause_or_statement": "Attention and observer inertia are distinct; A_i is not 1/iota_obs."
+      }
+    ]
+  },
+  "parameter_provenance_policy": {
+    "status": "FROZEN_PRE_BENCHMARK",
+    "outcome_guided_parameter_selection": "FORBIDDEN",
+    "classes": {
+      "CANONICAL_FIXED": [
+        "D_i(W)=W",
+        "deadline_inclusive",
+        "one_request_per_observer_cycle",
+        "A1b_global_opportunity_mass_matched_per_cycle",
+        "synchronous_snapshot_barrier"
+      ],
+      "THEORY_CONSTRAINED_NOT_FITTED": [
+        "eta_EH0_domain",
+        "lambda_state_domain",
+        "p_domain",
+        "stationary_target_semantics"
+      ],
+      "BLIND_INSTRUMENT_CALIBRATION_ABENCH0": [
+        "observer_buffer_capacity_value",
+        "required_work_rule_or_range",
+        "L_grid",
+        "L_A",
+        "opportunity_candidate_rules_and_levels",
+        "A1b_q_H",
+        "A1b_q_L",
+        "A1b_stratum_proportion"
+      ],
+      "SYNTHETIC_INTEGRITY_OR_POWER_ONLY": [
+        "N_or_sample_size",
+        "AETA0_competence",
+        "ACOMP0_competence",
+        "inferential_rules_and_margins"
+      ],
+      "SCIENTIFIC_DESIGN_PRECOMMITTED": [
+        "eta_EH0_value",
+        "lambda_state_value",
+        "p_A",
+        "p_B",
+        "p_0",
+        "target_episode_design",
+        "W"
+      ]
+    },
+    "ABENCH0_allowed_observables": [
+      "D_i",
+      "U_i",
+      "A_i",
+      "update_latency_distribution",
+      "deadline_misses",
+      "queue_service_timing",
+      "runtime_metadata",
+      "hardwareConcurrency"
+    ],
+    "ABENCH0_forbidden_observables": [
+      "eta_hat",
+      "p_i(t)",
+      "EH",
+      "belief_dispersion",
+      "consensus",
+      "D_collective",
+      "attractor_outcomes",
+      "any_A1a_or_A1b_outcome"
+    ],
+    "v1_outcomes_may_select_parameters": false,
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 17,
+        "clause_or_statement": "ABENCH0 is a blind instrumentation benchmark before the scientific run."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 18,
+        "clause_or_statement": "ABENCH0 allowed outputs are technical/instrumental only."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 19,
+        "clause_or_statement": "Scientific trajectory/outcome quantities are forbidden in ABENCH0."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 20,
+        "clause_or_statement": "Candidate grid and deterministic selection criteria must be frozen before ABENCH0."
+      }
+    ]
   }
 }
