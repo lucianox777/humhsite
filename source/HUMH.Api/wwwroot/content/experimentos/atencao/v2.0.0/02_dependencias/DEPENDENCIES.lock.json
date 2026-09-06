@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_SCHEDULE_AUDIT_R8",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_INDEPENDENT_CONTENT_R9",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "58b91f15b583e1ce0dac726febe455e898d267bc6083509e2ce2959c4dace728"
+      "sha256": "82a1db0645de24b9d90a98c7b78301677c31a64f364b4525efe0333e053c0adb"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "6c72c36864ce5abcb6d61dd37b6fe03e48bcf49246b2fb80f4a280fdd2f3c074"
+      "sha256": "83282751f3252b224e4045fda08bf022e459321db2acb31e0bb6d174abc9ccdd"
     }
   ],
   "active_canonical_dependencies": [
@@ -47,7 +47,7 @@
     }
   ],
   "A1b_confirmatory_authorized": false,
-  "A1b_structural_audit": "CONDITIONAL_DISCRIMINATIVE",
+  "A1b_structural_audit": "FAIL_INDEPENDENT_CONFIRMATORY_CONTENT_CURRENT_CONSTRUCTION",
   "A1b_assignment_semantics": "FROZEN_FIXED_PREASSIGNED_STRATA",
   "parameter_identifiability": "FROZEN_ETA_EH0_PLUS_LAMBDA_STATE",
   "demand_generation": "FROZEN_D_i_EQUALS_W",
@@ -55,8 +55,9 @@
   "work_unit_normalization": "FROZEN_B_EQUALS_1_OBSERVER_CAPACITY_UNIT",
   "workload_contract": "FROZEN_K_C_EQUALS_2_MINIMAL_NONTRIVIAL",
   "deadline_contract": "FROZEN_L_A_EQUALS_1_CANONICAL_PREFERENCE",
-  "A1b_structural_audit_scope": "GENERAL_NONIDENTITY_ONLY_NOT_CONFIRMATORY_AUTHORIZATION",
+  "A1b_structural_audit_scope": "CURRENT_GENERATOR_NO_INDEPENDENT_CONFIRMATORY_CONTENT",
   "A1b_R8_witness_disposition": "FAIL_DERIVATIONAL_MECHANISM_DEMONSTRATION_ONLY",
   "A1b_R8_instrument_feasibility": "PASS_ANALYTIC",
-  "A1b_scientific_assignment_levels_frozen": false
+  "A1b_scientific_assignment_levels_frozen": false,
+  "A1b_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]"
 }

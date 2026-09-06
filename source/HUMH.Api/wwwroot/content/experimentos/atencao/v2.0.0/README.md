@@ -16,3 +16,7 @@ Congelamentos correntes:
 `SCIENTIFIC_RUN_NOT_AUTHORIZED`.
 
 O auditor auxiliar `03_integridade/audit_schedules.py` verifica FIFO, deadlines, borda direita e um testemunho de matching sem executar trajetórias científicas. Seus números não congelam os braços A1b.
+
+## R9 — conteúdo independente
+
+A1a/A1b atuais são demonstrações de mecanismo, não testes confirmatórios. A1b não foi refutada; a auditoria do gerador foi encerrada. O próximo desenho requer conteúdo coletivo independente antes de novos números. A0 permanece não executado e A2 não autorizado. Ver §§17.4–17.5, 26–27 e 29.

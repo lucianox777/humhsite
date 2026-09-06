@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_SCHEDULE_FEASIBILITY_AND_DERIVATIONAL_AUDIT`  
+**Status:** `PRE_CODE_INDEPENDENT_CONTENT_AUDIT_CLOSED_R9`
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** O R7 permanece congelado. A auditoria R8 demonstra que a razão nominal oportunidades/trabalho não determina A_i, identifica bloqueio de fase do FIFO e apresenta um testemunho de matching A1b com massa nominal, trabalho efetivo e número de atualizações iguais por ciclo. O próprio testemunho força divergência D pela regra basal e, portanto, é demonstração de mecanismo, não confirmação independente. Os níveis científicos de A1b continuam pendentes; nenhum parâmetro é escolhido para resgatar a classificação.
+**Motivo:** A0 não executado; A1a demonstração de mecanismo por ANBC0=FAIL_DERIVATIONAL. A1b não possui conteúdo confirmatório independente no gerador corrente. O testemunho R8 é derivacional e a ausência de uma identidade universal D_A→D não basta para discriminação. A hipótese não foi refutada; A2 não autorizado. Não se escolherão novos números para resgatar esta construção.
 
 ---
 
@@ -1562,8 +1562,7 @@ efeito não reduzível à identidade local de A1a
 Gates independentes de integridade/poder
 ```
 
-A auditoria desse conteúdo próprio passa a ser o próximo bloqueio conceitual antes do
-congelamento final dos números.
+A auditoria desse conteúdo próprio está encerrada para a construção corrente no §17.4. A1b não recebe autorização confirmatória por escolha posterior de números.
 
 
 # 8. A0 — ATTENTION MEASUREMENT CONTRACT
@@ -2078,7 +2077,7 @@ Restrições:
 - regra de alocação exógena e congelada;
 - `A_bar` não pode ser “corrigido” depois olhando o outcome coletivo.
 
-A1b não é consequência automática de H-A1S. Entretanto, qualquer outcome coletivo candidato deve primeiro passar por auditoria derivacional dentro de `ADIST0`, para excluir efeito que seja invariância ou consequência matemática automática da construção local.
+A1b não é consequência automática de H-A1S. A auditoria de ADIST0 deve excluir invariância, efeito imposto e ausência de conteúdo independente do gerador. Não basta mostrar que D_A não determina universalmente D. O fechamento corrente está no §17.4.
 
 ---
 
@@ -2345,43 +2344,59 @@ passar por sua própria auditoria de consequência algébrica e competência.
 
 ---
 
-## 17.4. Classificação prospectiva atual de ADIST0
+## 17.4. Fechamento da auditoria de conteúdo independente — R9
 
-O estado correto antes dos valores basais e da regra instrumental final é:
+A classificação preliminar `CONDITIONAL_DISCRIMINATIVE` foi excessiva: ela provava apenas que D_A não determina universalmente D(W). Isso não demonstra competência discriminativa. O R8 já oferece um contraste concreto derivacional. O fechamento abaixo aplica-se à construção atual, não a toda possível dinâmica coletiva.
+
+### 17.4.1. Recorrência e alcance da inferência
+
+Com alvo comum, parâmetros homogêneos e barreira síncrona:
+
+\[
+p_i[n+1]=p_{target}+(p_i[n]-p_{target])r_n^{k_i[n]},\qquad r_n=1-\eta_0(EH[n]).
+\]
+
+As conclusões k_i[n] decorrem da fila, demandas, deadlines e schedule; EH[n] decorre do snapshot anterior. Dados o estado inicial, a regra basal, a história exógena e o schedule, a trajetória é determinada recursivamente. A1b pode ter consequências emergentes não óbvias, mas executar esse gerador e recuperar sua própria recorrência demonstra consistência interna, não evidência independente de que a lei descreva outro substrato.
+
+Modelos determinísticos podem gerar previsões não triviais e falsificáveis por dados independentes. O bloqueio corrente não é determinismo em si: é a ausência de um confronto independente e de alternativas capazes de contrariar a interpretação pretendida. O núcleo 1.9-A, A2, distingue C1 de C2/E; A5 proíbe inserir diretamente EH/kappa EH nos agentes cuja convergência confirmará N1a, e A6 exige o competidor aninhado. A regra basal atual contém eta0(EH), o que é admissível para demonstração declarada, mas não confirma independentemente N1a, H-A1S ou A1b.
+
+### 17.4.2. Simetria do modelo homogêneo
+
+Para uma permutação P aplicada conjuntamente a estados, filas e schedules, a dinâmica atual satisfaz:
+
+\[
+F(Pp,Pk)=P F(p,k).
+\]
+
+A média e EH são invariantes à permutação, os parâmetros e o alvo são comuns e não há leitura de vizinhos/topologia na atualização. Por indução, a trajetória apenas é permutada. Logo, a média, EH e D são exatamente iguais. Com estado inicial homogêneo, trocar o mesmo multiconjunto de schedules entre observadores homogêneos também preserva esses outcomes coletivos.
+
+Portanto, a proposta futura de manter toda a distribuição de atenção e apenas trocar quem a recebe não possui conteúdo adicional nesta microdinâmica. Ela exigiria heterogeneidade basal ou interação estrutural efetiva previamente justificada. Não se introduzirá heterogeneidade auxiliar B_i apenas para produzir um efeito. A simetria não é uma afirmação sobre observadores reais.
+
+### 17.4.3. Disposição da construção corrente
+
+A hipótese dos §§67–69 permanece aberta: a distribuição de atenção pode conter informação dinâmica além da média. O R8 demonstra viabilidade do instrumento, não a verdade dessa hipótese. O modelo corrente não fornece conteúdo confirmatório independente suficiente para promover D a outcome primário de um teste da HUMH. O bloqueio é de desenho/identificação, não de potência ou de falta de um número conveniente.
 
 ```text
-ADIST0.DERIVATIONAL_CONTENT_AUDIT_STRUCTURAL =
-    CONDITIONAL_DISCRIMINATIVE
-
-ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL =
-    PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS
-
+ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = FAIL_INDEPENDENT_CONFIRMATORY_CONTENT_CURRENT_CONSTRUCTION
 ADIST0_CONFIRMATORY = NOT_AUTHORIZED
-```
-
-`CONDITIONAL_DISCRIMINATIVE` é apenas a classificação geral preliminar de ausência de uma identidade universal `D_A -> D`. Não é demonstração de competência discriminativa nem autorização confirmatória. O R8 mostra um subdomínio concreto no qual o contraste em D é derivacional mesmo com EH dependente do estado. A auditoria final de qualquer desenho científico deverá excluir conclusões já garantidas por sua própria construção, sem selecionar parâmetros para forçar aprovação.
-A classificação final deve ser repetida depois de congelados os compostos basais identificáveis, p_0, W e os níveis instrumentais ainda pendentes, sempre antes da primeira trajetória científica. B=1, K_C=2 e L_A=1 não são reabertos. A classificação do testemunho R8 já é derivacional e não pode ser revertida por tuning.
-
-## 17.5. Regra anti-resgate
-
-Nenhum parâmetro poderá ser escolhido com o objetivo de converter a classificação final em
-`DISCRIMINATIVE`. O regime será congelado por critérios teóricos/técnicos independentes.
-
-Se, depois desse congelamento, `D` cair em regime derivacional:
-
-```text
 A1b = MECHANISM_DEMONSTRATION_ONLY [C1]
-ADIST0_CONFIRMATORY = NOT_AUTHORIZED
+A1b_PRIMARY_OUTCOME_D = FROZEN_FOR_AUDIT_NOT_CONFIRMATORY
+A1b_THEORY_REFUTATION = FALSE
+ADIST0_CONFIRMATORY_RUN = NOT_EXECUTED
+SCIENTIFIC_RUN_NOT_AUTHORIZED
 ```
 
-Se permanecer não forçado e todos os demais Gates forem satisfeitos, `D` poderá então ser
-promovido de **candidato auditado** a outcome primário confirmatório de A1b.
+Essa disposição pertence ao subcheck existente, não cria Gate raiz nem refuta a teoria. Não significa que todos os schedules forcem o mesmo sinal. A1b pode ser demonstrado mecanicamente com rotulagem explícita, sem emitir ESTABLISHED/COMPATIBLE ou REFUTED. Não se escolherão eta_EH0, lambda_state, p_0, W, q_H, q_L ou margens para converter o bloqueio em PASS.
 
-A restrição temporal permanece:
+## 17.5. Próximo desenho sem resgate ad hoc
 
-```text
-A1B_DERIVATIONAL_AUDIT_FINAL_MUST_PRECEDE_FIRST_SCIENTIFIC_TRAJECTORY
-```
+Preserva-se um experimento A0/A1: A0 como infraestrutura de mensuração e os módulos atuais A1a/A1b como diagnósticos mecanísticos. O próximo módulo coletivo poderá reutilizar o instrumento e a rastreabilidade, mas deverá receber especificação prospectiva antes de coleta científica.
+
+A teoria §2.4.2 apresenta C2C como agregação de medições individuais, ajustes e nova agregação. Essa é uma linhagem pertinente, mas não fornece sozinha uma implementação A1 completa, parâmetros, margens, outcome independente ou evidência. Introduzir pooling ou média dos vizinhos no p_target atual violaria seu contrato; programar convergência e depois medi-la repetiria a auto-confirmação.
+
+Antes do próximo run será necessário justificar a proveniência de um substrato coletivo, congelar sua dinâmica sem ajuste por outcomes A1, especificar rivais e uma previsão capaz de falhar e estabelecer a fonte independente da resposta. Um substrato computacional preexistente, selecionado por regra pré-registrada, ou coleta externa adequada são possibilidades. Uma ponte C1 continua útil para consistência, mas não é validação independente.
+
+A distinção atenção/inércia/EH/recurso global, os controles locais, o pareamento e a sequência A0→A1a→A1b permanecem. Nenhuma nova hipótese, variável teórica, Gate raiz ou A2 é congelada aqui. O próximo trabalho é especificar conteúdo coletivo independente, não outro benchmark de schedules. Os números R8 continuam testemunho auxiliar.
 
 ---
 
@@ -2688,85 +2703,15 @@ INDIVIDUAL_BASAL_DECOMPOSITION = NOT_REQUIRED_AND_NOT_IDENTIFIED
 
 ---
 
-# 26. Itens de desenho e números ainda NÃO congelados
+# 26. Parâmetros e autorização
 
-Já estão congelados prospectivamente no primeiro A1:
+B=1, K_C=2 e L_A=1 permanecem contratos da operacionalização mecanística, não constantes estimadas da HUMH. N, W, parâmetros basais, atratores, episódios, níveis instrumentais, margens e poder confirmatórios não foram escolhidos. Os números A1b são diferidos até existir desenho científico autorizado; não serão escolhidos para contornar ADIST0.
 
-```text
-observer_basal_parameter_regime = HOMOGENEOUS
-observer_buffer_capacity_heterogeneity_regime = HOMOGENEOUS
-observer_buffer_capacity_value = NORMALIZED_B_EQUALS_1
-required_work_heterogeneity_regime = HOMOGENEOUS_FOR_FIRST_A1
-required_opportunities_per_request_K_C = 2
-L_A = 1
-logical_cycle_commit = SYNCHRONOUS_SNAPSHOT_BARRIER
-A1b_global_opportunity_mass = MATCHED_PER_LOGICAL_CYCLE
-first_A1_demand_generation = D_i(W)=W
-parameter_provenance_policy = FROZEN
-```
+# 27. Procedimento autorizado
 
-Permanecem `UNFROZEN_REQUIRED_BEFORE_RUN`:
+A0 e o auditor de schedules podem continuar tecnicamente, sem outcomes científicos. A1a/A1b atuais só poderão ser executados como demonstrações mecanísticas explicitamente rotuladas, após congelamento e integridade aplicáveis. Não há autorização para busca numérica confirmatória.
 
-```text
-N
-W
-eta_EH0_value
-lambda_state_resistance_value
-required_work_rule
-required_work_range_or_distribution
-p_A
-p_B
-p_0_or_initialization_value
-number_of_target_episodes
-A_B_episode_balance_and_order
-target_episode_length
-target_stationarity_certification
-regras instrumentais candidatas de ABENCH0
-critérios instrumentais de ABENCH0
-number_of_arms
-instrumental_contrast_criteria
-saturation_avoidance_criteria
-A1b_stratum_proportion
-A1b_q_H
-A1b_q_L
-A1b_per_cycle_opportunity_levels
-ADIST0_final_derivational_classification
-margem de matching de A_bar
-diferença mínima de D_A
-margem de efeito A1b
-regra inferencial A1b
-tamanho amostral/poder
-```
-
-Nenhum campo pode ser preenchido com base em outcomes científicos da série v1.0.x nem
-escolhido para obter uma classificação desejada em `ANBC0` ou `ADIST0`.
-
-A microdinâmica basal continua fechada:
-
-```text
-A1A_OBSERVER_MICRODYNAMIC =
-  FROZEN_CANONICAL_DISCRETE_WITH_AUXILIARY_COMPLETION_MAPPING
-ANBC0 = FAIL_DERIVATIONAL
-```
-
----
-
-# 27. Procedimento autorizado daqui até run-ready
-
-A ordem prospectiva passa a ser:
-
-1. preservar a microdinâmica basal já congelada e `ANBC0=FAIL_DERIVATIONAL`;
-2. preservar o regime homogêneo e a barreira síncrona já congelados por isolamento;
-3. preservar `B=1`, `K_C=2` e `L_A=1` já congelados, e congelar `eta_EH0`, `lambda_state`, `p_A`, `p_B`, `p_0` e os demais números
-   por suas classes de proveniência prospectivamente autorizadas, sem inventar decomposição separada de `omega/iota_obs/kappa`;
-4. verificar que os valores basais congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
-5. congelar os níveis numéricos A1b (`q_H`, `q_L`, proporção dos estratos e discretização por ciclo) sob a semântica de atribuição já congelada e com massa global de oportunidades igual em cada ciclo;
-6. repetir `ADIST0.DERIVATIONAL_CONTENT_AUDIT` com o regime completo congelado;
-7. aceitar a classificação obtida: se derivacional, A1b fica demonstração de mecanismo;
-   se discriminativa, congelar margens, inferência e poder;
-8. executar `AETA0`, `ABENCH0`, `AMAN0`, `AISO0` e `AINT0` sem tuning por outcomes;
-9. manter `v2.0.0` enquanto o objeto continuar pré-publicação e regenerar hashes a cada
-   alteração normativa.
+O próximo trabalho científico é especificar prospectivamente um substrato coletivo independente ou uma ponte a confrontar com dados independentes. Essa escolha precede dinâmica, rivais, outcomes, margens, poder e seeds. O instrumento A0 poderá ser reutilizado se seu mapeamento for validado no novo substrato. Mantém-se v2.0.0 pré-publicação; teoria, núcleo, programa N3 e A2 não são alterados.
 
 ---
 
@@ -2869,17 +2814,7 @@ H-A1S, mas não podem ser emitidas por esta implementação.
 
 ## A1b
 
-Estado corrente:
-
-```text
-PRIMARY_OUTCOME_CANDIDATE = STATE_DIVERGENCE_D
-ADIST0.DERIVATIONAL_CONTENT_AUDIT_STRUCTURAL = CONDITIONAL_DISCRIMINATIVE
-ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS
-ADIST0_CONFIRMATORY = NOT_AUTHORIZED
-```
-
-Somente se a auditoria final classificar o candidato como discriminativo e os demais
-critérios forem congelados poderão ser usadas as categorias gerais de resultado de A1b.
+A auditoria final da construção corrente é `FAIL_INDEPENDENT_CONFIRMATORY_CONTENT_CURRENT_CONSTRUCTION`. D permanece candidato auditado, não outcome confirmatório. A1b é demonstração de mecanismo [C1], sem run confirmatório, sem refutação teórica e sem autorização para resgate numérico. As categorias gerais permanecem disponíveis para um futuro desenho adequado.
 
 ## A2
 
@@ -2927,5 +2862,5 @@ e proíbe a direção inversa:
 TRACEABILITY_RESET = FROZEN
 SCIENTIFIC_MODEL = CANONICAL_A0_A1_ONLY
 SCIENTIFIC_RUN_NOT_AUTHORIZED
-NEXT = FREEZE_BASAL_AND_SERVICE_NUMERICS_PLUS_A1B_LEVELS_THEN_COMPLETE_ADIST0_DERIVATIONAL_AUDIT
+NEXT = SPECIFY_INDEPENDENT_COLLECTIVE_CONTENT_BEFORE_NEW_SCIENTIFIC_NUMERICS
 ```

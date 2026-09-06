@@ -13,3 +13,5 @@
 A teoria exibida pelo site permanece `../../teoria.md`; a cópia em `v2.0.0/02_dependencias/` é a dependência canônica hash-locked.
 
 A auditoria pré-código R8 está integrada à spec/trace v2.0.0 e ao verificador auxiliar de schedules. Não congela níveis científicos nem reabre os contratos R7.
+
+R9: auditoria de conteúdo independente encerrada; A1a/A1b somente demonstração de mecanismo. Ver v2.0.0.

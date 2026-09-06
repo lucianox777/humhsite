@@ -8,7 +8,7 @@
     "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
     "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
   },
-  "status": "V2_0_0_SCHEDULE_FEASIBILITY_AND_DERIVATIONAL_AUDIT_PREPUBLICATION",
+  "status": "V2_0_0_INDEPENDENT_CONTENT_AUDIT_CLOSED_R9_PREPUBLICATION",
   "scientific_run_authorized": false,
   "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
   "canonical_variables": [
@@ -839,7 +839,7 @@
           "clause_or_statement": "ANBC0: separability not guaranteed by construction"
         }
       ],
-      "pre_run_status": "NOT_READY_FOR_CLASSIFICATION"
+      "pre_run_status": "FAIL_DERIVATIONAL"
     },
     {
       "id": "ACOMP0",
@@ -1132,19 +1132,10 @@
     "number_of_arms",
     "instrumental_contrast_criteria",
     "saturation_avoidance_criteria",
-    "A1b_stratum_proportion",
-    "A1b_q_H",
-    "A1b_q_L",
-    "A1b_per_cycle_opportunity_levels",
-    "ADIST0_final_derivational_classification",
-    "A1b_Abar_matching_margin",
-    "A1b_min_DA_difference",
-    "A1b_material_effect_margin",
-    "A1b_inference_rule",
     "sample_size_power"
   ],
   "previous_v1_outcomes_policy": "EXPOSED_DIAGNOSTIC_ONLY; may inform software bug prevention but not scientific numeric choices.",
-  "next_version": "Keep unpublished v2.0.0. R8 validates schedule feasibility and identifies a derivational A1b witness; scientific levels remain unfrozen. Do not tune to rescue independent confirmation. Finish prospectively justified design and integrity/power checks before any scientific run.",
+  "next_version": "Keep unpublished v2.0.0; current A1a/A1b mechanism only. Specify independent collective content before confirmatory numerics. A2 unauthorized.",
   "canonical_artifact_registry": {
     "HUMH_ATTENTION_DEFINITION_1.0.0": {
       "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
@@ -1153,6 +1144,10 @@
     "HUMH_THEORY_CANONICAL": {
       "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
       "role": "canonical theory lineage used only through qualified references"
+    },
+    "HUMH_NUCLEUS_CANONICAL": {
+      "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+      "role": "lineage-only, not bundled or modified"
     }
   },
   "build_run_traceability_requirements": {
@@ -1334,15 +1329,26 @@
           "clause_or_statement": "A1b follows A1a in the formal A0->A1a->A1b sequence."
         }
       ],
-      "current_authorization": "NOT_AUTHORIZED_PENDING_FINAL_DERIVATIONAL_AUDIT",
+      "current_authorization": "NOT_AUTHORIZED_INDEPENDENT_CONTENT_BLOCK",
       "primary_outcome_candidate": "STATE_DIVERGENCE_D",
-      "pre_numeric_derivational_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED",
-      "candidate_status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_YET_AUTHORIZED",
-      "derivational_audit_structural": "CONDITIONAL_DISCRIMINATIVE",
-      "derivational_audit_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS",
+      "pre_numeric_derivational_classification": "GENERAL_NONIDENTITY_ONLY_NOT_SUFFICIENT",
+      "candidate_status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_CONFIRMATORY",
+      "derivational_audit_structural": "GENERAL_NONIDENTITY_ONLY_NOT_SUFFICIENT",
+      "derivational_audit_final": "FAIL_INDEPENDENT_CONFIRMATORY_CONTENT_CURRENT_CONSTRUCTION",
       "current_confirmatory_authorization": false,
       "R8_witness_disposition": "MECHANISM_DEMONSTRATION_ONLY",
-      "R8_witness_not_independent_confirmation": true
+      "R8_witness_not_independent_confirmation": true,
+      "current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
+      "current_allowed_results": [
+        "MECHANISM_DEMONSTRATION_ONLY [C1]",
+        "INCONCLUSIVE_TECHNICAL_OR_IMPLEMENTATION"
+      ],
+      "current_forbidden_results": [
+        "ATTENTION_DISTRIBUTION_EFFECT_ESTABLISHED/COMPATIBLE [C1]",
+        "ATTENTION_DISTRIBUTION_EFFECT_NOT_ESTABLISHED",
+        "ATTENTION_DISTRIBUTION_EFFECT_REFUTED"
+      ],
+      "current_rule": "Current generator lacks independent confirmatory content; no numerical rescue. The theoretical hypothesis is not refuted."
     },
     "A2": {
       "result": "NOT_AUTHORIZED / NOT_TESTED",
@@ -1375,7 +1381,8 @@
       }
     ],
     "current_A1a_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
-    "A1b_continuation_condition": "Freeze omega/iota/kappa/B, service/deadline numerics and q_H/q_L/stratum proportion under the already frozen assignment semantics; then repeat ADIST0 before any scientific trajectory."
+    "A1b_continuation_condition": "Current confirmatory construction blocked. Preserve A0 and mechanism diagnostics; specify independent collective content before numerical design. A2 unauthorized.",
+    "current_A1b_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]"
   },
   "historical_entity_overlap_policy": {
     "allowed": true,
@@ -1886,6 +1893,16 @@
         "required exact per-cycle global opportunity mass matching",
         "kept q_H/q_L/stratum proportion and basal/service values numerical pending"
       ]
+    },
+    {
+      "id": "V2_0_0_PREPUBLICATION_INDEPENDENT_CONTENT_CLOSURE_R9",
+      "scientific_version_bump": false,
+      "changes": [
+        "Closed current A1b independent-content audit without numerical rescue",
+        "Preserved R8 witness and corrected the general-nonidentity inference",
+        "Proved homogeneous permutation equivariance",
+        "Deferred confirmatory numerical design; preserved A0 and A2 prohibition"
+      ]
     }
   ],
   "ANBC0_current_classification": {
@@ -1928,12 +1945,12 @@
     "id": "ADIST0_DERIVATIONAL_CONTENT_AUDIT",
     "kind": "GATE_SUBCHECK",
     "parent_gate": "ADIST0",
-    "status_structural": "CONDITIONAL_DISCRIMINATIVE",
-    "status_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS",
+    "status_structural": "GENERAL_NONIDENTITY_ONLY_NOT_SUFFICIENT",
+    "status_final": "FAIL_INDEPENDENT_CONFIRMATORY_CONTENT_CURRENT_CONSTRUCTION",
     "primary_outcome_candidate": {
       "id": "STATE_DIVERGENCE_D",
       "formula": "D=(1/N)*sum_i |p_i-p_bar|",
-      "status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_YET_AUTHORIZED",
+      "status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_CONFIRMATORY",
       "canonical_refs": [
         {
           "artifact_id": "HUMH_NUCLEUS_CANONICAL",
@@ -1965,7 +1982,8 @@
     },
     "general_state_dependent_case": {
       "condition": "r_n varies with collective EH[n]",
-      "classification": "NOT_ALGEBRAICALLY_FORCED_BY_D_A_ALONE"
+      "classification": "NOT_ALGEBRAICALLY_FORCED_BY_D_A_ALONE",
+      "scientific_interpretation": "General nonidentity does not establish independent-content discrimination."
     },
     "instrument_isolation": {
       "per_cycle_global_opportunity_mass": "MATCHED_BETWEEN_A1B_ARMS",
@@ -1984,12 +2002,83 @@
     },
     "confirmatory_authorized": false,
     "final_audit_must_precede_first_scientific_trajectory": true,
-    "anti_rescue": "Parameters cannot be selected to obtain a desired derivational classification.",
+    "anti_rescue": "No numeric rescue of current confirmatory construction.",
     "R8_witness_disposition": "FAIL_DERIVATIONAL",
     "R8_witness_instrument_feasibility": "PASS_ANALYTIC",
     "R8_witness_is_confirmatory": false,
     "general_nonidentity_is_sufficient_for_confirmation": false,
-    "current_confirmatory_authorization": false
+    "current_confirmatory_authorization": false,
+    "R9_closure": {
+      "kind": "GATE_SUBCHECK",
+      "parent_gate": "ADIST0",
+      "status": "FAIL_INDEPENDENT_CONFIRMATORY_CONTENT_CURRENT_CONSTRUCTION",
+      "theory_refutation": false,
+      "confirmatory_run_executed": false,
+      "permutation_equivariance": "F(Pp,Pk)=P F(p,k) for homogeneous non-networked basal construction",
+      "scope_limit": "Does not claim all schedules force one sign or deterministic models cannot be tested independently",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 67,
+          "clause_or_statement": "Attention distribution effect at fixed mean."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 69,
+          "clause_or_statement": "A1b is not automatic from H-A1S."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 108,
+          "clause_or_statement": "Separability must distinguish rivals without constructing the answer."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 116,
+          "clause_or_statement": "A1b result logic and frozen inference."
+        },
+        {
+          "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+          "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+          "section": "A2",
+          "clause_or_statement": "C1 versus independent C2/E substrata."
+        },
+        {
+          "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+          "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+          "section": "A4",
+          "clause_or_statement": "D is distinct from EH."
+        },
+        {
+          "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+          "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+          "section": "A5",
+          "clause_or_statement": "N1a prohibits direct EH causal insertion in confirmatory agents."
+        },
+        {
+          "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+          "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+          "section": "A6",
+          "clause_or_statement": "Nested competitor without EH term."
+        },
+        {
+          "artifact_id": "HUMH_THEORY_CANONICAL",
+          "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+          "section": "4.2.5",
+          "clause_or_statement": "Basal state-dependent rate."
+        },
+        {
+          "artifact_id": "HUMH_THEORY_CANONICAL",
+          "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+          "section": "4.4.2",
+          "clause_or_statement": "Discrete basal update."
+        }
+      ]
+    }
   },
   "first_A1_baseline_regime": {
     "status": "FROZEN_HOMOGENEOUS_FOR_FIRST_A1",
@@ -2450,5 +2539,40 @@
       "independent_confirmation": false
     },
     "anti_rescue": "No scientific parameter or schedule may be selected to turn the witness derivational classification into confirmatory support."
+  },
+  "deferred_confirmatory_design": {
+    "kind": "GOVERNANCE_STATUS",
+    "status": "DEFERRED_PENDING_INDEPENDENT_CONTENT",
+    "fields": [
+      "A1b_stratum_proportion",
+      "A1b_q_H",
+      "A1b_q_L",
+      "A1b_per_cycle_opportunity_levels",
+      "ADIST0_final_derivational_classification",
+      "A1b_Abar_matching_margin",
+      "A1b_min_DA_difference",
+      "A1b_material_effect_margin",
+      "A1b_inference_rule"
+    ],
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 70,
+        "clause_or_statement": "Numerical arms not frozen by definition."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 71,
+        "clause_or_statement": "No outcome-based contrast selection."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 120,
+        "clause_or_statement": "Freeze design before scientific collection."
+      }
+    ]
   }
 }
