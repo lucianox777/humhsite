@@ -1,0 +1,21 @@
+name: Materialize HUMH A0-A1 v2.0.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/humh-stage/**'
+      - '.github/workflows/humh-materialize-a0a1-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize and verify experiment tree
+        run: bash .github/humh-stage/materialize.sh
