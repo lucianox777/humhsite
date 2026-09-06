@@ -63,7 +63,7 @@ Ela **não pode** ser usada para escolher na v2.0.0:
 - braços HIGH/MID/LOW;
 - regras/níveis correspondentes de alocação de oportunidades;
 - `W`;
-- `L_A`, exceto via novo `ABENCH0` cego técnico;
+- `L_A` (agora congelado prospectivamente em `1` pelo §16; nunca selecionado por resultados v1.0.x);
 - `delta_drive`;
 - número mínimo de passos;
 - informação mínima `sum(x^2)`;
@@ -126,7 +126,7 @@ termina dentro do deadline lógico comum.
 
 Janela em ciclos lógicos.
 
-### 
+### L_A
 Uma requisição criada em `t` entra em `U_i` somente se:
 
 \[
@@ -141,7 +141,7 @@ t_{complete}\le t+L_A.
 A definição canônica §16 determina que o primeiro A1 deve **preferir `L_A=1` ciclo** quando
 a arquitetura comportar uma atualização completa nesse intervalo. A arquitetura aqui
 congelada satisfaz essa condição: `B=1`, `K_C=2`, e o scheduler pode conceder duas
-opotunidades lógicas no mesmo ciclo; ao completar a segunda, a rotina basal é executada
+oportunidades lógicas no mesmo ciclo; ao completar a segunda, a rotina basal é executada
 imediatamente antes da barreira de commit.
 
 Portanto:
@@ -2589,10 +2589,8 @@ number_of_target_episodes
 A_B_episode_balance_and_order
 target_episode_length
 target_stationarity_certification
-L_grid
 regras instrumentais candidatas de ABENCH0
 critérios instrumentais de ABENCH0
-L_A
 number_of_arms
 instrumental_contrast_criteria
 saturation_avoidance_criteria

@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_MINIMAL_WORKLOAD_LA1_R7",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_MINIMAL_WORKLOAD_LA1_R7_CONSISTENT",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,7 +8,7 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "84fe1a8cd756f70b691c34551554640015adc2c6e3e1398c51c91edc42f50474"
+      "sha256": "f7449dc82d60cee773b0731a552a8de97f2145a291e64000723e995db5410807"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
