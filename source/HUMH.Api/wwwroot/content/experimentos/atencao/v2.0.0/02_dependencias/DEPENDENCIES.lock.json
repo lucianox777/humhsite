@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_A1B_STRUCTURAL_AUDIT_R2",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_A1B_ASSIGNMENT_AND_ETA_BOUND_R3",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "657b365a6c78994e629af310571f38f17c8c49b1bb64b12b944a4c2db3b8ea85"
+      "sha256": "11c761eb36e52a08bbb12558742af02bf4b536895ce6bd8632662446baeba092"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "addb7c9161f1137e5eacc9efbf45d8396ca4ba99841f8adbddbb1ba98ebef64d"
+      "sha256": "c276d1e4c27a5aa3f4bdc0366fbfc7eebe8fff9b1a15d0c08eab78a6ab77c9cd"
     }
   ],
   "active_canonical_dependencies": [
@@ -47,5 +47,6 @@
     }
   ],
   "A1b_confirmatory_authorized": false,
-  "A1b_structural_audit": "CONDITIONAL_DISCRIMINATIVE"
+  "A1b_structural_audit": "CONDITIONAL_DISCRIMINATIVE",
+  "A1b_assignment_semantics": "FROZEN_FIXED_PREASSIGNED_STRATA"
 }

@@ -568,7 +568,6 @@ Somente após os dois canais terminarem é permitido comparar `eta_hat` com `A_i
 A semântica e o regime de isolamento já estão congelados. Antes do run ainda devem ser congelados:
 
 ```text
-basal_eta0_bound_admissibility
 observer_buffer_capacity_value
 required_work_rule
 required_work_range_or_distribution
@@ -1063,6 +1062,46 @@ Status:
 
 ```text
 BASAL_ETA0_BOUND_PRESERVATION = REQUIRED_BEFORE_RUN
+POST_HOC_CLAMPING = FORBIDDEN
+```
+
+
+### 7.1.2.1. Critério analítico de admissibilidade de `eta0` — CONGELADO
+
+Como `EH` pertence ao intervalo `[0,1]`, defina:
+
+\[
+m=\min_{h\in[0,1]}\left(1+\iota_{obs}+\kappa h\right)
+ =1+\iota_{obs}+\min(0,\kappa).
+\]
+
+Para o regime homogêneo do primeiro A1, a condição prospectiva que garante simultaneamente
+denominador positivo e:
+
+\[
+0<\eta^{(0)}(h)\le1
+\]
+
+para todo `h in [0,1]` é:
+
+\[
+\boxed{m>0\quad\land\quad 0<\omega\le m.}
+\]
+
+Se `kappa>=0`, a expressão reduz-se a:
+
+\[
+0<\omega\le1+\iota_{obs}.
+\]
+
+A desigualdade é um **critério de admissibilidade**, não uma escolha numérica. `omega`,
+`iota_obs` e `kappa` continuam pendentes. Qualquer combinação que viole a condição bloqueia
+o run; não existe correção por clamp.
+
+Status:
+
+```text
+BASAL_ETA0_BOUND_ADMISSIBILITY = FROZEN_ANALYTIC
 POST_HOC_CLAMPING = FORBIDDEN
 ```
 
@@ -1877,10 +1916,42 @@ CONSTANT_UPDATE_FACTOR_REGIME -> DERIVATIONALLY_FORCED_FOR_D
 STATE_DEPENDENT_UPDATE_FACTOR_REGIME -> NOT_ALGEBRAICALLY_FORCED_BY_D_A_ALONE
 ```
 
-## 17.3. Controle temporal obrigatório do instrumento A1b
+## 17.3. Regra de atribuição A1b — SEMÂNTICA CONGELADA
 
-Para que A1b teste distribuição **entre observadores** e não uma alteração do volume global
-de recurso ao longo do tempo, os braços pareados devem satisfazer, em cada ciclo lógico:
+A1b deve alterar a distribuição de atenção **entre observadores**, preservando o volume
+global de oportunidades em cada ciclo lógico. Para isso, congela-se a seguinte semântica:
+
+```text
+A1B_ASSIGNMENT_SEMANTICS = FIXED_PREASSIGNED_STRATA
+A1B_GLOBAL_OPPORTUNITY_MASS = MATCHED_PER_LOGICAL_CYCLE
+A1B_REACTIVE_REALLOCATION = FORBIDDEN
+```
+
+Antes de qualquer trajetória científica, uma seed do namespace exclusivo `A1B_ASSIGNMENT`
+atribui os observadores aos estratos da condição heterogênea. A atribuição:
+
+```text
+não lê p_i
+não lê EH
+não lê omega/iota/B
+não lê fila ou deadline miss
+não lê eta_hat, D ou qualquer outcome
+permanece fixa durante toda a janela W
+```
+
+A condição `UNIFORM` distribui oportunidades nominais o mais igualmente possível entre os
+observadores em cada ciclo. Se restrições inteiras produzirem resto, usa-se rotação
+round-robin predeterminada pela seed, sem consulta ao estado.
+
+A condição `HETEROGENEOUS` utiliza dois estratos fixos:
+
+```text
+HIGH_ATTENTION_STRATUM
+LOW_ATTENTION_STRATUM
+```
+
+com níveis prospectivos `q_H > q_L`. Proporção dos estratos e valores de `q_H`, `q_L`
+continuam numéricos pendentes. Em todo ciclo `n`, entretanto, deve valer exatamente:
 
 \[
 \boxed{
@@ -1890,20 +1961,18 @@ de recurso ao longo do tempo, os braços pareados devem satisfazer, em cada cicl
 }
 \]
 
+A partição fixa é escolhida para produzir heterogeneidade **entre observadores** no horizonte,
+não heterogeneidade temporal criada por troca reativa de quem recebe recurso.
+
+A barreira síncrona já congelada garante que velocidade física, ordem de mensagens e
+interleaving de WebWorkers não participem do efeito.
+
 Status:
 
 ```text
-A1B_GLOBAL_OPPORTUNITY_MASS = MATCHED_PER_LOGICAL_CYCLE
-A1B_ASSIGNMENT_RULE = EXOGENOUS_ARM_RULE_ONLY
-A1B_REACTIVE_REALLOCATION = FORBIDDEN
+A1B_ASSIGNMENT_RULE_SEMANTICS = FROZEN
+A1B_ASSIGNMENT_NUMERICS = UNFROZEN_REQUIRED_BEFORE_RUN
 ```
-
-A regra específica de distribuição das oportunidades entre observadores e seus níveis
-numéricos ainda será congelada antes do run. Ela não pode consultar `p_i`, `EH`, sucesso,
-fila, deadline miss, `eta_hat`, `D`, consenso ou qualquer outcome.
-
-Com a barreira síncrona, diferenças de wall-clock, ordem de mensagens ou velocidade de
-threads não podem criar um efeito espúrio de distribuição.
 
 ## 17.4. Classificação prospectiva atual de ADIST0
 
@@ -2187,7 +2256,6 @@ Permanecem `UNFROZEN_REQUIRED_BEFORE_RUN`:
 ```text
 N
 W
-basal_eta0_bound_admissibility
 omega_value
 iota_obs_value
 kappa_value
@@ -2208,7 +2276,9 @@ L_A
 number_of_arms
 instrumental_contrast_criteria
 saturation_avoidance_criteria
-attention_to_observer_assignment_rule_A1b
+A1b_stratum_proportion
+A1b_q_H
+A1b_q_L
 A1b_per_cycle_opportunity_levels
 ADIST0_final_derivational_classification
 margem de matching de A_bar
@@ -2408,5 +2478,5 @@ e proíbe a direção inversa:
 TRACEABILITY_RESET = FROZEN
 SCIENTIFIC_MODEL = CANONICAL_A0_A1_ONLY
 SCIENTIFIC_RUN_NOT_AUTHORIZED
-NEXT = FREEZE_BASAL_NUMERICS_AND_A1B_ASSIGNMENT_THEN_COMPLETE_ADIST0_DERIVATIONAL_AUDIT
+NEXT = FREEZE_BASAL_AND_SERVICE_NUMERICS_PLUS_A1B_LEVELS_THEN_COMPLETE_ADIST0_DERIVATIONAL_AUDIT
 ```

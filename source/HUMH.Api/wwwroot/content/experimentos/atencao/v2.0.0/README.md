@@ -1,20 +1,16 @@
 # HUMH A0/A1 v2.0.0 — estado pré-publicação
 
-A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` porque `ANBC0=FAIL_DERIVATIONAL`.
+A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` (`ANBC0=FAIL_DERIVATIONAL`).
 
-## A1b — auditoria estrutural
+A1b mantém `D` como candidato auditado, com classificação estrutural `CONDITIONAL_DISCRIMINATIVE` e confirmação ainda não autorizada.
 
-`D=(1/N) sum_i |p_i-p_bar|` permanece o primeiro candidato canônico, ainda não autorizado como outcome confirmatório.
+Novos congelamentos:
 
-Correção importante: `D_A` fixa a heterogeneidade das contagens totais de atendimento, mas não determina sozinho o produto dos fatores de atualização quando `eta0` varia com `EH[n]`. Logo não existe identidade algébrica geral `D_A -> D`. Em submodelos com fator de atualização constante, porém, um efeito em `D` é derivacional.
+- primeiro A1 basal e `B_i` homogêneos por isolamento;
+- ciclo científico em `SYNCHRONOUS_SNAPSHOT_BARRIER`;
+- admissibilidade de `eta0`: `m=1+iota_obs+min(0,kappa)>0` e `0<omega<=m`;
+- A1b usa estratos `HIGH_ATTENTION_STRATUM`/`LOW_ATTENTION_STRATUM` pré-atribuídos por seed independente e fixos durante `W`;
+- massa global de oportunidades é exatamente igual entre braços em cada ciclo;
+- `q_H`, `q_L`, proporção dos estratos e demais números continuam pendentes.
 
-Estado:
-
-- `ADIST0.DERIVATIONAL_CONTENT_AUDIT_STRUCTURAL = CONDITIONAL_DISCRIMINATIVE`
-- `ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE`
-- `ADIST0_CONFIRMATORY = NOT_AUTHORIZED`
-- primeiro A1: observadores/buffer basais homogêneos por isolamento; valores numéricos pendentes;
-- ciclo científico: `SYNCHRONOUS_SNAPSHOT_BARRIER`; ordem física de WebWorkers é diagnóstica;
-- A1b deve igualar a massa global de oportunidades em cada ciclo e variar apenas sua distribuição entre observadores.
-
-`scientific_run_authorized = false`
+`SCIENTIFIC_RUN_NOT_AUTHORIZED`.
