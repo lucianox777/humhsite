@@ -1345,7 +1345,7 @@
       "pre_numeric_derivational_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED",
       "candidate_status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_YET_AUTHORIZED",
       "derivational_audit_structural": "CONDITIONAL_DISCRIMINATIVE",
-      "derivational_audit_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE",
+      "derivational_audit_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS",
       "current_confirmatory_authorization": false
     },
     "A2": {
@@ -1932,7 +1932,7 @@
     "kind": "GATE_SUBCHECK",
     "parent_gate": "ADIST0",
     "status_structural": "CONDITIONAL_DISCRIMINATIVE",
-    "status_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE",
+    "status_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS",
     "primary_outcome_candidate": {
       "id": "STATE_DIVERGENCE_D",
       "formula": "D=(1/N)*sum_i |p_i-p_bar|",

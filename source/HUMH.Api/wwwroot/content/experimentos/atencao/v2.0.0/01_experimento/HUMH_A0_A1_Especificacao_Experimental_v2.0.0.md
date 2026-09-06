@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_A1B_STRUCTURAL_AUDIT`  
+**Status:** `PRE_CODE_A1B_ASSIGNMENT_AND_ETA_BOUND_FREEZE`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. A auditoria de A1b foi refinada: `D` continua candidato canônico, mas `D_A` determina apenas a quantidade total de conclusões por observador, não a exposição temporal aos fatores de atualização dependentes do estado coletivo. Para impedir que ordem física de WebWorkers se torne variável científica, congela-se uma barreira síncrona por ciclo lógico e um regime basal homogêneo para o primeiro A1. A classificação final de `ADIST0` continua anterior a qualquer trajetória científica.
+**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. Em A1b, `D` permanece candidato canônico sob auditoria estrutural. Estão congelados o regime basal/B homogêneo do primeiro A1, a barreira síncrona do ciclo lógico, o critério analítico de admissibilidade de `eta0` e a semântica exógena de estratos HIGH/LOW com massa global de oportunidades pareada por ciclo. Os valores numéricos e a classificação final de `ADIST0` permanecem pendentes e devem ser fechados antes de qualquer trajetória científica.
 
 ---
 
@@ -1056,7 +1056,7 @@ automaticamente:
 0\le p_i\le1.
 \]
 
-O critério numérico que garante essa condição permanece a congelar prospectivamente.
+O critério analítico que garante essa condição está congelado no §7.1.2.1; permanecem pendentes apenas os valores numéricos que deverão satisfazê-lo.
 
 Status:
 
@@ -1983,7 +1983,7 @@ ADIST0.DERIVATIONAL_CONTENT_AUDIT_STRUCTURAL =
     CONDITIONAL_DISCRIMINATIVE
 
 ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL =
-    PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE
+    PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS
 
 ADIST0_CONFIRMATORY = NOT_AUTHORIZED
 ```
@@ -2309,9 +2309,8 @@ A ordem prospectiva passa a ser:
 2. preservar o regime homogêneo e a barreira síncrona já congelados por isolamento;
 3. congelar `omega`, `iota_obs`, `kappa`, `B`, `p_A`, `p_B`, `p_0` e os demais números
    basais por critérios teóricos/técnicos independentes de outcomes A1;
-4. certificar `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
-5. congelar a regra exata A1b mantendo a massa global de oportunidades igual em cada
-   ciclo e variando somente sua distribuição entre observadores;
+4. verificar que os valores congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
+5. congelar os níveis numéricos A1b (`q_H`, `q_L`, proporção dos estratos e discretização por ciclo) sob a semântica de atribuição já congelada e com massa global de oportunidades igual em cada ciclo;
 6. repetir `ADIST0.DERIVATIONAL_CONTENT_AUDIT` com o regime completo congelado;
 7. aceitar a classificação obtida: se derivacional, A1b fica demonstração de mecanismo;
    se discriminativa, congelar margens, inferência e poder;
@@ -2425,7 +2424,7 @@ Estado corrente:
 ```text
 PRIMARY_OUTCOME_CANDIDATE = STATE_DIVERGENCE_D
 ADIST0.DERIVATIONAL_CONTENT_AUDIT_STRUCTURAL = CONDITIONAL_DISCRIMINATIVE
-ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE
+ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS
 ADIST0_CONFIRMATORY = NOT_AUTHORIZED
 ```
 
