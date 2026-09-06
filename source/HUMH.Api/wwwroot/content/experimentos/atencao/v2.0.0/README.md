@@ -8,10 +8,10 @@ Congelamentos correntes:
 
 - uma demanda elegível por observador/ciclo: `D_i(W)=W`;
 - regime basal homogêneo e ciclo em `SYNCHRONOUS_SNAPSHOT_BARRIER`;
-- capacidade computacional homogênea normalizada por unidade: `B_i=B=1`; o workload passa a ser medido em `observer_capacity_unit`;
-- dinâmica basal numericamente representada pelos compostos identificáveis `eta_EH0` e `lambda_state`;
+- capacidade homogênea normalizada: `B_i=1 observer_capacity_unit`;
+- workload do primeiro A1 homogêneo e reduzido exatamente à classe inteira `K_C=ceil(C_j)`, usando `C_j=K_C`; somente `K_C>=1` permanece para calibração cega;
+- basal numérico representado por `eta_EH0` e `lambda_state`;
 - A1b HIGH/LOW pré-atribuído e massa global de oportunidades igual por ciclo;
-- política de proveniência numérica congelada; `B` não é mais número a calibrar por `ABENCH0`;
-- `required_work`, `L_A`, níveis instrumentais e números científicos continuam pendentes sob seus canais autorizados.
+- política de proveniência numérica congelada.
 
 `SCIENTIFIC_RUN_NOT_AUTHORIZED`.

@@ -6,8 +6,8 @@
 - `A1a = MECHANISM_DEMONSTRATION_ONLY [C1]`;
 - A1b: `D` candidato em auditoria estrutural `CONDITIONAL_DISCRIMINATIVE`;
 - `D_i(W)=W`, regime basal homogêneo e barreira síncrona congelados;
-- capacidade auxiliar homogênea normalizada em `B=1 observer_capacity_unit`;
-- basal numérico reduzido a `eta_EH0` e `lambda_state`, sem falsa decomposição de `omega/iota_obs/kappa`;
+- `B=1 observer_capacity_unit`; workload homogêneo do primeiro A1 é o inteiro `K_C=ceil(C_j)`;
+- basal numérico reduzido a `eta_EH0` e `lambda_state`;
 - A1b HIGH/LOW fixo e exógeno, níveis ainda pendentes;
 - proveniência dos parâmetros congelada antes de `ABENCH0`;
 - `SCIENTIFIC_RUN_NOT_AUTHORIZED`.

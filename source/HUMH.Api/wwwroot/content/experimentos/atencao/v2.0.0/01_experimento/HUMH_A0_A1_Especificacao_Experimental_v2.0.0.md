@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_WORK_UNIT_NORMALIZATION_FREEZE`  
+**Status:** `PRE_CODE_DISCRETE_WORKLOAD_NORMALIZATION_FREEZE`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. A1b permanece em auditoria estrutural. Depois de fechar `D_i(W)=W`, a reparametrização basal identificável e a proveniência numérica, elimina-se agora mais um grau de liberdade puramente computacional: no regime homogêneo do primeiro A1, a unidade de trabalho é definida pela própria capacidade basal por oportunidade, de modo que `B_i=B=1` por normalização de unidade e não por calibração científica.
+**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`; A1b permanece em auditoria estrutural. Com `D_i(W)=W`, `B=1` e serviço sem spill entre demandas, o valor contínuo de `required_work` contém graus de liberdade sem efeito científico: a conclusão de uma demanda isolada depende somente de `ceil(C_j)`. O primeiro A1 passa, portanto, a usar workload homogêneo representado por um único inteiro `K_C>=1`, o número de oportunidades exigidas por demanda isolada; apenas `K_C` permanece para calibração técnica cega.
 
 ---
 
@@ -394,12 +394,59 @@ logo:
 \boxed{n^{req}_{ij}=\lceil C_j\rceil.}
 \]
 
-A regra/distribuição prospectiva de `C_j` continua pendente e poderá ser calibrada somente
-pelo caminho técnico cego autorizado; o valor de `B` não é mais parâmetro dessa calibração.
+### 5.1.2.1. Quociente operacional do workload — CONGELADO
+
+A implementação não executa atualização basal parcial: uma demanda só atualiza `p_i` quando
+`remaining_work` chega a zero. Além disso, capacidade não usada na oportunidade de conclusão
+não é transferida para a próxima demanda. Nessas regras já congeladas, dois workloads
+positivos `C_a` e `C_b` com:
+
+\[
+\lceil C_a\rceil=\lceil C_b\rceil
+\]
+
+produzem exatamente o mesmo ciclo de conclusão para a mesma sequência de oportunidades.
+Portanto o valor fracionário dentro de cada intervalo não é identificável nem operacionalmente
+relevante para A1.
+
+Define-se a classe equivalente por:
+
+\[
+\boxed{K_C=\lceil C_j\rceil\in\{1,2,3,\ldots\}.}
+\]
+
+E escolhe-se o representante canônico de implementação:
+
+\[
+\boxed{C_j=K_C.}
+\]
+
+Para isolar atenção de heterogeneidade de dificuldade, o primeiro A1 congela também:
+
+```text
+REQUIRED_WORK_HETEROGENEITY_REGIME = HOMOGENEOUS_FOR_FIRST_A1
+required_capacity_units_j = K_C para toda demanda elegível j
+K_C >= 1 inteiro
+```
+
+Assim:
+
+\[
+\boxed{n^{req}_{ij}=K_C}
+\]
+
+para toda demanda isolada do primeiro A1.
+
+Isso **não** afirma que demandas reais tenham dificuldade idêntica. É isolamento experimental:
+heterogeneidade de workload fica para robustez/sucessor. O valor de `K_C` ainda não é
+escolhido; ele é parâmetro exclusivamente instrumental e poderá ser selecionado apenas pelo
+benchmark cego autorizado, nunca por `p`, `EH`, `eta_hat`, `D` coletivo ou qualquer outcome.
 
 ```text
 REQUIRED_WORK_UNIT = OBSERVER_CAPACITY_UNIT
 OBSERVER_CAPACITY_UNIT = 1
+REQUIRED_WORK_PARAMETER = K_C
+REQUIRED_WORK_NUMERIC_STATUS = UNFROZEN_BLIND_INSTRUMENT_CALIBRATION
 ```
 
 ## 5.1.3. Instrumento de atenção: oportunidades
@@ -487,12 +534,12 @@ observer_id
 arrival_cycle
 payload_id
 payload
-required_work = C_j
+required_work = C_j = K_C
 remaining_work
 deadline_cycle = arrival_cycle + L_A
 ```
 
-`required_work` é `arm-blind`.
+`required_work` é `arm-blind` e, no primeiro A1, constante entre demandas: `required_work=K_C`.
 
 ```text
 OBSERVER_CAPACITY_UNIT = 1
@@ -666,8 +713,7 @@ A semântica e o regime de isolamento já estão congelados. Antes do run ainda 
 
 ```text
 observer_buffer_capacity_value
-required_work_rule
-required_work_range_or_distribution
+required_opportunities_per_request_K_C
 observer_opportunity_arm_rules
 ABENCH0_opportunity_candidate_rules
 L_A
@@ -2418,7 +2464,7 @@ THEORY_CONSTRAINED_NOT_FITTED
   alvo estacionário por episódio
 
 BLIND_INSTRUMENT_CALIBRATION_ABENCH0
-  required_work rule/range
+  K_C required opportunities per isolated request
   L_grid e L_A
   regras/níveis de oportunidades
   q_H, q_L e proporção instrumental A1b
@@ -2481,6 +2527,7 @@ Já estão congelados prospectivamente no primeiro A1:
 observer_basal_parameter_regime = HOMOGENEOUS
 observer_buffer_capacity_heterogeneity_regime = HOMOGENEOUS
 observer_buffer_capacity_value = NORMALIZED_B_EQUALS_1
+required_work_heterogeneity_regime = HOMOGENEOUS_FOR_FIRST_A1
 logical_cycle_commit = SYNCHRONOUS_SNAPSHOT_BARRIER
 A1b_global_opportunity_mass = MATCHED_PER_LOGICAL_CYCLE
 first_A1_demand_generation = D_i(W)=W
@@ -2541,7 +2588,7 @@ A ordem prospectiva passa a ser:
 
 1. preservar a microdinâmica basal já congelada e `ANBC0=FAIL_DERIVATIONAL`;
 2. preservar o regime homogêneo e a barreira síncrona já congelados por isolamento;
-3. preservar `B=1` como normalização de unidade e congelar `eta_EH0`, `lambda_state`, `p_A`, `p_B`, `p_0` e os demais números
+3. preservar `B=1` e workload homogêneo `C_j=K_C` como normalizações/isolamento, e congelar `K_C`, `eta_EH0`, `lambda_state`, `p_A`, `p_B`, `p_0` e os demais números
    por suas classes de proveniência prospectivamente autorizadas, sem inventar decomposição separada de `omega/iota_obs/kappa`;
 4. verificar que os valores congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
 5. congelar os níveis numéricos A1b (`q_H`, `q_L`, proporção dos estratos e discretização por ciclo) sob a semântica de atribuição já congelada e com massa global de oportunidades igual em cada ciclo;

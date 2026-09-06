@@ -8,7 +8,7 @@
     "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
     "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
   },
-  "status": "V2_0_0_WORK_UNIT_NORMALIZATION_FROZEN_PREPUBLICATION",
+  "status": "V2_0_0_DISCRETE_WORKLOAD_NORMALIZATION_FROZEN_PREPUBLICATION",
   "scientific_run_authorized": false,
   "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
   "canonical_variables": [
@@ -1120,8 +1120,7 @@
     "W",
     "eta_EH0_value",
     "lambda_state_resistance_value",
-    "required_work_rule",
-    "required_work_range_or_distribution",
+    "required_opportunities_per_request_K_C",
     "p_A",
     "p_B",
     "p_0_or_initialization_value",
@@ -1585,8 +1584,7 @@
       "queue_length"
     ],
     "numerics_pending": [
-      "required_work_rule",
-      "required_work_range_or_distribution",
+      "required_opportunities_per_request_K_C",
       "observer_opportunity_arm_rules",
       "ABENCH0_opportunity_candidate_rules",
       "L_A",
@@ -2161,7 +2159,7 @@
         "stationary_target_semantics"
       ],
       "BLIND_INSTRUMENT_CALIBRATION_ABENCH0": [
-        "required_work_rule_or_range",
+        "required_opportunities_per_request_K_C",
         "L_grid",
         "L_A",
         "opportunity_candidate_rules_and_levels",
@@ -2186,7 +2184,11 @@
       ],
       "IMPLEMENTATION_NORMALIZATION": [
         "observer_buffer_capacity_B_equals_1",
-        "WORK_QUANTUM_equals_1_observer_capacity_unit"
+        "WORK_QUANTUM_equals_1_observer_capacity_unit",
+        "raw_workload_C_represented_by_integer_equivalence_class_K_C_equals_ceil_C"
+      ],
+      "EXPERIMENTAL_ISOLATION": [
+        "required_work_heterogeneity_regime_HOMOGENEOUS_FOR_FIRST_A1"
       ]
     },
     "ABENCH0_allowed_observables": [
@@ -2257,5 +2259,21 @@
       "B is not CPU speed",
       "B is not thread priority"
     ]
+  },
+  "workload_contract": {
+    "status": "FROZEN_HOMOGENEOUS_DISCRETE_EQUIVALENCE_CLASS_FIRST_A1",
+    "observer_capacity_unit": 1,
+    "raw_positive_work_symbol": "C_j",
+    "equivalence_class": "K_C=ceil(C_j)",
+    "representative_execution_value": "C_j=K_C",
+    "K_C_domain": "positive integers >=1",
+    "required_work_heterogeneity_regime": "HOMOGENEOUS_FOR_FIRST_A1",
+    "all_eligible_demands_first_A1": "required_capacity_units_j=K_C",
+    "isolated_required_opportunities": "n_req_ij=K_C",
+    "numeric_status_K_C": "UNFROZEN_BLIND_INSTRUMENT_CALIBRATION",
+    "selected_by_scientific_outcomes": false,
+    "scientific_role": "AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION",
+    "derivation": "With B=1, no partial basal update, FIFO front-job-only service and no spill of unused capacity, completion timing depends on positive C_j only through ceil(C_j).",
+    "heterogeneous_workload_disposition": "SUCCESSOR_OR_ROBUSTNESS_ONLY"
   }
 }
