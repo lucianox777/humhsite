@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Otimizador HUMH — Corrigido e Unificado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <style>
+    :root{
+      --bg:#f7f9fc; --card:#ffffff; --text:#0b0f14; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:20px;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .container{max-width:100%;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+    h1{margin:0 0 6px;font-size:18px}
+    p{margin:4px 0 10px;color:var(--muted);font-size: 12px}
+    .row{display:grid;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));gap:10px;align-items:end;margin-top:6px}
+    .col{flex:1;min-width: 130px}
+    label{display:block;font-size:12px;color:var(--muted);margin:6px 0 4px}
+    input,select,button{width:100%;padding: 6px;border:1px solid var(--line);border-radius:8px;background:#f3f6fb;font-size:13px;color:var(--text)}
+    button{background:var(--accent);color:#fff;border:none;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .status{background:#f3f6fb;border:1px solid var(--line);padding:8px;border-radius:8px;color:#1f2937;font-size:12px;margin:10px 0}
+    table{border-collapse:collapse;margin-top:8px;font-size: 9px;width:100%}
+    th,td{border:1px solid var(--line);padding: 6px 8px;text-align:left;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    th{background:#eef2ff;color:#111827}
+    .kpi{display:grid;grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));gap:8px;margin-top:10px}
+    .kpi > div{background:#f3f6fb;border:1px solid var(--line);border-radius:8px;padding: 6px}
+    code{background:#f3f6fb;border:1px solid var(--line);padding:2px 6px;border-radius:6px}
+    .btnrow{display:flex; gap:8px; justify-content:flex-start;}
+    .btnrow button{width:auto;min-width:64px}
+    .header-panel{
+      display:block; background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+      padding: 12px 14px; margin: 0 0 12px 0; width:100%; max-width:100%;
+    }
+    .header-panel h1{ margin:0 0 6px 0; }
+    .header-panel p{ margin:0; }
+    #statusInfo{
+      font-size: 14px !important; line-height: 1.3 !important; white-space: normal !important;
+      overflow: visible !important; text-overflow: initial !important; word-break: break-word;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gpu.js/2.16.0/gpu-browser.min.js"></script>
+
+<script>
+// ===== UNIFIED CONSTANTS (IDENTICAL TO SIMULATOR) =====
+const COOLDOWN_MINUTES = 14; // SEMPRE 14 minutos reais - IDENTICAL TO SIMULATOR
+const MAXH_CONSISTENT = 90;
+const EH_HIST_BINS = 32;
+const MIN_Q1_RSIZE = 60;
+
+// ===== STATUS FUNCTIONS (DEFINED EARLY) =====
+function setStatus(msg){ 
+  try {
+    const el = document.getElementById('status');
+    if (el) el.textContent = msg;
+    console.log('[STATUS]', msg);
+  } catch(e) {}
+}
+
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+function fmt(x,n=2){ return Number.isFinite(x)? x.toFixed(n) : "0"; }
+
+// ===== UNIFIED GPU SETUP (IDENTICAL TO SIMULATOR) =====
+let HUMH_GPU_ENABLED = false;
+let HUMH_GPU = null;
+let HUMH_GPU_COMPUTE_TR = null;
+let HUMH_WGPU_ENABLED = false;
+let HUMH_WGPU_DEVICE = null;
+let HUMH_WGPU_QUEUE = null;
+let HUMH_WGPU_TR_PIPELINE = null;
+
+async function initGPUjs(){
+  try{
+    if(!window.GPU) throw new Error('GPU.js não disponível');
+    const gpu = new GPU({ mode: 'gpu' });
+    
+    const testKernel = gpu.createKernel(function(a) {
+      return a[this.thread.x] * 2;
+    }).setOutput([4]);
+    
+    const testResult = testKernel([1, 2, 3, 4]);
+    if(!testResult || testResult.length !== 4) throw new Error('GPU.js test failed');
+    
+    HUMH_GPU_COMPUTE_TR = gpu.createKernel(function(highs, lows, closes) {
+      const i = this.thread.x;
+      if (i >= highs.length - 1) return 0;
+      const idx = i + 1;
+      const a = highs[idx] - lows[idx];
+      const b = Math.abs(highs[idx] - closes[i]);
+      const c = Math.abs(lows[idx] - closes[i]);
+      return Math.max(Math.max(a, b), c);
+    }).setOutput([0]);
+    
+    HUMH_GPU = gpu;
+    HUMH_GPU_ENABLED = true;
+    console.log('[GPU.js] Inicializado com sucesso');
+    return true;
+  }catch(e){
+    console.warn('[GPU.js] Erro na inicialização:', e);
+    HUMH_GPU_ENABLED = false;
+    if(window.GPU){
+      try{
+        HUMH_GPU = new GPU({ mode: 'cpu' });
+        console.log('[GPU.js] Fallback para modo CPU');
+      }catch(_){}
+    }
+    return false;
+  }
+}
+
+async function initWebGPU(){
+  if (!('gpu' in navigator)) {
+    console.log('[WebGPU] Não suportado pelo navegador');
+    return false;
+  }
+  try{
+    const adapter = await navigator.gpu.requestAdapter({
+      powerPreference: 'high-performance'
+    });
+    if (!adapter) {
+      console.log('[WebGPU] Adapter não encontrado');
+      return false;
+    }
+    
+    const device = await adapter.requestDevice();
+    HUMH_WGPU_DEVICE = device;
+    HUMH_WGPU_QUEUE = device.queue;
+    HUMH_WGPU_ENABLED = !!device;
+    
+    const shaderCode = `
+struct BufF { data: array<f32>, }
+struct Params { N: u32, _pad0: u32, _pad1: u32, _pad2: u32, }
+
+@group(0) @binding(0) var<storage, read>       high  : BufF;
+@group(0) @binding(1) var<storage, read>       low   : BufF;
+@group(0) @binding(2) var<storage, read>       prevc : BufF;
+@group(0) @binding(3) var<storage, read_write> outTR : BufF;
+@group(0) @binding(4) var<uniform>             params: Params;
+
+@compute @workgroup_size(256)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = gid.x;
+  if (i >= params.N) { return; }
+  let a = high.data[i] - low.data[i];
+  let b = abs(high.data[i] - prevc.data[i]);
+  let c = abs(low.data[i]  - prevc.data[i]);
+  var m = a;
+  if (b > m) { m = b; }
+  if (c > m) { m = c; }
+  outTR.data[i] = m;
+}`;
+    const module = HUMH_WGPU_DEVICE.createShaderModule({ code: shaderCode });
+    HUMH_WGPU_TR_PIPELINE = HUMH_WGPU_DEVICE.createComputePipeline({
+      layout: 'auto',
+      compute: { module, entryPoint: 'main' }
+    });
+    
+    console.log('[WebGPU] Inicializado com sucesso');
+    console.log('[WebGPU] Adapter info:', adapter.info || adapter);
+    updateStatusInfo();
+    return true;
+  }catch(e){
+    console.warn('[WebGPU] Erro na inicialização:', e);
+    HUMH_WGPU_ENABLED = false;
+    return false;
+  }
+}
+
+// ===== UNIFIED GPU TR COMPUTATION (IDENTICAL TO SIMULATOR) =====
+async function computeTR_WebGPU_core(high, low, prevc){
+  if (!HUMH_WGPU_ENABLED || !HUMH_WGPU_DEVICE || !HUMH_WGPU_TR_PIPELINE) return null;
+  const N = Math.min(high.length, low.length, prevc.length);
+  if (N <= 0) return new Float32Array(0);
+  const device = HUMH_WGPU_DEVICE;
+  const queue = HUMH_WGPU_QUEUE;
+  const byteLen = N * 4;
+
+  const highBuf = device.createBuffer({ size: byteLen, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  const lowBuf = device.createBuffer({ size: byteLen, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  const prevBuf = device.createBuffer({ size: byteLen, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  const outBuf = device.createBuffer({ size: byteLen, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+  const readBuf = device.createBuffer({ size: byteLen, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+
+  queue.writeBuffer(highBuf, 0, high.buffer, high.byteOffset, byteLen);
+  queue.writeBuffer(lowBuf, 0, low.buffer, low.byteOffset, byteLen);
+  queue.writeBuffer(prevBuf, 0, prevc.buffer, prevc.byteOffset, byteLen);
+
+  const paramsBuf = device.createBuffer({ size: 16, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+  const paramsArr = new Uint32Array([N, 0, 0, 0]);
+  queue.writeBuffer(paramsBuf, 0, paramsArr.buffer, 0, paramsArr.byteLength);
+
+  const bindGroup = device.createBindGroup({
+    layout: HUMH_WGPU_TR_PIPELINE.getBindGroupLayout(0),
+    entries: [
+      { binding: 0, resource: { buffer: highBuf } },
+      { binding: 1, resource: { buffer: lowBuf } },
+      { binding: 2, resource: { buffer: prevBuf } },
+      { binding: 3, resource: { buffer: outBuf } },
+      { binding: 4, resource: { buffer: paramsBuf } },
+    ]
+  });
+
+  const encoder = device.createCommandEncoder();
+  const pass = encoder.beginComputePass();
+  pass.setPipeline(HUMH_WGPU_TR_PIPELINE);
+  pass.setBindGroup(0, bindGroup);
+  pass.dispatchWorkgroups(Math.ceil(N / 256));
+  pass.end();
+  encoder.copyBufferToBuffer(outBuf, 0, readBuf, 0, byteLen);
+  queue.submit([encoder.finish()]);
+
+  await readBuf.mapAsync(GPUMapMode.READ);
+  const arr = readBuf.getMappedRange();
+  const out = new Float32Array(arr.slice(0));
+  readBuf.unmap();
+  return out;
+}
+
+async function computeTR_WebGPU_fromCandles(highs, lows, closes){
+  const n = Math.min(highs.length, lows.length, closes.length);
+  if (n <= 1) return new Float32Array(0);
+  const h = new Float32Array(highs.slice(1, n));
+  const l = new Float32Array(lows.slice(1, n));
+  const prevc = new Float32Array(closes.slice(0, n-1));
+  return await computeTR_WebGPU_core(h, l, prevc);
+}
+
+async function computeTR_GPUjs(highs, lows, closes){
+  if (!HUMH_GPU_ENABLED || !HUMH_GPU_COMPUTE_TR) return null;
+  try{
+    const n = Math.min(highs.length, lows.length, closes.length);
+    if (n <= 1) return new Float32Array(0);
+    HUMH_GPU_COMPUTE_TR.setOutput([n - 1]);
+    const result = HUMH_GPU_COMPUTE_TR(highs, lows, closes);
+    return new Float32Array(result);
+  }catch(e){
+    console.warn('[GPU.js] TR compute error:', e);
+    return null;
+  }
+}
+
+// ===== UNIFIED ATR COMPUTATION (IDENTICAL TO SIMULATOR) =====
+async function ATR_series_consistent_async(highs, lows, closes, period=14){
+  const Nlen = Math.max(0, Math.min(highs.length, lows.length, closes.length) - 1);
+  const USE_WGPU = Nlen >= 50000;
+  const USE_GPUjs = Nlen >= 10000 && !USE_WGPU;
+  
+  let trValues = null;
+  
+  if (USE_WGPU && HUMH_WGPU_ENABLED){
+    try{
+      trValues = await computeTR_WebGPU_fromCandles(highs, lows, closes);
+      console.log('[ATR] Usando WebGPU para', Nlen, 'barras');
+    }catch(e){
+      console.warn('[WebGPU] TR compute fallback:', e);
+      trValues = null;
+    }
+  }
+  
+  if (!trValues && USE_GPUjs && HUMH_GPU_ENABLED){
+    try{
+      trValues = await computeTR_GPUjs(highs, lows, closes);
+      console.log('[ATR] Usando GPU.js para', Nlen, 'barras');
+    }catch(e){
+      console.warn('[GPU.js] TR compute fallback:', e);
+      trValues = null;
+    }
+  }
+  
+  if (!trValues){
+    console.log('[ATR] Usando CPU para', Nlen, 'barras');
+    const N = Math.min(highs.length, lows.length, closes.length);
+    const outTR = new Float32Array(Math.max(0, N-1));
+    for (let i=1;i<N;i++){
+      const a = highs[i]-lows[i];
+      const b = Math.abs(highs[i]-closes[i-1]);
+      const c = Math.abs(lows[i]-closes[i-1]);
+      outTR[i-1] = Math.max(a,b,c);
+    }
+    trValues = outTR;
+  }
+  
+  const out = new Array(closes.length).fill(0);
+  if (closes.length < period+1) return out;
+  let win = [];
+  for (let i=1;i<closes.length;i++){
+    const tr = trValues[i-1] || 0;
+    win.push(tr);
+    if (win.length > period) win.shift();
+    let s = 0; for (let j=0;j<win.length;j++) s += win[j];
+    out[i] = s / Math.max(1, Math.min(period, win.length));
+  }
+  return out;
+}
+
+// ===== UNIFIED CORE FUNCTIONS (IDENTICAL TO SIMULATOR) =====
+function computeP_EHT_unified(stochArray, currentIndex, windowSize, threshold){
+  const start = Math.max(0, currentIndex - (windowSize - 1));
+  const slice = stochArray.slice(start, currentIndex + 1);
+  const active = slice.filter(v => v > threshold).length;
+  return slice.length > 0 ? active / slice.length : 0;
+}
+
+function calcularEH(p){ return 1 - Math.abs(2*p - 1); }
+
+function makeEHHist(maxSize = MAXH_CONSISTENT){
+  return { 
+    hist: new Array(EH_HIST_BINS).fill(0), 
+    ring: new Array(maxSize).fill(0), 
+    rsize:0, rpos:0, maxSize: maxSize
+  };
+}
+
+function pushEH(H, eh){
+  const bin = Math.max(0, Math.min(EH_HIST_BINS-1, Math.floor(eh*EH_HIST_BINS)));
+  if (H.rsize < H.maxSize){
+    H.ring[H.rpos] = eh;
+    H.rpos = (H.rpos + 1) % H.ring.length;
+    H.rsize++;
+    H.hist[bin]++;
+  } else {
+    const old = H.ring[H.rpos];
+    const oldBin = Math.max(0, Math.min(EH_HIST_BINS-1, Math.floor(old*EH_HIST_BINS)));
+    if (H.hist[oldBin] > 0) H.hist[oldBin]--;
+    H.ring[H.rpos] = eh;
+    H.rpos = (H.rpos + 1) % H.ring.length;
+    H.hist[bin]++;
+  }
+}
+
+function Q1_from_hist(H){
+  if (H.rsize <= 0) return null;
+  const target = Math.max(1, Math.floor(0.25 * H.rsize));
+  let cum = 0, qBin = 0;
+  for (let b=0;b<EH_HIST_BINS;b++){
+    cum += H.hist[b];
+    if (cum >= target){ qBin=b; break; }
+  }
+  let lim = (qBin + 0.5) / EH_HIST_BINS;
+  return Math.max(0.05, Math.min(0.50, lim));
+}
+
+function autoRelaxADX(tf, days, adxMin){ return (tf==='5m' && days>=720) ? Math.max(5, adxMin-10) : adxMin; }
+function autoRelaxEPS(tf, days, eps){ return (tf==='5m' && days>=720) ? Math.max(0.02, eps*0.70) : eps; }
+
+// ===== UNIFIED INDICATORS (IDENTICAL TO SIMULATOR) =====
+function SMA(arr, period){
+  if (arr.length < period) return [];
+  const out=[]; let sum=0;
+  for (let i=0;i<arr.length;i++){
+    sum += arr[i];
+    if (i>=period) sum -= arr[i-period];
+    if (i>=period-1) out.push(sum/period);
+  }
+  return out;
+}
+
+function EMA(arr, period){
+  if (!arr || arr.length === 0) return [];
+  const k = 2/(period+1);
+  const out = new Array(arr.length);
+  let emaPrev = arr[0];
+  out[0] = emaPrev;
+  for (let i=1;i<arr.length;i++){
+    emaPrev = arr[i]*k + emaPrev*(1-k);
+    out[i] = emaPrev;
+  }
+  return out;
+}
+
+function VWAP(highs, lows, closes, volumes){
+  if (highs.length===0 || volumes.length===0) return [];
+  const out = [];
+  let pvSum=0, vSum=0;
+  for (let i=0;i<closes.length;i++){
+    const tp = (highs[i]+lows[i]+closes[i])/3;
+    const vol = (volumes[i]||0);
+    pvSum += tp * vol;
+    vSum += vol;
+    out.push(vSum>0 ? pvSum/vSum : tp);
+  }
+  return out;
+}
+
+function ADX(highs, lows, closes, period=14){
+  const len = closes.length;
+  if (len < period+1) return new Array(len).fill(0);
+  const tr = [], plusDM=[], minusDM=[];
+  for (let i=1;i<len;i++){
+    const upMove = highs[i] - highs[i-1];
+    const downMove = lows[i-1] - lows[i];
+    plusDM.push((upMove>downMove && upMove>0)? upMove : 0);
+    minusDM.push((downMove>upMove && downMove>0)? downMove : 0);
+    const trueRange = Math.max(highs[i]-lows[i], Math.abs(highs[i]-closes[i-1]), Math.abs(lows[i]-closes[i-1]));
+    tr.push(trueRange);
+  }
+  function smooth(arr){
+    const out=[]; let sum=0;
+    for (let i=0;i<arr.length;i++){
+      sum += arr[i];
+      if (i>=period) sum -= arr[i-period];
+      if (i>=period-1) out.push(sum);
+    }
+    return out;
+  }
+  const trN = smooth(tr);
+  const plusDMN = smooth(plusDM);
+  const minusDMN = smooth(minusDM);
+  const dx = [];
+  for (let i=0;i<trN.length;i++){
+    const pdi = 100 * (plusDMN[i]/Math.max(1e-12,trN[i]));
+    const mdi = 100 * (minusDMN[i]/Math.max(1e-12,trN[i]));
+    const denom = Math.max(1e-12, pdi + mdi);
+    dx.push(100 * Math.abs(pdi - mdi) / denom);
+  }
+  const adxCore = SMA(dx, period);
+  const pad = Math.max(0, len - adxCore.length);
+  const out = new Array(pad).fill(0).concat(adxCore);
+  return out.length===len ? out : (out.concat(new Array(len-out.length).fill(0)));
+}
+
+function computeRSI(closes, period=14){
+  if (closes.length < period+1) return [];
+  const rsi = [];
+  for (let i = period; i < closes.length; i++) {
+    const win = closes.slice(i-period, i+1);
+    let gain=0, loss=0;
+    for (let j=1;j<win.length;j++){
+      const d = win[j]-win[j-1];
+      if (d>0) gain += d; else loss -= d;
+    }
+    const avgGain = gain/period;
+    const avgLoss = loss/period;
+    const rs = avgLoss===0 ? 100 : (avgGain/avgLoss);
+    rsi.push(100 - 100/(1+rs));
+  }
+  return rsi;
+}
+
+function computeStochRSI(rsi, win=14){
+  const out=[];
+  for(let i=win-1;i<rsi.length;i++){
+    const slice = rsi.slice(i-win+1, i+1);
+    const mn = Math.min(...slice), mx = Math.max(...slice);
+    const cur = rsi[i];
+    const val = (mx!==mn) ? (cur - mn)/(mx - mn) : 0.5;
+    out.push(Math.max(0, Math.min(1, isFinite(val)?val:0.5)));
+  }
+  return out;
+}
+
+// ===== UNIFIED DIRECTION LOGIC (IDENTICAL TO SIMULATOR) =====
+function computeDirectionTF(k, tf, e3C, e9C, e21C, e50C, vwapC, adxC, cC, adxMinEff, spanDays, dirOn){
+  const price = cC[k];
+  if (dirOn){
+    if (tf==='1m') {
+      const isLong  = (e3C[k]>e9C[k] && e9C[k]>e21C[k] && price>e50C[k] && price>vwapC[k] && adxC[k]>=adxMinEff);
+      const isShort = (e3C[k]<e9C[k] && e9C[k]<e21C[k] && price<e50C[k] && price<vwapC[k] && adxC[k]>=adxMinEff);
+      return isLong? 1 : (isShort? -1 : 0);
+    } else {
+      const vwapBase = (spanDays <= 7) ? Math.max(e50C[k], vwapC[k]) : vwapC[k];
+      const isLong  = (price>e9C[k] && e9C[k]>e21C[k] && e21C[k]>e50C[k] && price>vwapBase && adxC[k]>=adxMinEff);
+      const isShort = (price<e9C[k] && e9C[k]<e21C[k] && e21C[k]<e50C[k] && price<vwapBase && adxC[k]>=adxMinEff);
+      return isLong? 1 : (isShort? -1 : 0);
+    }
+  } else {
+    return (price >= e9C[k]) ? 1 : -1;
+  }
+}
+
+// ===== UNIFIED SL/TP LOGIC (IDENTICAL TO SIMULATOR) =====
+function calcSLTP_ATR(price, atr, eh, dir, SLX, TPX){
+  const estabilidade = 1 - eh;
+  const baseSL = SLX * atr * (1 + 0.3*estabilidade);
+  const baseTP = TPX * atr * (1 + 0.5*estabilidade);
+  return dir>0 ? [price - baseSL, price + baseTP] : [price + baseSL, price - baseTP];
+}
+
+
+// ===== EH STATUS (aligned with Simulator) =====
+function updateEHStatus(eh) {
+  try {
+    const ehDisp = document.getElementById('ehDisplay');
+    if (ehDisp) ehDisp.textContent = eh.toFixed(3);
+    const ehStatus = document.getElementById('ehStatus');
+    if (ehStatus) {
+      if (eh >= 0.8) ehStatus.textContent = "EH-Instável";
+      else if (eh <= 0.3) ehStatus.textContent = "EH-Baixa";
+      else ehStatus.textContent = "EH-Alta";
+    }
+  } catch(e) { /* no-op for headless runs */ }
+}
+// ===== UTILITY FUNCTIONS =====
+function getFeeRate(){
+  try{
+    const el = document.getElementById('taxa');
+    if (!el) return 0.0001;
+    const raw = String(el.value || el.getAttribute('value') || '').trim();
+    if (raw === '') return 0.0001;
+    const pct = parseFloat(raw.replace(',', '.'));
+    if (!isFinite(pct)) return 0.0001;
+    return Math.max(0, pct) / 100;
+  }catch(e){ return 0.0001; }
+}
+
+// ===== TIMEFRAME CONVERSION FUNCTIONS =====
+function barMsFromInterval(iv){
+  switch(iv){
+    case '1m': return 60*1000; 
+    case '5m': return 5*60*1000;
+    default: return 60*1000;
+  }
+}
+
+// ===== UNIFIED EXIT DETECTION (IDENTICAL TO SIMULATOR) =====
+function scanExitByCross_Enhanced(allCandles, kStart, dir, entry, sl, tp){
+  try {
+    if (!allCandles || allCandles.length === 0) return {found:false};
+    for (let j = kStart + 1; j < allCandles.length; j++){
+      const hi = allCandles[j].h;
+      const lo = allCandles[j].l;
+      if (dir > 0){
+        if (lo <= sl && hi >= tp) return {found:true, price:sl, reason:'SL'};
+        if (lo <= sl) return {found:true, price:sl, reason:'SL'};
+        if (hi >= tp) return {found:true, price:tp, reason:'TP'};
+      } else {
+        if (hi >= sl && lo <= tp) return {found:true, price:sl, reason:'SL'};
+        if (hi >= sl) return {found:true, price:sl, reason:'SL'};
+        if (lo <= tp) return {found:true, price:tp, reason:'TP'};
+      }
+    }
+    return {found:false};
+  } catch(e){ return {found:false}; }
+}
+
+// ===== API FUNCTIONS =====
+const API = "https://fapi.binance.com";
+const SYMBOL = "BTCUSDT";
+const MAX_PER_REQ = 1000;
+let cancelFlag = false;
+
+async function fetchKlines(interval, startMs, endMs){
+  const url = `${API}/fapi/v1/klines?symbol=${SYMBOL}&interval=${interval}&startTime=${startMs}&endTime=${endMs}&limit=${MAX_PER_REQ}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error("Binance klines HTTP "+res.status);
+  const data = await res.json();
+  return data.map(k=>({t:k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]}));
+}
+
+async function fetchRangeDays_generic(interval, days){
+  const end = Date.now();
+  const start = end - days*24*60*60*1000;
+  let cur = start;
+  const stepMap = { "1m": 60*1000, "5m": 5*60*1000 };
+  const step = MAX_PER_REQ * (stepMap[interval] || 60*1000);
+  const out = [];
+  setStatus("Baixando dados " + interval + "...");
+  while (cur < end){
+    if (cancelFlag) throw new Error("Cancelado");
+    const chunkEnd = Math.min(end, cur + step - 1);
+    const part = await fetchKlines(interval, cur, chunkEnd);
+    out.push(...part);
+    setStatus("Baixando " + interval + "... " + new Date(chunkEnd).toISOString().slice(0,10) + " (+" + part.length + ")");
+    if (part.length === 0) cur = chunkEnd + 1;
+    else cur = part[part.length-1].t + stepMap[interval];
+    await sleep(35);
+  }
+  return out;
+}
+
+// ===== GRID CONFIGURATION =====
+function gridFor(preset){
+  if (preset === 'coarse'){
+    return { TAU:[0.78,0.80,0.82,0.90], EPS:[0.04,0.05], ATR:[14,20], SLX:[0.95,1.05], TPX:[1.8,2.2], MAXH:[90], ADX:[12,18,25], RISCO:[1.0] };
+  } else if (preset === 'dense'){
+    return { TAU:[0.76,0.78,0.80,0.82,0.90], EPS:[0.04,0.05,0.06], ATR:[14,20], SLX:[0.90,0.95,1.00,1.05,1.10], TPX:[1.6,1.8,2.0,2.2,2.4], MAXH:[90], ADX:[12,15,18,20,25,30], RISCO:[0.5,1.0,2.0] };
+  }
+  return { TAU:[0.80,0.82,0.90,0.92], EPS:[0.04,0.05], ATR:[14,20], SLX:[0.95,1.05], TPX:[1.8,2.2], MAXH:[90], ADX:[12,18,25], RISCO:[1.0] };
+}
+
+function* product(arrays){
+  const [head, ...tail] = arrays;
+  const remainder = tail.length ? product(tail) : [[]];
+  for (const r of remainder){
+    for (const h of head){
+      yield [h, ...r];
+    }
+  }
+}
+
+function gridFromPreset(preset){
+  const G = gridFor(preset);
+  const arrays = [G.TAU, G.EPS, G.ATR, G.SLX, G.TPX, G.MAXH, G.ADX, G.RISCO];
+  const out = [];
+  for (const combo of product(arrays)){ out.push(combo); }
+  return out;
+}
+
+// ===== TIMEFRAME AGGREGATION =====
+function aggregateTo5m(bars1m){
+  if (!bars1m || !bars1m.length) return [];
+  const out = [];
+  let curStart = null, bucket = null;
+  const FIVE = 5*60*1000;
+  for (const b of bars1m){
+    const t = b.t;
+    const start = Math.floor(t / FIVE) * FIVE;
+    if (curStart === null || start !== curStart){
+      if (bucket && bucket.count === 5){
+        out.push({ t: curStart, o: bucket.o, h: bucket.h, l: bucket.l, c: bucket.c, v: bucket.v });
+      }
+      curStart = start;
+      bucket = { o:b.o, h:b.h, l:b.l, c:b.c, v:(b.v||0), count:1 };
+    } else {
+      bucket.h = Math.max(bucket.h, b.h);
+      bucket.l = Math.min(bucket.l, b.l);
+      bucket.c = b.c;
+      bucket.v += (b.v||0);
+      bucket.count += 1;
+    }
+  }
+  if (bucket && bucket.count === 5){
+    out.push({ t: curStart, o: bucket.o, h: bucket.h, l: bucket.l, c: bucket.c, v: bucket.v });
+  }
+  return out;
+}
+
+// ===== GLOBAL VARIABLES =====
+let bestListGlobal = [];
+let totalTestedGlobal = 0;
+let TXCOST = 0.0001;
+
+// ===== UNIFIED OPTIMIZATION ENGINE (IDENTICAL LOGIC TO SIMULATOR) =====
+async function runCPU(all, tf, combos, npUI, dirOnVal){
+  const N = all.length;
+  const highs = all.map(x=>x.h), lows = all.map(x=>x.l), closes = all.map(x=>x.c), vols = all.map(x=>x.v||0);
+  
+  // CRITICAL: Use IDENTICAL data slicing as simulator
+  const hC = highs.slice(0,-1), lC = lows.slice(0,-1), cC = closes.slice(0,-1), vC = vols.slice(0,-1);
+  const e3C = EMA(cC,3), e9C = EMA(cC,9), e21C = EMA(cC,21), e50C = EMA(cC,50);
+  const vwapC = VWAP(hC, lC, cC, vC);
+  const adxC = ADX(hC, lC, cC, 14);
+
+  // IDENTICAL RSI/StochRSI computation as simulator
+  const rsi = computeRSI(cC,14);
+  const stoch = computeStochRSI(rsi,14);
+  const baseOff = cC.length - stoch.length;
+
+  // ATR series with GPU acceleration
+  console.log(`[ATR] Calculando ATR para ${cC.length} barras...`);
+  const atr14 = await ATR_series_consistent_async(hC, lC, cC, 14);
+  const atr20 = await ATR_series_consistent_async(hC, lC, cC, 20);
+
+  const minutesPerBar = (tf==='1m')?1:5;
+  const spanDays = (cC.length * minutesPerBar) / (60*24);
+
+  // Buy & Hold baseline (identical timing to simulator)
+  const entryIdxBH = baseOff;
+  const entryPxBH = closes[entryIdxBH];
+  const exitPxBH = closes[closes.length-1];
+  const bhFinalRaw = 100 * (exitPxBH / entryPxBH);
+  const bhFinal = bhFinalRaw * (1 - TXCOST) * (1 - TXCOST);
+  
+  // Update UI
+  const k_top = document.getElementById('k_top');
+  const k_n = document.getElementById('k_n');
+  const k_per = document.getElementById('k_periodo');
+  if (k_per) k_per.textContent = `${new Date(all[entryIdxBH].t).toISOString().slice(0,10)} → ${new Date(all[all.length-1].t).toISOString().slice(0,10)}`;
+
+  let tested = 0, best = -Infinity;
+
+  for (const combo of combos){
+    if (cancelFlag) throw new Error('Cancelado');
+    const [TAU, EPS, ATRP, SLX, TPX, MAXH, ADXMIN, RISCO] = combo;
+    
+    const epsEff = autoRelaxEPS(tf, spanDays, EPS);
+    const adxMinEff = autoRelaxADX(tf, spanDays, ADXMIN);
+    const dirOn = (String(dirOnVal) === 'on');
+    
+    const H = makeEHHist(MAXH_CONSISTENT);
+    let capital = 100.0;
+    let quantidadeTrades = 0; // Track trade count for first trade logic
+    
+    // UNIFIED HOT START (IDENTICAL TO SIMULATOR)
+    let prevEleg = false;
+    let __firstLiveBarAfterHS = false;
+    let cooldownEndTime = 0; // TIMESTAMP ABSOLUTO - IDENTICAL TO SIMULATOR
+    
+    try{
+      const warmN = (tf === '1m') ? 30 : 20;
+      const preload = Math.min(stoch.length, warmN);
+      
+      console.log(`[WARM-UP] TF=${tf}, preload=${preload}/${warmN}`);
+      
+      for (let m=0; m<preload; m++){
+        const pPre = computeP_EHT_unified(stoch, m, npUI, TAU);
+        const ehPre = calcularEH(pPre);
+        pushEH(H, ehPre);
+        
+        let lim = (tf==='1m') ? 0.40 : 0.30; 
+        const q1 = (H.rsize >= MIN_Q1_RSIZE) ? Q1_from_hist(H) : null;
+        if (q1 !== null) lim = q1;
+        const limEff = Math.min(0.50, lim + epsEff);
+        
+        const rep = Math.abs(pPre - 0.5) < epsEff;
+        const eleg = (!rep) && (ehPre <= limEff);
+        prevEleg = eleg;
+      }
+      
+      __firstLiveBarAfterHS = true;
+      // COOLDOWN STARTS AFTER WARM-UP - IDENTICAL TO SIMULATOR
+      const baseSimTime = all[baseOff].t; // Simulate timeline starting at baseOff
+      cooldownEndTime = baseSimTime + (COOLDOWN_MINUTES * 60 * 1000);
+      
+    }catch(e){ 
+      console.warn('[WARM-UP] Erro:', e);
+      prevEleg = false; 
+      __firstLiveBarAfterHS = true;
+      const baseSimTime = all[baseOff]?.t || Date.now();
+      cooldownEndTime = baseSimTime + (COOLDOWN_MINUTES * 60 * 1000);
+    }
+    
+    let signals = 0;
+    
+    // UNIFIED MAIN DECISION LOOP (IDENTICAL TO SIMULATOR)
+    for (let m=0; m<stoch.length; m++){
+      const k = baseOff + m;
+      const currentBarTime = all[k]?.t || (all[baseOff]?.t || Date.now()) + (m * barMsFromInterval(tf));
+      
+      // COOLDOWN HANDLING - IDENTICAL TO SIMULATOR (timestamp-based)
+      const inCooldown = (cooldownEndTime > 0 && currentBarTime < cooldownEndTime);
+      
+      if (inCooldown){ 
+        // Continue updating calculations during cooldown - IDENTICAL TO SIMULATOR
+        const p = computeP_EHT_unified(stoch, m, npUI, TAU);
+        const eh = calcularEH(p);
+        updateEHStatus(eh);
+        pushEH(H, eh);
+        prevEleg = false; // CRITICAL: reset during cooldown like simulator
+        if (__firstLiveBarAfterHS) { __firstLiveBarAfterHS = false; }
+        continue; 
+      }
+
+      const p = computeP_EHT_unified(stoch, m, npUI, TAU);
+      const eh = calcularEH(p);
+      updateEHStatus(eh);
+
+      // Dynamic limit calculation (identical to simulator)
+      let lim = (tf==='1m') ? 0.40 : 0.30;
+      const q1 = (H.rsize >= MIN_Q1_RSIZE) ? Q1_from_hist(H) : null;
+      if (q1 !== null) lim = q1;
+      const limEff = Math.min(0.50, lim + epsEff);
+      
+      // Gate logic (identical to simulator)
+      const repulsor = Math.abs(p - 0.5) < epsEff;
+      const elegNow = (!repulsor) && (eh <= limEff);
+      
+      // IDENTICAL rising edge detection from simulator - INCLUDING FIRST TRADE LOGIC
+      const rising = ((!prevEleg) && elegNow) || (__firstLiveBarAfterHS && elegNow) || (elegNow && quantidadeTrades === 0);
+      if (__firstLiveBarAfterHS) { __firstLiveBarAfterHS = false; }
+
+      if (repulsor) {
+        pushEH(H, eh);
+        prevEleg = false;
+        continue;
+      }
+      
+      if (!rising) {
+        pushEH(H, eh);
+        prevEleg = elegNow;
+        continue;
+      }
+
+      const dir = computeDirectionTF(k, tf, e3C, e9C, e21C, e50C, vwapC, adxC, cC, adxMinEff, spanDays, dirOn);
+      if (dir === 0){
+        pushEH(H, eh);
+        prevEleg = elegNow;
+        continue;
+      }
+      
+      // ENTRY SIGNAL DETECTED
+      signals++;
+      quantidadeTrades++;
+      const price = cC[k];
+      const atrArr = (ATRP===14 ? atr14 : atr20);
+      const atr = atrArr[k] || 0;
+      const [sl, tp] = calcSLTP_ATR(price, atr, eh, dir, SLX, TPX);
+      
+      // IDENTICAL exit detection logic from simulator using scanExitByCross_Enhanced
+      let exitPx = closes[closes.length-1];
+      let exitFound = false;
+      
+      const exitResult = scanExitByCross_Enhanced(all, k, dir, price, sl, tp);
+      if (exitResult && exitResult.found) {
+        exitPx = exitResult.price;
+        exitFound = true;
+      }
+      
+      // IDENTICAL P&L calculation from simulator (SIMPLIFIED VERSION)
+      const stopDist = Math.abs(price - sl); // IDENTICAL TO SIMULATOR
+      const qty = (capital * (RISCO/100)) / Math.max(stopDist, 0.01); // IDENTICAL TO SIMULATOR
+      const pnl = (dir>0 ? (exitPx - price) : (price - exitPx)) * qty;
+      const feeEntry = price * qty * TXCOST;
+      const feeExit = exitPx * qty * TXCOST;
+      const pnlLiquido = pnl - (feeEntry + feeExit);
+      capital += pnlLiquido;
+
+      // COOLDOWN STARTS AFTER TRADE CLOSE - IDENTICAL TO SIMULATOR
+      cooldownEndTime = currentBarTime + (COOLDOWN_MINUTES * 60 * 1000);
+
+      // State update (identical to simulator)
+      pushEH(H, eh);
+      prevEleg = elegNow;
+    }
+
+    const diff = capital - bhFinal;
+    tested++;
+    if (capital > best) best = capital;
+    
+    // Update UI
+    if (k_top) k_top.textContent = fmt(Math.max(-1e9, Math.min(1e9, best)),2);
+    if (k_n) k_n.textContent = tested.toString();
+
+    // Store result
+    const item = {
+      capital: Math.max(-1e9, Math.min(1e9, capital)), 
+      tf, 
+      DIR:(dirOn?'ON':'OFF'), 
+      npUI, 
+      TAU, 
+      EPS, 
+      ATRP, 
+      SLX, 
+      TPX, 
+      MAXH:MAXH_CONSISTENT, 
+      ADXMIN, 
+      RISCO, 
+      signals, 
+      bhFinal: Math.max(-1e9, Math.min(1e9, bhFinal))
+    };
+    bestListGlobal.push(item);
+    bestListGlobal.sort((a,b)=> b.capital - a.capital);
+    if (bestListGlobal.length > 100) bestListGlobal.length = 100;
+  }
+}
+
+// ===== MAIN OPTIMIZATION FUNCTION =====
+const TF_SET = ['1m','5m'];
+const DIR_SET = ['off','on'];
+
+async function runOpt(){
+  try{
+    document.getElementById('run').disabled = true;
+    document.getElementById('stop').disabled = false;
+    cancelFlag = false;
+
+    const npUI = parseInt(document.getElementById('np').value || '1140', 10);
+    const preset = document.getElementById('preset').value || 'default';
+    TXCOST = getFeeRate();
+    
+    // Clear table
+    try { 
+      const tb = document.querySelector('#tbl tbody'); 
+      if (tb) tb.innerHTML = ''; 
+    } catch(_){}
+        
+    const days = Math.max(30, Math.ceil(((npUI*5) + 1500) / 1440));
+    setStatus(`Preparando (grid TF/Dir)... Np=${npUI} (~${days} dias 1m)`);
+    
+    const candles1m = await fetchRangeDays_generic('1m', days);
+    const candles5m = aggregateTo5m(candles1m);
+    const combos = gridFromPreset(preset);
+    
+    bestListGlobal = []; 
+    totalTestedGlobal = 0;
+
+    for (const tf of TF_SET){
+      for (const dirOnVal of DIR_SET){
+        const candles = (tf==='1m') ? candles1m : candles5m;
+        await runCPU(candles, tf, combos, npUI, dirOnVal);
+        totalTestedGlobal += combos.length;
+      }
+    }
+    
+    // Render final results
+    const tbody = document.querySelector('#tbl tbody');
+    if (tbody) {
+      tbody.innerHTML='';
+      bestListGlobal.sort((a,b)=> b.capital - a.capital);
+      if (bestListGlobal.length > 100) bestListGlobal.length = 100;
+      
+      for (let i=0;i<bestListGlobal.length;i++){
+        const it = bestListGlobal[i];
+        const tr = document.createElement('tr');
+        const val = fmt(it.capital,2);
+        const bhv = fmt(it.bhFinal,2);
+        const dif = fmt(it.capital - it.bhFinal,2);
+        tr.innerHTML = `<td>${i+1}</td><td>${it.tf}</td><td>${it.DIR}</td><td>${it.npUI}</td>` +
+                      `<td>${it.TAU}</td><td>${it.EPS}</td><td>${it.ATRP}</td><td>${it.SLX}</td><td>${it.TPX}</td>` +
+                      `<td>${it.MAXH}</td><td>${it.ADXMIN}</td><td>${it.RISCO}</td><td>${it.signals}</td><td>${val}</td><td>${bhv}</td><td>${dif}</td>`;
+        tbody.appendChild(tr);
+      }
+      
+      const k_top = document.getElementById('k_top');
+      const k_n = document.getElementById('k_n');
+      if (k_top && bestListGlobal.length){ k_top.textContent = fmt(bestListGlobal[0].capital,2); }
+      if (k_n){ k_n.textContent = String(totalTestedGlobal); }
+    }
+    
+    setStatus("Concluído.");
+  } catch(err){
+    console.error(err);
+    setStatus("Erro: " + (err && err.message ? err.message : err));
+  } finally {
+    document.getElementById('run').disabled = false;
+    document.getElementById('stop').disabled = true;
+  }
+}
+
+function stopOpt(){ 
+  cancelFlag = true; 
+  setStatus("Cancelando..."); 
+}
+
+// ===== STATUS DISPLAY =====
+function composeStatus(){
+  const jsOn = HUMH_GPU_ENABLED ? 'ON' : 'OFF';
+  const wgOn = HUMH_WGPU_ENABLED ? 'ON' : 'OFF';
+  let kernel = 'CPU';
+  if (HUMH_WGPU_ENABLED){ kernel = 'WebGPU'; } 
+  else if (HUMH_GPU_ENABLED && HUMH_GPU && HUMH_GPU.mode === 'gpu'){ kernel = 'GPU.js'; }
+  
+  let txt = `Atratores(ON) - GPU.js(${jsOn}) • WebGPU(${wgOn}) • Kernel(${kernel})`;
+  if (window.HUMH_DIAG_TEXT){ txt += ' • ' + window.HUMH_DIAG_TEXT; }
+  return txt;
+}
+
+function updateStatusInfo(){
+  const el = document.getElementById('statusInfo');
+  if (el){
+    const txt = composeStatus();
+    el.textContent = txt;
+    el.title = txt;
+  }
+}
+
+// ===== GPU BENCHMARK =====
+window.HUMH_DIAG_TEXT = window.HUMH_DIAG_TEXT || '';
+
+async function humhBenchmarkGPU(){
+  const statusEl = document.getElementById('statusInfo');
+  try{
+    if(statusEl) statusEl.textContent = 'Executando diagnóstico GPU...';
+    const results = [];
+    
+    if(HUMH_WGPU_ENABLED){
+      try{
+        const start = performance.now();
+        const testH = new Float32Array(10000).fill(100);
+        const testL = new Float32Array(10000).fill(99);
+        const testC = new Float32Array(10000).fill(99.5);
+        const trResult = await computeTR_WebGPU_core(testH, testL, testC);
+        const elapsed = performance.now() - start;
+        results.push(`WebGPU: ${elapsed.toFixed(1)}ms (${trResult.length} valores)`);
+        
+        const adapter = await navigator.gpu.requestAdapter();
+        if(adapter && adapter.info){
+          results.push(`GPU: ${adapter.info.vendor || 'Unknown'} ${adapter.info.device || 'Unknown'}`);
+        }
+      }catch(e){
+        results.push(`WebGPU: ERRO - ${e.message}`);
+      }
+    } else {
+      results.push('WebGPU: Não inicializado');
+    }
+    
+    if(HUMH_GPU_ENABLED && HUMH_GPU_COMPUTE_TR){
+      try{
+        const start = performance.now();
+        const testData = Array(10000).fill().map((_, i) => 100 + Math.sin(i/100));
+        HUMH_GPU_COMPUTE_TR.setOutput([9999]);
+        const trResult = HUMH_GPU_COMPUTE_TR(testData, testData, testData);
+        const elapsed = performance.now() - start;
+        results.push(`GPU.js: ${elapsed.toFixed(1)}ms (modo: ${HUMH_GPU.mode})`);
+      }catch(e){
+        results.push(`GPU.js: ERRO - ${e.message}`);
+      }
+    } else {
+      results.push('GPU.js: Não inicializado');
+    }
+    
+    window.HUMH_DIAG_TEXT = results.join(' • ');
+    updateStatusInfo();
+    console.log('[Debug] Resultados do benchmark:', results);
+  }catch(e){
+    console.error('[Debug] Erro:', e);
+    window.HUMH_DIAG_TEXT = 'Debug erro: ' + e.message;
+    updateStatusInfo();
+  }
+}
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', async function(){
+  console.log('[Init] Inicializando otimizador unificado...');
+  setStatus('Inicializando suporte GPU...');
+  
+  try{
+    const [wgpuResult, gpujsResult] = await Promise.all([
+      initWebGPU().catch(e => {
+        console.warn('[Init] WebGPU falhou:', e);
+        return false;
+      }),
+      initGPUjs().catch(e => {
+        console.warn('[Init] GPU.js falhou:', e);
+        return false;
+      })
+    ]);
+    
+    let gpuStatus = '';
+    if(wgpuResult && gpujsResult){ gpuStatus = 'WebGPU + GPU.js ativos'; }
+    else if(wgpuResult){ gpuStatus = 'WebGPU ativo'; }
+    else if(gpujsResult){ gpuStatus = 'GPU.js ativo'; }
+    else { gpuStatus = 'Modo CPU (GPUs indisponíveis)'; }
+    
+    console.log('[Init]', gpuStatus);
+    setStatus('Concluído. ' + gpuStatus);
+    updateStatusInfo();
+    
+    // Clear table and reset globals
+    const tb = document.querySelector('#tbl tbody');
+    if (tb) tb.innerHTML = '';
+    bestListGlobal = [];
+    totalTestedGlobal = 0;
+    
+    // Setup event listeners
+    document.getElementById('run').addEventListener('click', runOpt);
+    document.getElementById('stop').addEventListener('click', stopOpt);
+    
+  }catch(e){
+    console.error('[Init] Erro geral:', e);
+    setStatus('Erro na inicialização: ' + e.message);
+  }
+});
+</script>
+<script>const API_BASE_COMPUTED=(window.location.origin||"http://localhost:8080")+"/api";</script>
+</head>
+<body>
+<div class="container">
+  <div class="header-panel">
+    <h1>Otimizador HUMH — Corrigido e Unificado</h1>
+    <p><strong>PADRONIZADO:</strong> Lógica 100% idêntica ao simulador. <strong>Gate HUMH:</strong> repulsor <code>|p-0.5| &lt; ε</code> bloqueia; elegibilidade quando <code>EHT ≤ min(0.50, Q1 + ε_eff)</code> (borda de subida). <strong>Direção ON:</strong> EMAs+VWAP+ADX por TF. <strong>Direção OFF:</strong> preço ≥ EMA9 ⇒ long; caso contrário short. <strong>Cooldown:</strong> 14 minutos reais sempre (timestamp absoluto).</p>
+  </div>
+  <div class="status-panel" style="margin:8px 0; padding:8px; border:1px solid #e3e3e3; border-radius:8px; background:#fafafa;">
+    <strong>EH:</strong> <span id="ehDisplay">—</span> &nbsp;|&nbsp; <strong>Estado:</strong> <span id="ehStatus">—</span>
+  </div>
+
+
+  <div class="row">
+    <div class="col">
+      <label>Janela p (Np, barras)</label>
+      <input id="np" type="number" min="60" step="1" value="1140" max="2280">
+    </div>
+    <div class="col">
+      <label>Tamanho da busca</label>
+      <select id="preset">
+        <option value="coarse">Coarse (rápido)</option>
+        <option value="default" selected>Default</option>
+        <option value="dense">Dense (mais combinações)</option>
+      </select>
+    </div>
+    <div class="col">
+      <label>Taxa (%) — 0.01 = 0,01%</label>
+      <input id="taxa" type="number" step="0.01" min="0" value="0.01">
+    </div>
+    <div class="col btnrow">
+      <button id="run">Otimizar</button>
+      <button id="stop" disabled>Parar</button>
+      <button id="diagBtn" title="Diagnóstico WebGPU/GPU.js" onclick="humhBenchmarkGPU()" type="button">Debug</button>
+    </div>
+    <div class="col">
+      <div id="statusInfo" class="status">Inicializando GPUs...</div>
+    </div>
+  </div>
+
+  <div id="status" class="status">Carregando...</div>
+
+  <div class="kpi">
+    <div><strong>Top Valor (US$)</strong><div id="k_top">100.00</div></div>
+    <div><strong>Combinações testadas</strong><div id="k_n">0</div></div>
+    <div><strong>Período</strong><div id="k_periodo">2025-07-29 → 2025-08-28</div></div>
+  </div>
+
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th>#</th><th>TF</th><th>Filtro Dir</th><th>Np</th><th>τ</th><th>ε</th><th>ATR</th><th>SL×</th><th>TP×</th>
+        <th>MAXH</th><th>ADX</th><th>Risco%</th><th>Sinais</th><th>Valor</th><th>Buy&Hold</th><th>Dif</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <p style="color:#94a3b8"><strong>Verificação de Paridade:</strong> Algoritmo idêntico ao simulador. Use os parâmetros ótimos encontrados aqui no simulador para validar consistência. Taxas de 0,01% por lado (TXCOST). Buy&Hold com 100 USD pós-warmup e mesmas taxas.</p>
+</div>
+
+</body>
+</html>

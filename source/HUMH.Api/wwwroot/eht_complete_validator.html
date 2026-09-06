@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador EHT - Entropia Harmônica para Trading</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2a5298;
+            margin-top: 30px;
+            border-bottom: 2px solid #e3f2fd;
+            padding-bottom: 10px;
+        }
+
+        .theory-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        select, input, button {
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+            select:focus, input:focus {
+                outline: none;
+                border-color: #2196f3;
+                box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+            }
+
+        button {
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+            }
+
+            button:disabled {
+                background: #bdc3c7;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+        .status {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
+            .status.loading {
+                background: linear-gradient(90deg, #fff3cd, #ffeaa7);
+                color: #856404;
+                animation: pulse 2s infinite;
+            }
+
+            .status.success {
+                background: linear-gradient(90deg, #d4edda, #28a745);
+                color: white;
+            }
+
+            .status.error {
+                background: linear-gradient(90deg, #f8d7da, #dc3545);
+                color: white;
+            }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+            .result-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            }
+
+            .result-card h3 {
+                margin-top: 0;
+                color: #495057;
+                font-size: 1.1em;
+            }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .metric:last-child {
+                border-bottom: none;
+            }
+
+        .metric-label {
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-family: 'SF Mono', 'Monaco', monospace;
+            font-weight: 500;
+        }
+
+        .trading-signals {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border: 2px solid #4caf50;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .signal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .signal-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .signal-strong {
+            border-left: 4px solid #28a745;
+        }
+
+        .signal-weak {
+            border-left: 4px solid #ffc107;
+        }
+
+        .signal-avoid {
+            border-left: 4px solid #dc3545;
+        }
+
+        .data-table {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #e3f2fd;
+        }
+
+        .validation-results {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2196f3, #1976d2);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+    </style>
+    <script>const API_BASE_COMPUTED=(window.location.origin||"http://localhost:8080")+"/api";</script>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Validador EHT - Entropia Harmônica para Trading</h1>
+        <p style="text-align: center; font-size: 1.1em; color: #666;">
+            Análise científica da percepção coletiva do mercado usando a teoria HUMH
+        </p>
+
+        <div class="theory-section">
+            <h3>🎯 O que é EHT (Entropia Harmônica para Trading)?</h3>
+            <p><strong>EHT = 1 - |2p - 1|</strong> [ℋ] onde <strong>p</strong> = percepção coletiva de que o preço subirá</p>
+            <p><em>Nota:</em> EHT é medida EH (ℋ). O custo operacional (tempo de decisão, spreads) é medido em unidades reais conforme o domínio.</p>
+            <ul>
+                <li><strong>EHT < 0.3:</strong> Consenso forte - direção clara (momento ideal para trade)</li>
+                <li><strong>EHT 0.3-0.6:</strong> Consenso moderado - operar com cautela</li>
+                <li><strong>EHT > 0.6:</strong> Alta incerteza - evitar posições grandes</li>
+            </ul>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="symbol">💰 Par de Trading</label>
+                <select id="symbol">
+                    <option value="BTCUSDT">BTC/USDT</option>
+                    <option value="ETHUSDT">ETH/USDT</option>
+                    <option value="ADAUSDT">ADA/USDT</option>
+                    <option value="SOLUSDT">SOL/USDT</option>
+                    <option value="BNBUSDT">BNB/USDT</option>
+                    <option value="XRPUSDT">XRP/USDT</option>
+                    <option value="DOGEUSDT">DOGE/USDT</option>
+                    <option value="MATICUSDT">MATIC/USDT</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="timeframe">⏰ Timeframe</label>
+                <select id="timeframe">
+                    <option value="5m">5 minutos (scalping)</option>
+                    <option value="15m">15 minutos</option>
+                    <option value="1h" selected>1 hora (swing)</option>
+                    <option value="4h">4 horas</option>
+                    <option value="1d">1 dia (posição)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="limit">📊 Período de Análise</label>
+                <select id="limit">
+                    <option value="500">500 barras (~3 semanas)</option>
+                    <option value="1000" selected>1000 barras (~6 semanas)</option>
+                    <option value="2000">2000 barras (~3 meses)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="tau">🎯 Threshold τ (Sensibilidade)</label>
+                <select id="tau">
+                    <option value="0.65">0.65 (muito sensível)</option>
+                    <option value="0.70">0.70 (sensível)</option>
+                    <option value="0.75" selected>0.75 (padrão)</option>
+                    <option value="0.80">0.80 (conservador)</option>
+                    <option value="0.85">0.85 (muito conservador)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="window">🔍 Janela EHT</label>
+                <select id="window">
+                    <option value="20">20 (rápido)</option>
+                    <option value="50" selected>50 (padrão)</option>
+                    <option value="100">100 (suave)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button onclick="runEHTAnalysis()" id="runBtn">🚀 Analisar EHT</button>
+            </div>
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="results" style="display: none;">
+            <h2>📊 Resultados da Análise EHT</h2>
+
+            <div class="trading-signals">
+                <h3>🎯 Sinais de Trading</h3>
+                <div id="tradingSignals"></div>
+            </div>
+
+            <div class="results">
+                <div class="result-card">
+                    <h3>📈 Métricas EHT</h3>
+                    <div id="ehtMetrics"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3>🧠 Percepção Coletiva</h3>
+                    <div id="marketPerception"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3>⚡ Análise de Volatilidade</h3>
+                    <div id="volatilityAnalysis"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3>🔗 Validação Técnica</h3>
+                    <div id="technicalValidation"></div>
+                </div>
+            </div>
+
+            <div class="validation-results">
+                <h3>🔬 Teste de Sanidade EHT</h3>
+                <div id="sanityCheck"></div>
+            </div>
+
+            <div class="data-table">
+                <h3>📋 Dados Detalhados (Últimas 20 barras)</h3>
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Preço</th>
+                            <th>StochRSI</th>
+                            <th>p (Percepção)</th>
+                            <th>EHT</th>
+                            <th>Estado</th>
+                            <th>Sinal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateRSI(prices, period = 14) {
+            if (prices.length < period + 1) return [];
+
+            const rsi = [];
+            let avgGain = 0, avgLoss = 0;
+
+            for (let i = 1; i <= period; i++) {
+                const change = prices[i] - prices[i - 1];
+                if (change > 0) avgGain += change;
+                else avgLoss += Math.abs(change);
+            }
+            avgGain /= period;
+            avgLoss /= period;
+
+            const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+            rsi.push(100 - (100 / (1 + rs)));
+
+            for (let i = period + 1; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                const gain = change > 0 ? change : 0;
+                const loss = change < 0 ? Math.abs(change) : 0;
+
+                avgGain = ((avgGain * (period - 1)) + gain) / period;
+                avgLoss = ((avgLoss * (period - 1)) + loss) / period;
+
+                const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+                rsi.push(100 - (100 / (1 + rs)));
+            }
+
+            return rsi;
+        }
+
+        function calculateStochRSI(rsi, window = 14) {
+            if (rsi.length < window) return [];
+
+            const stochRSI = [];
+            for (let i = window - 1; i < rsi.length; i++) {
+                const slice = rsi.slice(i - window + 1, i + 1);
+                const min = Math.min(...slice);
+                const max = Math.max(...slice);
+                const current = rsi[i];
+
+                if (max === min) {
+                    stochRSI.push(0.5);
+                } else {
+                    stochRSI.push((current - min) / (max - min));
+                }
+            }
+            return stochRSI;
+        }
+
+        function calculateEHT(stochRSI, tau, window = 50) {
+            if (stochRSI.length < window) return { p_values: [], eht_values: [] };
+
+            const p_values = [];
+            const eht_values = [];
+
+            for (let i = window - 1; i < stochRSI.length; i++) {
+                const slice = stochRSI.slice(i - window + 1, i + 1);
+
+                const bullishCount = slice.filter(val => val > tau).length;
+                const p = bullishCount / slice.length;
+
+                const eht = 1 - Math.abs(2 * p - 1);
+
+                p_values.push(p);
+                eht_values.push(eht);
+            }
+
+            return { p_values, eht_values };
+        }
+
+        function calculateVolatility(prices, window = 20) {
+            const returns = [];
+            for (let i = 1; i < prices.length; i++) {
+                returns.push((prices[i] - prices[i-1]) / prices[i-1]);
+            }
+
+            const volatility = [];
+            for (let i = window - 1; i < returns.length; i++) {
+                const slice = returns.slice(i - window + 1, i + 1);
+                const mean = slice.reduce((a, b) => a + b) / slice.length;
+                const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / slice.length;
+                volatility.push(Math.sqrt(variance * 365 * 24));
+            }
+
+            return volatility;
+        }
+
+        function calculateCorrelation(x, y) {
+            const n = Math.min(x.length, y.length);
+            if (n < 2) return { r: 0, significant: false };
+
+            const xSlice = x.slice(-n);
+            const ySlice = y.slice(-n);
+
+            const meanX = xSlice.reduce((a, b) => a + b) / n;
+            const meanY = ySlice.reduce((a, b) => a + b) / n;
+
+            let numerator = 0;
+            let sumXSquared = 0;
+            let sumYSquared = 0;
+
+            for (let i = 0; i < n; i++) {
+                const deltaX = xSlice[i] - meanX;
+                const deltaY = ySlice[i] - meanY;
+                numerator += deltaX * deltaY;
+                sumXSquared += deltaX * deltaX;
+                sumYSquared += deltaY * deltaY;
+            }
+
+            const denominator = Math.sqrt(sumXSquared * sumYSquared);
+            const r = denominator === 0 ? 0 : numerator / denominator;
+
+            const t = Math.abs(r) * Math.sqrt((n - 2) / (1 - r * r));
+            const significant = t > 2.0 && n > 30;
+
+            return { r, significant };
+        }
+
+        function analyzeEHTState(eht) {
+            if (eht < 0.2) return { state: "Consenso Muito Forte", class: "signal-strong", color: "#28a745" };
+            if (eht < 0.4) return { state: "Consenso Forte", class: "signal-strong", color: "#20c997" };
+            if (eht < 0.6) return { state: "Consenso Moderado", class: "signal-weak", color: "#ffc107" };
+            if (eht < 0.8) return { state: "Alta Incerteza", class: "signal-avoid", color: "#fd7e14" };
+            return { state: "Caos Total", class: "signal-avoid", color: "#dc3545" };
+        }
+
+        function generateTradingSignal(eht, p, stochRSI) {
+            let signal = "AGUARDAR";
+            let strength = "Fraco";
+            let reasoning = "";
+
+            if (eht < 0.3) {
+                if (p > 0.7 && stochRSI < 0.8) {
+                    signal = "COMPRA";
+                    strength = "Forte";
+                    reasoning = "Consenso otimista forte + não overbought";
+                } else if (p < 0.3 && stochRSI > 0.2) {
+                    signal = "VENDA";
+                    strength = "Forte";
+                    reasoning = "Consenso pessimista forte + não oversold";
+                }
+            } else if (eht < 0.5) {
+                if (p > 0.65) {
+                    signal = "COMPRA";
+                    strength = "Moderado";
+                    reasoning = "Leve consenso otimista";
+                } else if (p < 0.35) {
+                    signal = "VENDA";
+                    strength = "Moderado";
+                    reasoning = "Leve consenso pessimista";
+                }
+            } else {
+                signal = "AGUARDAR";
+                reasoning = "Mercado muito incerto para posições";
+            }
+
+            return { signal, strength, reasoning };
+        }
+
+        function validateEHT(eht_values, p_values, volatility) {
+            const results = {
+                rangeValid: true,
+                hasVariation: false,
+                volCorrelation: 0,
+                isHealthy: false,
+                issues: []
+            };
+
+            const ehtInRange = eht_values.every(eht => eht >= 0 && eht <= 1);
+            const pInRange = p_values.every(p => p >= 0 && p <= 1);
+            results.rangeValid = ehtInRange && pInRange;
+
+            if (!results.rangeValid) {
+                results.issues.push("Valores fora do range [0,1]");
+            }
+
+            const hasLowEHT = eht_values.some(eht => eht < 0.4);
+            const hasHighEHT = eht_values.some(eht => eht > 0.6);
+            results.hasVariation = hasLowEHT && hasHighEHT;
+
+            if (!results.hasVariation) {
+                results.issues.push("EHT não varia suficientemente (possível threshold mal calibrado)");
+            }
+
+            if (volatility.length > 0) {
+                const ehtVolCorr = calculateCorrelation(eht_values, volatility.slice(-eht_values.length));
+                results.volCorrelation = ehtVolCorr.r;
+                results.isHealthy = ehtVolCorr.r > 0.1;
+
+                if (!results.isHealthy) {
+                    results.issues.push("Correlação EHT-Volatilidade muito baixa");
+                }
+            }
+
+            const pNear05 = p_values.filter(p => Math.abs(p - 0.5) < 0.1).length / p_values.length;
+            if (pNear05 > 0.8) {
+                results.issues.push("p muito próximo de 0.5 (mercado sempre indeciso)");
+            }
+
+            return results;
+        }
+
+        async function fetchBinanceKlines(symbol, interval, limit) {
+            const maxPerRequest = 1000;
+            const requests = Math.ceil(limit / maxPerRequest);
+            const allKlines = [];
+
+            updateProgress(0);
+
+            for (let i = 0; i < requests; i++) {
+                const currentLimit = Math.min(maxPerRequest, limit - (i * maxPerRequest));
+                const endTime = i === 0 ? Date.now() : allKlines[0].timestamp - 1;
+
+                const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${currentLimit}&endTime=${endTime}`;
+
+                showStatus(`Coletando dados... ${i + 1}/${requests} requisições`);
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    const klines = data.map(k => ({
+                        timestamp: k[0],
+                        open: parseFloat(k[1]),
+                        high: parseFloat(k[2]),
+                        low: parseFloat(k[3]),
+                        close: parseFloat(k[4]),
+                        volume: parseFloat(k[5])
+                    }));
+
+                    if (i === 0) {
+                        allKlines.push(...klines);
+                    } else {
+                        allKlines.unshift(...klines.reverse());
+                    }
+
+                    updateProgress((i + 1) / requests * 100);
+
+                    if (i < requests - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+
+                } catch (error) {
+                    throw new Error(`Erro na requisição ${i + 1}: ${error.message}`);
+                }
+            }
+
+            return allKlines.sort((a, b) => a.timestamp - b.timestamp);
+        }
+
+        function updateProgress(percentage) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+
+            if (percentage > 0) {
+                progressBar.style.display = 'block';
+                progressFill.style.width = percentage + '%';
+            } else {
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function showStatus(message, type = 'loading') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('status').style.display = 'none';
+            updateProgress(0);
+        }
+
+        async function runEHTAnalysis() {
+            const symbol = document.getElementById('symbol').value;
+            const timeframe = document.getElementById('timeframe').value;
+            const limit = parseInt(document.getElementById('limit').value);
+            const tau = parseFloat(document.getElementById('tau').value);
+            const window = parseInt(document.getElementById('window').value);
+
+            const runBtn = document.getElementById('runBtn');
+            runBtn.disabled = true;
+
+            try {
+                showStatus(`Iniciando análise EHT para ${symbol}...`);
+
+                const klines = await fetchBinanceKlines(symbol, timeframe, limit);
+                const prices = klines.map(k => k.close);
+                const timestamps = klines.map(k => new Date(k.timestamp));
+
+                showStatus('Calculando indicadores técnicos...');
+
+                const rsi = calculateRSI(prices);
+                const stochRSI = calculateStochRSI(rsi);
+                const volatility = calculateVolatility(prices);
+
+                showStatus('Calculando EHT...');
+
+                const ehtResults = calculateEHT(stochRSI, tau, window);
+                const { p_values, eht_values } = ehtResults;
+
+                if (eht_values.length === 0) {
+                    throw new Error("Dados insuficientes para calcular EHT");
+                }
+
+                showStatus('Analisando resultados...');
+
+                const ehtMean = eht_values.reduce((a, b) => a + b) / eht_values.length;
+                const ehtStd = Math.sqrt(eht_values.reduce((a, b) => a + Math.pow(b - ehtMean, 2), 0) / eht_values.length);
+                const ehtMin = Math.min(...eht_values);
+                const ehtMax = Math.max(...eht_values);
+
+                const pMean = p_values.reduce((a, b) => a + b) / p_values.length;
+                const pStd = Math.sqrt(p_values.reduce((a, b) => a + Math.pow(b - pMean, 2), 0) / p_values.length);
+
+                const lowEHTCount = eht_values.filter(eht => eht < 0.3).length;
+                const highEHTCount = eht_values.filter(eht => eht > 0.7).length;
+                const consensusEfficiency = lowEHTCount / eht_values.length;
+
+                const validation = validateEHT(eht_values, p_values, volatility);
+
+                const ehtVolCorr = volatility.length > 0 ?
+                    calculateCorrelation(eht_values, volatility.slice(-eht_values.length)) :
+                    { r: 0, significant: false };
+
+                const currentEHT = eht_values[eht_values.length - 1];
+                const currentP = p_values[p_values.length - 1];
+                const currentStochRSI = stochRSI[stochRSI.length - 1];
+                const currentPrice = prices[prices.length - 1];
+
+                const currentState = analyzeEHTState(currentEHT);
+                const tradingSignal = generateTradingSignal(currentEHT, currentP, currentStochRSI);
+
+                displayResults({
+                    symbol, timeframe, tau, window,
+                    ehtMean, ehtStd, ehtMin, ehtMax,
+                    pMean, pStd,
+                    consensusEfficiency,
+                    currentEHT, currentP, currentStochRSI, currentPrice,
+                    currentState, tradingSignal,
+                    validation, ehtVolCorr,
+                    klines, eht_values, p_values, stochRSI, timestamps
+                });
+
+                showStatus('Análise EHT concluída com sucesso!', 'success');
+                document.getElementById('results').style.display = 'block';
+
+            } catch (error) {
+                showStatus(`Erro: ${error.message}`, 'error');
+                console.error('Erro na análise EHT:', error);
+            } finally {
+                runBtn.disabled = false;
+                setTimeout(hideStatus, 3000);
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('ehtMetrics').innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">EHT Atual:</span>
+                    <span class="metric-value" style="color: ${data.currentState.color}; font-weight: bold;">${data.currentEHT.toFixed(3)} ℋ</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">EHT Médio:</span>
+                    <span class="metric-value">${data.ehtMean.toFixed(3)} ± ${data.ehtStd.toFixed(3)} ℋ</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Range EHT:</span>
+                    <span class="metric-value">[${data.ehtMin.toFixed(3)}, ${data.ehtMax.toFixed(3)}] ℋ</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Eficiência Consenso:</span>
+                    <span class="metric-value">${(data.consensusEfficiency * 100).toFixed(1)}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Estado Atual:</span>
+                    <span class="metric-value" style="color: ${data.currentState.color}; font-weight: bold;">${data.currentState.state}</span>
+                </div>
+            `;
+
+            let sentimentLabel, sentimentColor;
+            if (data.currentP < 0.3) {
+                sentimentLabel = "Muito Pessimista";
+                sentimentColor = "#dc3545";
+            } else if (data.currentP < 0.45) {
+                sentimentLabel = "Pessimista";
+                sentimentColor = "#fd7e14";
+            } else if (data.currentP < 0.55) {
+                sentimentLabel = "Neutro";
+                sentimentColor = "#6c757d";
+            } else if (data.currentP < 0.7) {
+                sentimentLabel = "Otimista";
+                sentimentColor = "#20c997";
+            } else {
+                sentimentLabel = "Muito Otimista";
+                sentimentColor = "#28a745";
+            }
+
+            document.getElementById('marketPerception').innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Percepção Atual (p):</span>
+                    <span class="metric-value" style="color: ${sentimentColor}; font-weight: bold;">${data.currentP.toFixed(3)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Sentiment:</span>
+                    <span class="metric-value" style="color: ${sentimentColor}; font-weight: bold;">${sentimentLabel}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">p Médio:</span>
+                    <span class="metric-value">${data.pMean.toFixed(3)} ± ${data.pStd.toFixed(3)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Threshold (τ):</span>
+                    <span class="metric-value">${data.tau}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Interpretação:</span>
+                    <span class="metric-value">${(data.currentP * 100).toFixed(1)}% acredita em alta</span>
+                </div>
+            `;
+
+            document.getElementById('volatilityAnalysis').innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Correlação EHT-Vol:</span>
+                    <span class="metric-value">${data.ehtVolCorr.r.toFixed(3)}${data.ehtVolCorr.significant ? ' *' : ''}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">StochRSI Atual:</span>
+                    <span class="metric-value">${data.currentStochRSI.toFixed(3)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Preço Atual:</span>
+                    <span class="metric-value">$${data.currentPrice.toFixed(2)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Janela EHT:</span>
+                    <span class="metric-value">${data.window} barras</span>
+                </div>
+            `;
+
+            const validationColor = data.validation.isHealthy ? "#28a745" : "#dc3545";
+            const validationIcon = data.validation.isHealthy ? "✅" : "⚠️";
+
+            document.getElementById('technicalValidation').innerHTML = `
+                <div class="metric">
+                    <span class="metric-label">Status Geral:</span>
+                    <span class="metric-value" style="color: ${validationColor}; font-weight: bold;">${validationIcon} ${data.validation.isHealthy ? 'Saudável' : 'Problemas'}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Range Válido:</span>
+                    <span class="metric-value">${data.validation.rangeValid ? '✅' : '❌'} ${data.validation.rangeValid ? 'OK' : 'Erro'}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Variação EHT:</span>
+                    <span class="metric-value">${data.validation.hasVariation ? '✅' : '⚠️'} ${data.validation.hasVariation ? 'Adequada' : 'Limitada'}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Problemas:</span>
+                    <span class="metric-value">${data.validation.issues.length || 'Nenhum'}</span>
+                </div>
+            `;
+
+            const signalColor = data.tradingSignal.signal === 'COMPRA' ? '#28a745' :
+                               data.tradingSignal.signal === 'VENDA' ? '#dc3545' : '#ffc107';
+            const strengthColor = data.tradingSignal.strength === 'Forte' ? '#28a745' :
+                                 data.tradingSignal.strength === 'Moderado' ? '#ffc107' : '#6c757d';
+
+            document.getElementById('tradingSignals').innerHTML = `
+                <div class="signal-grid">
+                    <div class="signal-box ${data.currentState.class}">
+                        <h4>Estado do Mercado</h4>
+                        <p style="color: ${data.currentState.color}; font-weight: bold; font-size: 1.2em;">
+                            ${data.currentState.state}
+                        </p>
+                        <small>EHT: ${data.currentEHT.toFixed(3)} ℋ</small>
+                    </div>
+
+                    <div class="signal-box">
+                        <h4>Sinal de Trading</h4>
+                        <p style="color: ${signalColor}; font-weight: bold; font-size: 1.4em;">
+                            ${data.tradingSignal.signal}
+                        </p>
+                        <small>Força: <span style="color: ${strengthColor};">${data.tradingSignal.strength}</span></small>
+                    </div>
+
+                    <div class="signal-box">
+                        <h4>Sentiment Coletivo</h4>
+                        <p style="color: ${sentimentColor}; font-weight: bold; font-size: 1.2em;">
+                            ${sentimentLabel}
+                        </p>
+                        <small>p = ${data.currentP.toFixed(3)}</small>
+                    </div>
+
+                    <div class="signal-box">
+                        <h4>Recomendação</h4>
+                        <p style="font-size: 0.9em; margin: 10px 0;">
+                            ${data.tradingSignal.reasoning}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('sanityCheck').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div>
+                        <strong>✅ Testes Aprovados:</strong>
+                        <ul style="margin: 5px 0;">
+                            ${data.validation.rangeValid ? '<li>Range de valores</li>' : ''}
+                            ${data.validation.hasVariation ? '<li>Variação adequada</li>' : ''}
+                            ${data.validation.isHealthy ? '<li>Correlação saudável</li>' : ''}
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>⚠️ Problemas Detectados:</strong>
+                        <ul style="margin: 5px 0;">
+                            ${data.validation.issues.map(issue => `<li>${issue}</li>`).join('') || '<li>Nenhum problema encontrado</li>'}
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>📊 Estatísticas:</strong>
+                        <ul style="margin: 5px 0;">
+                            <li>Dados: ${data.eht_values.length} pontos EHT</li>
+                            <li>Consenso: ${(data.consensusEfficiency * 100).toFixed(1)}% do tempo</li>
+                            <li>Correlação Vol: ${data.ehtVolCorr.r.toFixed(3)}</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+
+            const startIdx = Math.max(0, data.klines.length - 20);
+            for (let i = startIdx; i < data.klines.length; i++) {
+                const ehtIdx = i - (data.klines.length - data.eht_values.length);
+
+                if (ehtIdx >= 0) {
+                    const eht = data.eht_values[ehtIdx];
+                    const p = data.p_values[ehtIdx];
+                    const stochRSI = data.stochRSI[i - (data.klines.length - data.stochRSI.length)];
+
+                    const state = analyzeEHTState(eht);
+                    const signal = generateTradingSignal(eht, p, stochRSI);
+
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${data.timestamps[i].toLocaleString('pt-BR')}</td>
+                        <td>$${data.klines[i].close.toFixed(2)}</td>
+                        <td>${stochRSI ? stochRSI.toFixed(3) : '-'}</td>
+                        <td>${p.toFixed(3)}</td>
+                        <td style="color: ${state.color}; font-weight: bold;">${eht.toFixed(3)} ℋ</td>
+                        <td style="color: ${state.color};">${state.state}</td>
+                        <td style="color: ${signal.signal === 'COMPRA' ? '#28a745' : signal.signal === 'VENDA' ? '#dc3545' : '#ffc107'};">
+                            ${signal.signal}
+                        </td>
+                    `;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📈 Validador EHT carregado. Pronto para análise de trading!');
+        });
+    </script>
+
+</body>
+</html>

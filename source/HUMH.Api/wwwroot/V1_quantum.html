@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>HUMH - Validação com Estados Quânticos Intermediários</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            background: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 10px;
+        }
+
+        .header {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            margin: 20px auto;
+            text-align: left;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 0.5fr;
+            align-items: center;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        span {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .graficos {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .grafico-container {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 320px;
+            max-width: 380px;
+        }
+
+        #containerIntermediario {
+            border: 2px dashed #007bff;
+            background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+        }
+
+            #containerIntermediario h3 {
+                color: #0056b3;
+                text-shadow: 1px 1px 2px rgba(0,123,255,0.1);
+            }
+
+        h1, h2, h3 {
+            color: #0056b3;
+            border-bottom: 2px solid #eef;
+            padding-bottom: 5px;
+        }
+
+        .validation-result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            margin-top: 20px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        button {
+            padding: 12px 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+            button:disabled {
+                background-color: #6c757d;
+                cursor: wait;
+                opacity: 0.7;
+            }
+
+            button:hover:not(:disabled) {
+                background-color: #0056b3;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+
+        .formula {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+
+        .particle-animation {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 20px 0;
+        }
+
+        .modelo-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #28a745;
+        }
+
+        .modelo-tradicional {
+            border-left-color: #ffc107;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(0,123,255,.3);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+    <script>const API_BASE_COMPUTED = (window.location.origin || "http://localhost:8080") + "/api";</script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HUMH - Validação com Estados Quânticos Intermediários</h1>
+            <div class="formula">
+                <strong>Modelo Físico Expandido:</strong> Decoerência com 3 regimes (forte, intermediário, fraco)<br>
+                <strong>HUMH:</strong> EH = 1 - |2p - 1| (ℋ) para todos os estados de medição<br>
+                <strong>Demonstração HUMH:</strong> EH aplicada a 3 regimes de medição com nódulos superpostos (pointer states)
+            </div>
+            <p><strong>Hipótese:</strong> Estados intermediários revelam superposições parciais entre localização total e dispersão total</p>
+            <p><em>🌊 Validação automática comparativa: Modelo Tradicional vs Modelo com Estados Intermediários</em></p>
+        </div>
+
+        <div class="controls">
+            <div class="slider-group">
+                <label for="numSimulacoes">Número de Simulações:</label>
+                <input type="range" id="numSimulacoes" min="100" max="500" step="100" value="300">
+                <span id="valNumSimulacoes">300</span>
+            </div>
+            <div class="slider-group">
+                <label for="numParticulas">Sistemas Quânticos:</label>
+                <input type="range" id="numParticulas" min="2000" max="25000" step="1000" value="25000">
+                <span id="valNumParticulas">25000</span>
+            </div>
+            <div class="slider-group">
+                <label for="ruidoExperimental">Ruído Experimental (%):</label>
+                <input type="range" id="ruidoExperimental" min="5" max="80" step="5" value="80">
+                <span id="valRuidoExperimental">80</span>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="btnValidar">🌊 Executar Validação Comparativa (3 Estados)</button>
+            </div>
+            <div id="loading" style="min-height: 24px; font-weight: bold; color: #007bff; margin-top: 10px; display: none;"></div>
+        </div>
+
+        <div id="resultadoValidacao" class="validation-result" style="display: none;"></div>
+
+        <div class="graficos">
+            <div class="grafico-container">
+                <h3>🔬 Medição Forte (γ = <span id="gammaForte">--</span>) - Colapso Rápido</h3>
+                <div class="particle-animation">
+                    <canvas id="telaObservado" width="380" height="280"></canvas>
+                </div>
+                <p><strong>Coerência:</strong> <span id="coerenciaForte">--</span> | <strong>EH:</strong> <span id="ehForte">--</span> ℋ</p>
+            </div>
+
+            <div class="grafico-container" id="containerIntermediario">
+                <h3>🌊 Medição Intermediária (γ = <span id="gammaIntermediario">--</span>) - Estados Superpostos</h3>
+                <div class="particle-animation">
+                    <canvas id="telaIntermediario" width="380" height="280"></canvas>
+                </div>
+                <p><strong>Coerência:</strong> <span id="coerenciaIntermediario">--</span> | <strong>EH:</strong> <span id="ehIntermediario">--</span> ℋ</p>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">🌊 <em>Nódulos superpostos - Pointer states parcialmente localizados</em></p>
+            </div>
+
+            <div class="grafico-container">
+                <h3>🌊 Medição Fraca (γ = <span id="gammaFraco">--</span>) - Superposição Preservada</h3>
+                <div class="particle-animation">
+                    <canvas id="telaNaoObservado" width="380" height="280"></canvas>
+                </div>
+                <p><strong>Coerência:</strong> <span id="coerenciaFraco">--</span> | <strong>EH:</strong> <span id="ehFraco">--</span> ℋ</p>
+            </div>
+        </div>
+
+        <div id="relatorio"></div>
+    </div>
+
+    <script>
+    let dadosValidacao = [];
+        let animacaoAtiva = false;
+
+        const CENARIOS_EXPERIMENTAIS = {
+            aharonov: {
+                nome: "Aharonov et al.",
+                descricao: "Medição fraca",
+                gamma_forte: { mean: 0.90, std: 0.15 },
+                gamma_fraco: { mean: 0.10, std: 0.02 },
+                tempo_interacao: { mean: 1.0, std: 0.2 },
+                ruido_quantico: 0.08
+            },
+            wiseman: {
+                nome: "Wiseman et al.",
+                descricao: "Feedback quântico",
+                gamma_forte: { mean: 1.00, std: 0.20 },
+                gamma_fraco: { mean: 0.20, std: 0.05 },
+                tempo_interacao: { mean: 2.0, std: 0.4 },
+                ruido_quantico: 0.10
+            },
+            zurek: {
+                nome: "Zurek et al.",
+                descricao: "Decoerência ambiental",
+                gamma_forte: { mean: 1.20, std: 0.25 },
+                gamma_fraco: { mean: 0.25, std: 0.06 },
+                tempo_interacao: { mean: 1.5, std: 0.3 },
+                ruido_quantico: 0.10
+            },
+            synthetic: {
+                nome: "Sintético",
+                descricao: "Controlado",
+                gamma_forte: { mean: 1.0, std: 0.15 },
+                gamma_fraco: { mean: 0.20, std: 0.04 },
+                tempo_interacao: { mean: 2.0, std: 0.3 },
+                ruido_quantico: 0.10
+            }
+        };
+
+        function setupEventListeners() {
+            const sliders = ["numSimulacoes", "numParticulas", "ruidoExperimental"];
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                const label = document.getElementById(`val${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                slider.addEventListener("input", () => {
+                    label.textContent = slider.value;
+                });
+            });
+
+            document.getElementById("btnValidar").addEventListener("click", () => {
+                const btn = document.getElementById("btnValidar");
+                const loading = document.getElementById("loading");
+                // Atualiza rótulo imediatamente e força o repaint antes do processamento pesado
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading-spinner"></span>Processando...';
+                loading.style.display = "block";
+                loading.innerHTML = '<span class="loading-spinner"></span>Iniciando validação...';
+                // Deixa o browser pintar o novo estado e só então roda a simulação
+                requestAnimationFrame(() => setTimeout(executarValidacao, 0));
+            });
+        }
+
+        function randGauss() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        }
+
+        function sampleTruncatedNormal(mean, std, min = 0.001, max = 5.0) {
+            let sample;
+            let attempts = 0;
+            do {
+                sample = mean + std * randGauss();
+                attempts++;
+            } while ((sample < min || sample > max) && attempts < 50);
+            return Math.max(min, Math.min(max, sample));
+        }
+
+        function simularDecoerenciaQuantica(gamma, tempo, ruidoQuantico) {
+            const ruido_intrinseco = ruidoQuantico * (0.5 + 0.5 * Math.random());
+            const gamma_efetivo = gamma + ruido_intrinseco;
+            const coerencia_ideal = Math.exp(-gamma_efetivo * tempo);
+            const flutuacao_ambiental = 1 + 0.05 * randGauss();
+            return Math.max(0.001, Math.min(0.999, coerencia_ideal * flutuacao_ambiental));
+        }
+
+        function calcularDistribuicaoEspacial_HUMH(coerencia, numParticulas, canvasWidth) {
+            const posicoes = [];
+            const centro = canvasWidth / 2;
+            const separacaoFendas = 80;
+            const fator_localizacao = Math.pow(1 - coerencia, 1.2);
+
+            for (let i = 0; i < numParticulas; i++) {
+                const decisao_aleatoria = Math.random();
+
+                if (decisao_aleatoria < fator_localizacao) {
+                    const fenda = Math.random() < 0.5 ? (centro - separacaoFendas / 2) : (centro + separacaoFendas / 2);
+                    const dispersao = 15 * (1 + 0.3 * Math.random());
+                    posicoes.push(fenda + randGauss() * dispersao);
+                } else {
+                    const dispersaoLarga = 120;
+                    let x = centro + randGauss() * dispersaoLarga;
+                    const amplitude_base = 35 * coerencia;
+                    const amplitude_variavel = amplitude_base * (0.8 + 0.4 * Math.random());
+                    const fase_ruido = 0.08 * (1 + 0.2 * randGauss());
+                    const interferencia = amplitude_variavel * Math.cos(fase_ruido * (x - centro));
+                    x += interferencia;
+                    posicoes.push(x);
+                }
+            }
+
+            return posicoes.filter(x => x >= 0 && x < canvasWidth);
+        }
+
+        function calcularDistribuicaoEspacial_INTERMEDIARIO(coerencia, numParticulas, canvasWidth) {
+            const posicoes = [];
+            const centro = canvasWidth / 2;
+
+            const nodularidade = Math.sqrt(1 - coerencia);
+            const numNodulos = Math.floor(4 + 3 * nodularidade);
+            const larguraNodulo = 22 * (0.7 + 0.6 * coerencia);
+
+            const posicoesPreferenciais = [];
+            for (let i = 0; i < numNodulos; i++) {
+                const pos = centro + (i - numNodulos / 2) * (canvasWidth * 0.75 / numNodulos);
+                posicoesPreferenciais.push(pos);
+            }
+
+            for (let i = 0; i < numParticulas; i++) {
+                const decisao = Math.random();
+
+                if (decisao < nodularidade * 0.85) {
+                    const nodoEscolhido = Math.floor(Math.random() * numNodulos);
+                    const posBase = posicoesPreferenciais[nodoEscolhido];
+                    const dispersao = larguraNodulo * (0.8 + 0.4 * Math.random());
+                    posicoes.push(posBase + randGauss() * dispersao);
+
+                } else {
+                    const dispersaoLarga = 130 * coerencia;
+                    let x = centro + randGauss() * dispersaoLarga;
+                    const fase = 0.12 * (x - centro);
+                    const interferencia = 18 * coerencia * Math.cos(fase) * (0.6 + 0.4 * Math.random());
+                    x += interferencia;
+                    posicoes.push(x);
+                }
+            }
+
+            return posicoes.filter(x => x >= 0 && x < canvasWidth);
+        }
+
+        function calcularDistribuicaoEspacial_LINEAR(coerencia, numParticulas, canvasWidth) {
+            const posicoes = [];
+            const centro = canvasWidth / 2;
+            const separacaoFendas = 80;
+            const prob_linear = 1 - coerencia;
+
+            for (let i = 0; i < numParticulas; i++) {
+                if (Math.random() < prob_linear) {
+                    const fenda = Math.random() < 0.5 ? (centro - separacaoFendas / 2) : (centro + separacaoFendas / 2);
+                    posicoes.push(fenda + randGauss() * 20);
+                } else {
+                    posicoes.push(centro + randGauss() * 100);
+                }
+            }
+
+            return posicoes.filter(x => x >= 0 && x < canvasWidth);
+        }
+
+        function calcularDistribuicaoEspacial_LOG(coerencia, numParticulas, canvasWidth) {
+            const posicoes = [];
+            const centro = canvasWidth / 2;
+            const separacaoFendas = 80;
+            const prob_log = -Math.log(coerencia + 0.001) / 6.9;
+
+            for (let i = 0; i < numParticulas; i++) {
+                if (Math.random() < Math.min(0.95, prob_log)) {
+                    const fenda = Math.random() < 0.5 ? (centro - separacaoFendas / 2) : (centro + separacaoFendas / 2);
+                    posicoes.push(fenda + randGauss() * 18);
+                } else {
+                    posicoes.push(centro + randGauss() * 110);
+                }
+            }
+
+            return posicoes.filter(x => x >= 0 && x < canvasWidth);
+        }
+
+        function calcularParametroP_robusto(posicoes, canvasWidth, coerencia) {
+            if (posicoes.length === 0) return 0.5;
+
+            const centro = canvasWidth / 2;
+            const separacaoFendas = 80;
+            const fenda1 = centro - separacaoFendas / 2;
+            const fenda2 = centro + separacaoFendas / 2;
+            const tolerancia_base = 45;
+            const tolerancia_adaptativa = tolerancia_base * (0.8 + 0.4 * (1 - coerencia));
+
+            let particulasLocalizadas = 0;
+            for (let i = 0; i < posicoes.length; i++) {
+                const x = posicoes[i];
+                if (Math.abs(x - fenda1) < tolerancia_adaptativa ||
+                    Math.abs(x - fenda2) < tolerancia_adaptativa) {
+                    particulasLocalizadas++;
+                }
+            }
+
+            const p_base = particulasLocalizadas / posicoes.length;
+            const incerteza = 0.02 * randGauss();
+            return Math.max(0.01, Math.min(0.99, p_base + incerteza));
+        }
+
+        // === NOVO: Distinguibilidade D (Englert–Greenberger) por contagem relativa nas janelas das fendas ===
+        function estimarDistinguibilidade(posicoes, canvasWidth, coerencia) {
+            if (!posicoes || !posicoes.length) return 0.0;
+            const centro = canvasWidth / 2;
+            const separacaoFendas = 80;
+            const fenda1 = centro - separacaoFendas / 2;
+            const fenda2 = centro + separacaoFendas / 2;
+            const tolerancia_base = 45;
+            const tolerancia_adaptativa = tolerancia_base * (0.8 + 0.4 * (1 - coerencia));
+
+            let n1 = 0, n2 = 0;
+            for (let i = 0; i < posicoes.length; i++) {
+                const x = posicoes[i];
+                if (Math.abs(x - fenda1) < tolerancia_adaptativa) n1++;
+                else if (Math.abs(x - fenda2) < tolerancia_adaptativa) n2++;
+            }
+            const n = n1 + n2;
+            if (n <= 0) return 0.0;
+            return Math.abs(n1 - n2) / n; // D = |P1 - P2| com Pk ≈ nk/n
+        }
+
+        function calcularEntropiaHarmonica(p) {
+            return 1 - Math.abs(2 * p - 1);
+        }
+
+        function desenharDistribuicaoAnimada(canvasId, posicoes, coerencia, callback) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const intensidade_base = Math.max(0.25, 1 - coerencia * 0.6);
+            const totalPontos = Math.min(posicoes.length, 4500);
+            const step = Math.max(1, Math.floor(posicoes.length / totalPontos));
+
+            let pontosDesenhados = 0;
+            const velocidadeAnimacao = Math.max(10, Math.floor(totalPontos / 120));
+
+            function desenharProximoLote() {
+                if (!animacaoAtiva) return;
+
+                const loteSize = velocidadeAnimacao;
+                const fim = Math.min(pontosDesenhados + loteSize, totalPontos);
+
+                for (let i = pontosDesenhados; i < fim; i++) {
+                    const idx = i * step;
+                    if (idx < posicoes.length) {
+                        const x = posicoes[idx];
+                        const y = Math.random() * canvas.height;
+                        const intensidade = intensidade_base * (0.6 + 0.4 * Math.random());
+
+                        const alpha = Math.min(1, (i - pontosDesenhados + loteSize) / loteSize);
+                        let cor = "0,86,179";
+
+                        if (canvasId === "telaIntermediario") {
+                            cor = "0,123,255";
+                        }
+
+                        ctx.fillStyle = `rgba(${cor},${intensidade * alpha * 0.45})`;
+                        ctx.fillRect(x - 1, y - 1, 3, 3);
+
+                        ctx.fillStyle = `rgba(${cor},${intensidade * alpha * 0.15})`;
+                        ctx.fillRect(x, y, 2, 2);
+                    }
+                }
+
+                pontosDesenhados = fim;
+
+                if (pontosDesenhados < totalPontos) {
+                    setTimeout(desenharProximoLote, 16);
+                } else {
+                    if (callback) callback();
+                }
+            }
+
+            animacaoAtiva = true;
+            desenharProximoLote();
+        }
+
+        function calcularIC_correlacao(r, n, alfa = 0.05) {
+            if (Math.abs(r) >= 0.999) r = 0.999 * Math.sign(r);
+
+            const z_fisher = 0.5 * Math.log((1 + r) / (1 - r));
+            const se_z = 1 / Math.sqrt(n - 3);
+            const z_critico = 1.96;
+            const z_lower = z_fisher - z_critico * se_z;
+            const z_upper = z_fisher + z_critico * se_z;
+            const r_lower = Math.tanh(z_lower);
+            const r_upper = Math.tanh(z_upper);
+
+            return {
+                r_lower: r_lower,
+                r_upper: r_upper,
+                margem_erro: Math.abs(r_upper - r_lower) / 2,
+                contem_zero: r_lower <= 0 && r_upper >= 0,
+                significativo: !((r_lower <= 0 && r_upper >= 0))
+            };
+        }
+
+        function calcularPoderEstatistico(n, r_esperado, alfa = 0.05) {
+            if (n < 10) return 0;
+
+            const z_esperado = 0.5 * Math.log((1 + Math.abs(r_esperado)) / (1 - Math.abs(r_esperado)));
+            const se_h1 = 1 / Math.sqrt(n - 3);
+            const z_critico = 1.96;
+            const z_padronizado = z_esperado / se_h1;
+
+            const poder_superior = 1 - jStat.normal.cdf(z_critico - z_padronizado, 0, 1);
+            const poder_inferior = jStat.normal.cdf(-z_critico - z_padronizado, 0, 1);
+            const poder_total = poder_superior + poder_inferior;
+
+            return Math.max(0, Math.min(1, poder_total));
+        }
+        // === Helpers: V (contraste), CIs ===
+        function _smooth(arr, k = 5) {
+            if (k <= 1) return arr.slice();
+            const out = new Array(arr.length).fill(0);
+            const half = Math.floor(k / 2);
+            for (let i = 0; i < arr.length; i++) {
+                let s = 0, c = 0;
+                for (let j = i - half; j <= i + half; j++) {
+                    if (j >= 0 && j < arr.length) { s += arr[j]; c++; }
+                }
+                out[i] = s / (c || 1);
+            }
+            return out;
+        }
+        function _percentile(vals, q) {
+            if (!vals.length) return 0;
+            const v = vals.slice().sort((a, b) => a - b);
+            const idx = Math.min(v.length - 1, Math.max(0, Math.floor(q * (v.length - 1))));
+            return v[idx];
+        }
+        function computeVContrastFromPositions(posicoes, width, bins = 128) {
+            if (!posicoes || !posicoes.length) return 0;
+            const w = Math.max(16, width || 380);
+            const B = Math.max(32, bins | 0);
+            const hist = new Array(B).fill(0);
+            const scale = B / w;
+            for (let i = 0; i < posicoes.length; i++) {
+                const x = posicoes[i];
+                const b = Math.max(0, Math.min(B - 1, Math.floor(x * scale)));
+                hist[b]++;
+            }
+            const h2 = _smooth(hist, 5);
+            const Imax = _percentile(h2, 0.95);
+            const Imin = _percentile(h2, 0.05);
+            const num = Math.max(0, Imax - Imin);
+            const den = Math.max(1e-9, Imax + Imin);
+            const V = num / den;
+            return Math.max(0, Math.min(1, V));
+        }
+        function ciFisherR(r, n) {
+            if (!isFinite(r) || n < 4) return { low: NaN, high: NaN };
+            const eps = 1e-9;
+            if (r >= 1 - eps) r = 1 - 1e-6;
+            if (r <= -1 + eps) r = -1 + 1e-6;
+            const z = 0.5 * Math.log((1 + r) / (1 - r));
+            const se = 1 / Math.sqrt(n - 3);
+            const zc = 1.959963984540054;
+            return { low: Math.tanh(z - zc * se), high: Math.tanh(z + zc * se) };
+        }
+        function meanCI(arr) {
+            const n = arr.length | 0;
+            if (n <= 1) return { mean: NaN, low: NaN, high: NaN };
+            const m = arr.reduce((s, x) => s + x, 0) / n;
+            const v = arr.reduce((s, x) => s + (x - m) * (x - m), 0) / (n - 1);
+            const sd = Math.sqrt(Math.max(0, v));
+            const se = sd / Math.sqrt(n);
+            const zc = 1.959963984540054;
+            return { mean: m, low: m - zc * se, high: m + zc * se };
+        }
+        function wilsonCI(k, n) {
+            n = Math.max(1, n | 0);
+            const z = 1.959963984540054, z2 = z * z;
+            const p = Math.max(0, Math.min(1, k / n));
+            const denom = 1 + z2 / n;
+            const center = (p + z2 / (2 * n)) / denom;
+            const half = (z * Math.sqrt((p * (1 - p) / n) + (z2 / (4 * n * n)))) / denom;
+            return { p, low: Math.max(0, center - half), high: Math.min(1, center + half) };
+        }
+
+
+        function simularSistemaQuantico(parametros, ruidoExperimentalPct, numParticulas) {
+            try {
+                const gamma_forte = sampleTruncatedNormal(parametros.gamma_forte.mean, parametros.gamma_forte.std);
+                const gamma_fraco = sampleTruncatedNormal(parametros.gamma_fraco.mean, parametros.gamma_fraco.std);
+                const tempo = sampleTruncatedNormal(parametros.tempo_interacao.mean, parametros.tempo_interacao.std, 0.5, 5.0);
+
+                const ruido_adicional = (ruidoExperimentalPct / 100) * 0.5;
+                const ruido_total = parametros.ruido_quantico + ruido_adicional;
+
+                const coerencia_forte = simularDecoerenciaQuantica(gamma_forte, tempo, ruido_total);
+                const coerencia_fraco = simularDecoerenciaQuantica(gamma_fraco, tempo, ruido_total);
+
+                const gamma_intermediario = Math.sqrt(gamma_forte * gamma_fraco);
+                const coerencia_intermediario = simularDecoerenciaQuantica(gamma_intermediario, tempo, ruido_total);
+
+                const canvasForte = document.getElementById("telaObservado");
+                const canvasFraco = document.getElementById("telaNaoObservado");
+                const canvasInt = document.getElementById("telaIntermediario");
+                const widthF = canvasForte ? canvasForte.width : 380;
+                const widthW = canvasFraco ? canvasFraco.width : 380;
+                const widthI = canvasInt ? canvasInt.width : 380;
+
+                const posicoes_forte = calcularDistribuicaoEspacial_HUMH(coerencia_forte, numParticulas, widthF);
+                const posicoes_fraco = calcularDistribuicaoEspacial_HUMH(coerencia_fraco, numParticulas, widthW);
+                const posicoes_intermediario = calcularDistribuicaoEspacial_INTERMEDIARIO(coerencia_intermediario, numParticulas, widthI);
+
+                const p_forte = calcularParametroP_robusto(posicoes_forte, widthF, coerencia_forte);
+                const p_fraco = calcularParametroP_robusto(posicoes_fraco, widthW, coerencia_fraco);
+                const p_intermediario = calcularParametroP_robusto(posicoes_intermediario, widthI, coerencia_intermediario);
+
+                const EH_forte = calcularEntropiaHarmonica(p_forte);
+                const EH_fraco = calcularEntropiaHarmonica(p_fraco);
+                const EH_intermediario = calcularEntropiaHarmonica(p_intermediario);
+
+                // NOVO: V e D para Englert–Greenberger (V≈coerência; D por contagem relativa nas fendas)
+                const V_forte = computeVContrastFromPositions(posicoes_forte, widthF);
+                const V_fraco = computeVContrastFromPositions(posicoes_fraco, widthW);
+                const V_intermediario = computeVContrastFromPositions(posicoes_intermediario, widthI);
+
+                const D_forte = estimarDistinguibilidade(posicoes_forte, widthF, coerencia_forte);
+                const D_fraco = estimarDistinguibilidade(posicoes_fraco, widthW, coerencia_fraco);
+                const D_intermediario = estimarDistinguibilidade(posicoes_intermediario, widthI, coerencia_intermediario);
+
+                return {
+                    gamma_forte, gamma_fraco, tempo,
+                    coerencia_forte, coerencia_fraco,
+                    posicoes_forte, posicoes_fraco,
+                    p_forte, p_fraco,
+                    EH_forte, EH_fraco,
+                    gamma_intermediario,
+                    coerencia_intermediario,
+                    posicoes_intermediario,
+                    p_intermediario,
+                    EH_intermediario,
+                    // Englert–Greenberger
+                    V_forte, V_intermediario, V_fraco,
+                    D_forte, D_intermediario, D_fraco
+                };
+            } catch (error) {
+                console.error('[HUMH] Erro na simulação:', error);
+                return null;
+            }
+        }
+
+        async function executarValidacao() {
+            const btnValidar = document.getElementById("btnValidar");
+            const loading = document.getElementById("loading");
+            const resultado = document.getElementById("resultadoValidacao");
+
+            btnValidar.disabled = true;
+            btnValidar.innerHTML = '<span class="loading-spinner"></span>Processando...';
+            loading.style.display = "block";
+            loading.innerHTML = '<span class="loading-spinner"></span>Iniciando validação...';
+            resultado.style.display = "none";
+            animacaoAtiva = false;
+
+            const numSimulacoes = parseInt(document.getElementById("numSimulacoes").value);
+            const numParticulas = parseInt(document.getElementById("numParticulas").value);
+            const ruidoExp = parseInt(document.getElementById("ruidoExperimental").value);
+
+            const cenarioVisual = "wiseman";
+
+            const todosDadosValidacao = {};
+            const todosDadosTradicional = {};
+            const nomesCenarios = Object.keys(CENARIOS_EXPERIMENTAIS);
+            let ultimoResultadoVisual = null;
+
+            loading.innerHTML = '<span class="loading-spinner"></span>Executando validação com estados intermediários...';
+
+            for (const cenario of nomesCenarios) {
+                loading.innerHTML = `<span class="loading-spinner"></span>Validando ${CENARIOS_EXPERIMENTAIS[cenario].nome} (3 estados)...`;
+
+                const parametrosExp = CENARIOS_EXPERIMENTAIS[cenario];
+                const dadosCenario = [];
+                const dadosTradicional = [];
+
+                for (let i = 1; i <= numSimulacoes; i++) {
+                    if (i % 100 === 0) {
+                        loading.innerHTML = `<span class="loading-spinner"></span>${CENARIOS_EXPERIMENTAIS[cenario].nome}: ${i}/${numSimulacoes} (3 estados)`;
+                    }
+
+                    try {
+                        const resultado = simularSistemaQuantico(parametrosExp, ruidoExp, numParticulas);
+
+                        if (!resultado || !resultado.posicoes_forte || !resultado.posicoes_fraco || !resultado.posicoes_intermediario) {
+                            continue;
+                        }
+
+                        resultado.cenario = cenario;
+                        dadosCenario.push(resultado);
+
+                        const resultadoTradicional = {
+                            ...resultado,
+                            EH_tradicional_forte: resultado.EH_forte,
+                            EH_tradicional_fraco: resultado.EH_fraco
+                        };
+                        dadosTradicional.push(resultadoTradicional);
+
+                        if (cenario === cenarioVisual && (i % 200 === 0 || i === numSimulacoes)) {
+                            ultimoResultadoVisual = resultado;
+
+                            document.getElementById("gammaForte").textContent = resultado.gamma_forte.toFixed(3);
+                            document.getElementById("gammaFraco").textContent = resultado.gamma_fraco.toFixed(3);
+                            document.getElementById("gammaIntermediario").textContent = resultado.gamma_intermediario.toFixed(3);
+                            document.getElementById("coerenciaForte").textContent = resultado.coerencia_forte.toFixed(4);
+                            document.getElementById("coerenciaFraco").textContent = resultado.coerencia_fraco.toFixed(4);
+                            document.getElementById("coerenciaIntermediario").textContent = resultado.coerencia_intermediario.toFixed(4);
+                            document.getElementById("ehForte").textContent = resultado.EH_forte.toFixed(4);
+                            document.getElementById("ehFraco").textContent = resultado.EH_fraco.toFixed(4);
+                            document.getElementById("ehIntermediario").textContent = resultado.EH_intermediario.toFixed(4);
+
+                            loading.innerHTML = `<span class="loading-spinner"></span>Animando 3 estados - ${CENARIOS_EXPERIMENTAIS[cenario].nome}...`;
+                            await new Promise(resolve => {
+                                let animacoesCompletas = 0;
+                                const totalAnimacoes = 3;
+
+                                const checkComplete = () => {
+                                    animacoesCompletas++;
+                                    if (animacoesCompletas >= totalAnimacoes) resolve();
+                                };
+
+                                desenharDistribuicaoAnimada("telaObservado", resultado.posicoes_forte, resultado.coerencia_forte, checkComplete);
+                                desenharDistribuicaoAnimada("telaIntermediario", resultado.posicoes_intermediario, resultado.coerencia_intermediario, checkComplete);
+                                desenharDistribuicaoAnimada("telaNaoObservado", resultado.posicoes_fraco, resultado.coerencia_fraco, checkComplete);
+                            });
+                        }
+
+                        if (i % 500 === 0) {
+                            await new Promise(r => setTimeout(r, 10));
+                        }
+                    } catch (error) {
+                        console.error('[HUMH] Erro:', error);
+                        continue;
+                    }
+                }
+
+                todosDadosValidacao[cenario] = dadosCenario;
+                todosDadosTradicional[cenario] = dadosTradicional;
+            }
+
+            const totalSimulacoes = Object.values(todosDadosValidacao).reduce((sum, dados) => sum + dados.length, 0);
+
+            if (totalSimulacoes > 0) {
+                dadosValidacao = todosDadosValidacao[cenarioVisual] || [];
+                gerarRelatorioComparativo(todosDadosValidacao, todosDadosTradicional);
+                loading.innerHTML = "✅ Validação comparativa com 3 estados concluída!";
+            } else {
+                loading.innerHTML = "❌ Erro: Nenhuma simulação válida completada.";
+            }
+
+            btnValidar.disabled = false;
+            btnValidar.innerHTML = '🌊 Executar Validação Comparativa (3 Estados)';
+        }
+
+        function welchTest(grupo1, grupo2) {
+            const n1 = grupo1.length, n2 = grupo2.length;
+            if (n1 < 3 || n2 < 3) return { t: 0, df: n1 + n2 - 2, p: 1 };
+
+            const m1 = jStat.mean(grupo1), m2 = jStat.mean(grupo2);
+            const v1 = jStat.variance(grupo1, true), v2 = jStat.variance(grupo2, true);
+
+            const se2 = v1 / n1 + v2 / n2;
+            if (!isFinite(se2) || se2 <= 0) return { t: 0, df: n1 + n2 - 2, p: 1 };
+
+            const t = (m1 - m2) / Math.sqrt(se2);
+            const df = Math.pow(se2, 2) / (Math.pow(v1 / n1, 2) / (n1 - 1) + Math.pow(v2 / n2, 2) / (n2 - 1));
+            const p_value = 2 * (1 - jStat.studentt.cdf(Math.abs(t), df));
+
+            return { t, df, p: Math.max(0.000001, Math.min(0.999999, p_value)) };
+        }
+
+        function gerarRelatorioComparativo(todosDados3Estados, todosDadosTradicional) {
+            const nomesCenarios = Object.keys(todosDados3Estados);
+
+            const resultados3Estados = {};
+            nomesCenarios.forEach(cenario => {
+                const dados = todosDados3Estados[cenario];
+                if (dados.length === 0) {
+                    resultados3Estados[cenario] = null;
+                    return;
+                }
+
+                const eh_forte = dados.map(d => d.EH_forte);
+                const eh_intermediario = dados.map(d => d.EH_intermediario);
+                const eh_fraco = dados.map(d => d.EH_fraco);
+
+                const media_forte = jStat.mean(eh_forte);
+                const media_intermediario = jStat.mean(eh_intermediario);
+                const media_fraco = jStat.mean(eh_fraco);
+
+                const gammas = dados.flatMap(d => [d.gamma_forte, d.gamma_intermediario, d.gamma_fraco]);
+                const ehs = dados.flatMap(d => [d.EH_forte, d.EH_intermediario, d.EH_fraco]);
+                const correlacao = jStat.corrcoeff(gammas, ehs);
+                const n_correlacao = gammas.length;
+                const ic_correlacao = calcularIC_correlacao(correlacao, n_correlacao);
+
+                const teste_principal = welchTest(eh_forte, eh_fraco);
+                const teste_inter_forte = welchTest(eh_intermediario, eh_forte);
+                const teste_inter_fraco = welchTest(eh_intermediario, eh_fraco);
+
+                resultados3Estados[cenario] = {
+                    dados, media_forte, media_intermediario, media_fraco,
+                    correlacao, ic_correlacao, teste_principal,
+                    teste_inter_forte, teste_inter_fraco
+                };
+            });
+
+            const resultadosTradicional = {};
+            nomesCenarios.forEach(cenario => {
+                const dados = todosDadosTradicional[cenario];
+                if (dados.length === 0) {
+                    resultadosTradicional[cenario] = null;
+                    return;
+                }
+
+                const eh_forte = dados.map(d => d.EH_tradicional_forte);
+                const eh_fraco = dados.map(d => d.EH_tradicional_fraco);
+
+                const media_forte = jStat.mean(eh_forte);
+                const media_fraco = jStat.mean(eh_fraco);
+
+                const gammas = dados.flatMap(d => [d.gamma_forte, d.gamma_fraco]);
+                const ehs = dados.flatMap(d => [d.EH_tradicional_forte, d.EH_tradicional_fraco]);
+                const correlacao = jStat.corrcoeff(gammas, ehs);
+                const n_correlacao = gammas.length;
+                const ic_correlacao = calcularIC_correlacao(correlacao, n_correlacao);
+
+                const teste_principal = welchTest(eh_forte, eh_fraco);
+
+                resultadosTradicional[cenario] = {
+                    dados, media_forte, media_fraco,
+                    correlacao, ic_correlacao, teste_principal
+                };
+            });
+
+            // Expor global para hooks (PASS/FAIL console)
+            window.resultados3Estados = resultados3Estados;
+
+            const melhorCenario = nomesCenarios[0];
+            const resultado3 = resultados3Estados[melhorCenario];
+            const resultadoTrad = resultadosTradicional[melhorCenario];
+
+            const resultado = document.getElementById("resultadoValidacao");
+
+            if (resultado3) {
+                resultado.className = `validation-result success`;
+                resultado.style.display = "block";
+
+                resultado.innerHTML = `
+                    <h3>🌊 Validação Matemática Computacional - HUMH com Espectro Contínuo</h3>
+                    <p><strong>Validação Matemática Computacional:</strong> HUMH aplicada a 3 regimes de medição (forte/intermediário/fraco) vs abordagem binária tradicional (2 estados)</p>
+                    <p><strong>Estado Intermediário:</strong> γ = ${document.getElementById("gammaIntermediario").textContent}, EH = ${document.getElementById("ehIntermediario").textContent} ℋ</p>
+                    <p><strong>Correlação Expandida:</strong> r = ${resultado3.correlacao.toFixed(4)} (3 estados) <span id="ciR3"></span> vs r = ${resultadoTrad?.correlacao.toFixed(4) || '--'} (2 estados)</p>
+                    <p><strong>🎨 Visualização:</strong> Nódulos superpostos claramente visíveis no estado intermediário!</p>
+                  `;
+
+                // === Bloco PASS/FAIL anterior (coerência vs EH + Kendall) — mantido, não altera UI ===
+                try {
+                    if (resultado3 && resultado3.dados && Array.isArray(resultado3.dados)) {
+                        const dadosK = resultado3.dados;
+
+                        function pearson(x, y) {
+                            const n = Math.min(x.length, y.length);
+                            if (n < 3) return NaN;
+                            let sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+                            for (let i = 0; i < n; i++) { const xi = x[i], yi = y[i]; sx += xi; sy += yi; sxx += xi * xi; syy += yi * yi; sxy += xi * yi; }
+                            const mx = sx / n, my = sy / n;
+                            const vx = sxx / n - mx * mx, vy = syy / n - my * my;
+                            if (vx <= 0 || vy <= 0) return NaN;
+                            const cov = sxy / n - mx * my;
+                            return cov / Math.sqrt(vx * vy);
+                        }
+                        function kendallTau3(a, b, c) {
+                            let C = 0, D = 0;
+                            if (a < b) C++; else if (a > b) D++;
+                            if (a < c) C++; else if (a > c) D++;
+                            if (b < c) C++; else if (b > c) D++;
+                            return (C - D) / 3;
+                        }
+
+                        const ehF = dadosK.map(d => d.EH_forte).filter(Number.isFinite);
+                        const ehI = dadosK.map(d => d.EH_intermediario).filter(Number.isFinite);
+                        const ehW = dadosK.map(d => d.EH_fraco).filter(Number.isFinite);
+                        const cohF = dadosK.map(d => d.coerencia_forte).filter(Number.isFinite);
+                        const cohI = dadosK.map(d => d.coerencia_intermediario).filter(Number.isFinite);
+                        const cohW = dadosK.map(d => d.coerencia_fraco).filter(Number.isFinite);
+
+                        const rAll = pearson([].concat(ehF, ehI, ehW), [].concat(cohF, cohI, cohW));
+                        const passR = Math.abs(rAll) >= 0.85;
+
+                        const taus = [];
+                        let strictInc = 0, strictDec = 0;
+                        for (const d of dadosK) {
+                            const t = kendallTau3(d.EH_forte, d.EH_intermediario, d.EH_fraco);
+                            if (Number.isFinite(t)) {
+                                taus.push(t);
+                                if (t === 1) strictInc++;
+                                if (t === -1) strictDec++;
+                            }
+                        }
+                        const meanTau = taus.length ? (taus.reduce((s, x) => s + x, 0) / taus.length) : NaN;
+                        const fracInc = taus.length ? (strictInc / taus.length) : 0;
+                        const fracDec = taus.length ? (strictDec / taus.length) : 0;
+                        const passTau = Number.isFinite(meanTau) ? (meanTau > 0.2) : false;
+
+                        const overall = passR && passTau;
+
+                        const htmlPFK = `
+                        <div style="margin-top:10px; padding:10px; border-top:1px dashed #cfe2ff;">
+                          <p style="margin:6px 0;"><strong>PASS/FAIL (comparativo, 3 estados)</strong>: ${overall ? "✅ PASSOU" : "❌ FALHOU"}</p>
+                          <p style="margin:4px 0;">• |r(EH,coerência)| (3-estados): <strong>${Number.isFinite(rAll) ? Math.abs(rAll).toFixed(3) : "--"}</strong> (alvo ≥ 0.85) — ${passR ? "OK" : "X"}</p>
+                          <p style="margin:4px 0;">• Tendência ordinal (Kendall τ médio): <strong>${Number.isFinite(meanTau) ? meanTau.toFixed(3) : "--"}</strong> (alvo &gt; 0.20) — ${passTau ? "OK" : "X"}</p>
+                          <p style="margin:4px 0;">• Ordens estritas ↑: <strong>${(fracInc * 100).toFixed(1)}%</strong> &nbsp;|&nbsp; ↓: <strong>${(fracDec * 100).toFixed(1)}%</strong></p>
+                        </div>`;
+                        resultado.innerHTML += htmlPFK;
+                        resultado.className = `validation-result ${overall ? "success" : "warning"}`;
+                    }
+                } catch (e) {
+                    console.warn("[HUMH] PASS/FAIL + Kendall: erro ao renderizar", e);
+                }
+
+                // === NOVO BLOCO: Relatório do modelo físico Englert–Greenberger (V^2 + D^2 ≤ 1) ===
+                try {
+                    if (resultado3 && resultado3.dados && Array.isArray(resultado3.dados)) {
+                        const dadosE = resultado3.dados;
+
+                        function estatGE(dados, pickV, pickD) {
+                            const V = dados.map(pickV).filter(Number.isFinite);
+                            const D = dados.map(pickD).filter(Number.isFinite);
+                            const n = Math.min(V.length, D.length);
+                            if (n === 0) return null;
+                            const V2D2 = [];
+                            let ok = 0;
+                            for (let i = 0; i < n; i++) {
+                                const v = Math.max(0, Math.min(1, V[i]));
+                                const d = Math.max(0, Math.min(1, D[i]));
+                                const s = v * v + d * d;
+                                V2D2.push(s);
+                                if (s <= 1 + 1e-9) ok++;
+                            }
+                            return {
+                                n,
+                                V_mean: jStat.mean(V),
+                                D_mean: jStat.mean(D),
+                                V2D2_mean: jStat.mean(V2D2),
+                                ok_frac: ok / n
+                            };
+                        }
+
+                        const eF = estatGE(dadosE, d => d.V_forte, d => d.D_forte);
+                        const eI = estatGE(dadosE, d => d.V_intermediario, d => d.D_intermediario);
+                        const eW = estatGE(dadosE, d => d.V_fraco, d => d.D_fraco);
+                        const ciVF = meanCI(dadosE.map(d => d.V_forte).filter(Number.isFinite));
+                        const ciDF = meanCI(dadosE.map(d => d.D_forte).filter(Number.isFinite));
+                        const ciIF = wilsonCI(Math.round((eF?.ok_frac || 0) * (eF?.n || 0)), eF?.n || 1);
+                        const ciVI = meanCI(dadosE.map(d => d.V_intermediario).filter(Number.isFinite));
+                        const ciDI = meanCI(dadosE.map(d => d.D_intermediario).filter(Number.isFinite));
+                        const ciII = wilsonCI(Math.round((eI?.ok_frac || 0) * (eI?.n || 0)), eI?.n || 1);
+                        const ciVW = meanCI(dadosE.map(d => d.V_fraco).filter(Number.isFinite));
+                        const ciDW = meanCI(dadosE.map(d => d.D_fraco).filter(Number.isFinite));
+                        const ciIW = wilsonCI(Math.round((eW?.ok_frac || 0) * (eW?.n || 0)), eW?.n || 1);
+
+                        const thr = 0.95; // alvo: respeitar a desigualdade em ≥95% das simulações
+                        const passEG = [eF, eI, eW].every(e => e && e.ok_frac >= thr);
+
+                        const fmt = (x, p = 3) => (Number.isFinite(x) ? x.toFixed(p) : "--");
+
+                        const fmtIC = (lo, hi, p = 3) => (isFinite(lo) && isFinite(hi) ? ` (IC95%: ${lo.toFixed(p)}–${hi.toFixed(p)})` : ``);
+                        const fmtICP = (lo, hi) => (isFinite(lo) && isFinite(hi) ? ` (IC95%: ${(lo * 100).toFixed(1)}–${(hi * 100).toFixed(1)}%)` : ``);
+                        const blocoEG = `
+                        <div style="margin-top:12px; padding:12px; border-top:1px dashed #cfe2ff;">
+                          <p style="margin:6px 0;"><strong>Modelo físico (Englert–Greenberger)</strong>: <code>D^2 + V^2 ≤ 1</code></p>
+                          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align:left;">
+                            <div class="stat-box">
+                              <p><strong>🔬 Forte</strong></p>
+                              <p>V̄ (contraste) = <strong>${fmt(eF?.V_mean)}</strong>${fmtIC(ciVF.low, ciVF.high)} &nbsp;|&nbsp; D̄ = <strong>${fmt(eF?.D_mean)}</strong>${fmtIC(ciDF.low, ciDF.high)}</p>
+                              <p>⟨D²+V²⟩ = <strong>${fmt(eF?.V2D2_mean)}</strong></p>
+                              <p>Respeito à relação: <strong>${fmt((eF?.ok_frac ?? 0) * 100, 1)}%</strong>${fmtICP(ciIF.low, ciIF.high)}</p>
+                            </div>
+                            <div class="stat-box">
+                              <p><strong>🌊 Intermediário</strong></p>
+                              <p>V̄ (contraste) = <strong>${fmt(eI?.V_mean)}</strong>${fmtIC(ciVI.low, ciVI.high)} &nbsp;|&nbsp; D̄ = <strong>${fmt(eI?.D_mean)}</strong>${fmtIC(ciDI.low, ciDI.high)}</p>
+                              <p>⟨D²+V²⟩ = <strong>${fmt(eI?.V2D2_mean)}</strong></p>
+                              <p>Respeito à relação: <strong>${fmt((eI?.ok_frac ?? 0) * 100, 1)}%</strong>${fmtICP(ciII.low, ciII.high)}</p>
+                            </div>
+                            <div class="stat-box">
+                              <p><strong>🌊 Fraca</strong></p>
+                              <p>V̄ (contraste) = <strong>${fmt(eW?.V_mean)}</strong>${fmtIC(ciVW.low, ciVW.high)} &nbsp;|&nbsp; D̄ = <strong>${fmt(eW?.D_mean)}</strong>${fmtIC(ciDW.low, ciDW.high)}</p>
+                              <p>⟨D²+V²⟩ = <strong>${fmt(eW?.V2D2_mean)}</strong></p>
+                              <p>Respeito à relação: <strong>${fmt((eW?.ok_frac ?? 0) * 100, 1)}%</strong>${fmtICP(ciIW.low, ciIW.high)}</p>
+                            </div>
+                          </div>
+                          <p style="margin:8px 0;"><strong>PASS/FAIL (Englert–Greenberger)</strong>: ${passEG ? "✅ PASSOU" : "❌ FALHOU"} <span style="font-size:12px; color:#555;">(critério: ≥95% das simulações em cada regime respeitam D²+V²≤1)</span></p>
+                        </div>`;
+
+                        resultado.innerHTML += blocoEG;
+                        resultado.className = `validation-result ${passEG ? "success" : "warning"}`;
+                        try {
+                            const gammas = resultado3.dados.flatMap(d => [d.gamma_forte, d.gamma_intermediario, d.gamma_fraco]).filter(x => Number.isFinite(x));
+                            const ehs = resultado3.dados.flatMap(d => [d.EH_forte, d.EH_intermediario, d.EH_fraco]).filter(x => Number.isFinite(x));
+                            const nPairs = Math.min(gammas.length, ehs.length);
+                            const ciR = ciFisherR(resultado3.correlacao, nPairs);
+                            const ciSpan = document.getElementById('ciR3');
+                            if (ciSpan && isFinite(ciR.low) && isFinite(ciR.high)) {
+                                ciSpan.textContent = ` (IC95%: ${ciR.low.toFixed(3)}–${ciR.high.toFixed(3)})`;
+                            }
+                        } catch (_e) { }
+
+                    }
+                } catch (e) {
+                    console.warn("[HUMH] Englert–Greenberger: erro ao renderizar", e);
+                }
+                // === FIM BLOCO EG ===
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+
+            const exemploParms = CENARIOS_EXPERIMENTAIS.wiseman;
+            const exemploResult = (() => { const np = parseInt(document.getElementById("numParticulas").value); const rexp = parseInt(document.getElementById("ruidoExperimental").value); return simularSistemaQuantico(exemploParms, rexp, np); })();
+
+            if (exemploResult) {
+                document.getElementById("gammaForte").textContent = exemploResult.gamma_forte.toFixed(3);
+                document.getElementById("gammaFraco").textContent = exemploResult.gamma_fraco.toFixed(3);
+                document.getElementById("gammaIntermediario").textContent = exemploResult.gamma_intermediario.toFixed(3);
+                document.getElementById("coerenciaForte").textContent = exemploResult.coerencia_forte.toFixed(4);
+                document.getElementById("coerenciaFraco").textContent = exemploResult.coerencia_fraco.toFixed(4);
+                document.getElementById("coerenciaIntermediario").textContent = exemploResult.coerencia_intermediario.toFixed(4);
+                document.getElementById("ehForte").textContent = exemploResult.EH_forte.toFixed(4);
+                document.getElementById("ehFraco").textContent = exemploResult.EH_fraco.toFixed(4);
+                document.getElementById("ehIntermediario").textContent = exemploResult.EH_intermediario.toFixed(4);
+
+                animacaoAtiva = true;
+                desenharDistribuicaoAnimada("telaObservado", exemploResult.posicoes_forte, exemploResult.coerencia_forte);
+                desenharDistribuicaoAnimada("telaIntermediario", exemploResult.posicoes_intermediario, exemploResult.coerencia_intermediario);
+                desenharDistribuicaoAnimada("telaNaoObservado", exemploResult.posicoes_fraco, exemploResult.coerencia_fraco);
+
+                console.log("[HUMH] Sistema inicializado com validação de estados intermediários");
+            }
+        });</script>
+    <!-- HUMH PASS/FAIL (apenas console) - não altera UI -->
+    <script>
+    // ========= PASS/FAIL comparativo (não altera UI) =========
+        // Critérios (editáveis):
+        // 1) |r(EH, coerência)| ≥ 0.85  (3-estados, séries concatenadas)
+        // 2) Ordem EH_forte < EH_inter < EH_fraco em ≥ 75% das execuções
+        // =========================================================
+        (function () {
+            const PF_THRESH = { rMin: 0.85, orderMinFrac: 0.75 };
+
+            function _pearson(x, y) {
+                const n = Math.min(x.length, y.length);
+                if (n < 3) return NaN;
+                let sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0;
+                for (let i = 0; i < n; i++) {
+                    const xi = x[i], yi = y[i];
+                    sx += xi; sy += yi; sxx += xi * xi; syy += yi * yi; sxy += xi * yi;
+                }
+                const mx = sx / n, my = sy / n;
+                const vx = sxx / n - mx * mx, vy = syy / n - my * my;
+                if (vx <= 0 || vy <= 0) return NaN;
+                const cov = sxy / n - mx * my;
+                return cov / Math.sqrt(vx * vy);
+            }
+
+            function _fracEHOrder(ehForte, ehInter, ehFraco, eps = 1e-9) {
+                const n = Math.min(ehForte.length, ehInter.length, ehFraco.length);
+                if (n === 0) return 0;
+                let ok = 0;
+                for (let i = 0; i < n; i++) {
+                    if (ehForte[i] + eps < ehInter[i] && ehInter[i] + eps < ehFraco[i]) ok++;
+                }
+                return ok / n;
+            }
+
+            function runPassFail(sim) {
+                const ehAll = [].concat(sim.eh.forte || [], sim.eh.inter || [], sim.eh.fraco || []);
+                const cohAll = [].concat(sim.coer.forte || [], sim.coer.inter || [], sim.coer.fraco || []);
+                const r3 = _pearson(ehAll, cohAll);
+                const fracOrder = _fracEHOrder(sim.eh.forte || [], sim.eh.inter || [], sim.eh.fraco || []);
+
+                const t1 = { name: "Correlação |r(EH,coerência)| (3-estados)", value: Math.abs(r3), target: "≥ " + PF_THRESH.rMin, pass: Math.abs(r3) >= PF_THRESH.rMin };
+                const t2 = { name: "Ordem EH_forte < EH_inter < EH_fraco", value: fracOrder, target: "≥ " + PF_THRESH.orderMinFrac, pass: fracOrder >= PF_THRESH.orderMinFrac };
+
+                const tests = [t1, t2];
+                const overall = tests.every(t => t.pass);
+
+                console.groupCollapsed("%cHUMH • Validação Comparativa (Dupla Fenda) • PASS/FAIL", "font-weight:bold");
+                tests.forEach(t => {
+                    console.log(`${t.pass ? "PASSOU" : "FALHOU"} — ${t.name} | valor: ${Number.isFinite(t.value) ? t.value.toFixed(3) : String(t.value)} | alvo: ${t.target}`);
+                });
+                console.log("RESULTADO FINAL: " + (overall ? "✅ PASSOU" : "❌ FALHOU"));
+                console.groupEnd();
+
+                return { overall, tests };
+            }
+
+            function _tryBuildSimFromGlobals() {
+                const r3s = (window.resultados3Estados || window.resultadosTresEstados || null);
+                if (!r3s) return null;
+                let chosen = null;
+                const keys = Object.keys(r3s);
+                for (let i = 0; i < keys.length; i++) {
+                    const k = keys[i], r = r3s[k];
+                    if (r && r.dados && Array.isArray(r.dados) && r.dados.length) {
+                        chosen = r; break;
+                    }
+                }
+                if (!chosen) return null;
+                const dados = chosen.dados;
+                const ehF = [], ehI = [], ehW = [];
+                const cohF = [], cohI = [], cohW = [];
+                dados.forEach(d => {
+                    ehF.push(d.EH_forte ?? d.eh_forte ?? d.EHforte ?? d.EH_F);
+                    ehI.push(d.EH_intermediario ?? d.eh_intermediario ?? d.EHinter ?? d.EH_I);
+                    ehW.push(d.EH_fraco ?? d.eh_fraco ?? d.EHfraco ?? d.EH_W);
+
+                    cohF.push(d.coerencia_forte ?? d.coer_forte ?? d.coerForte);
+                    cohI.push(d.coerencia_intermediario ?? d.coer_inter ?? d.coerInter);
+                    cohW.push(d.coerencia_fraco ?? d.coer_fraco ?? d.coerFraco);
+                });
+                function _clean(v) { return (v || []).filter(x => Number.isFinite(x)); }
+                const sim = {
+                    eh: { forte: _clean(ehF), inter: _clean(ehI), fraco: _clean(ehW) },
+                    coer: { forte: _clean(cohF), inter: _clean(cohI), fraco: _clean(cohW) }
+                };
+                if ((sim.eh.forte.length + sim.eh.inter.length + sim.eh.fraco.length) < 3) return null;
+                if ((sim.coer.forte.length + sim.coer.inter.length + sim.coer.fraco.length) < 3) return null;
+                return sim;
+            }
+
+            const _orig = window.gerarRelatorioComparativo;
+            if (typeof _orig === "function") {
+                window.gerarRelatorioComparativo = function () {
+                    const ret = _orig.apply(this, arguments);
+                    try {
+                        const sim = _tryBuildSimFromGlobals();
+                        if (sim) {
+                            runPassFail(sim);
+                        } else {
+                            setTimeout(() => {
+                                const sim2 = _tryBuildSimFromGlobals();
+                                if (sim2) runPassFail(sim2);
+                            }, 50);
+                        }
+                    } catch (e) {
+                        console.warn("HUMH PASS/FAIL não executado:", e);
+                    }
+                    return ret;
+                };
+            } else {
+                window.addEventListener("load", () => {
+                    if (typeof window.gerarRelatorioComparativo === "function") {
+                        const orig2 = window.gerarRelatorioComparativo;
+                        window.gerarRelatorioComparativo = function () {
+                            const r = orig2.apply(this, arguments);
+                            try {
+                                const sim = _tryBuildSimFromGlobals();
+                                if (sim) runPassFail(sim);
+                            } catch (e) { console.warn("HUMH PASS/FAIL pós-load:", e); }
+                            return r;
+                        };
+                    }
+                });
+            }
+
+            window.HUMH_PASSFAIL = { runPassFail, PF_THRESH };
+        })();</script>
+</body>
+</html>

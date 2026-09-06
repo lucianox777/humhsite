@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HUMH — Simulação (EH) + PASS/FAIL + IC95% — Critérios Oficiais</title>
+<style>
+  :root{
+    --bg:#0e0f11;
+    --card:#17191c;
+    --text:#e7e7ea;
+    --muted:#a6a8ad;
+    --line:#2a2d32;
+    --accent:#f0f0f0; /* neutro (quase branco) */
+    --accent-2:#8f939a; /* cinza médio para série controle */
+    --ok:#b8f5c7;
+    --warn:#ffe09a;
+    --bad:#ffb3b3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
+       background:var(--bg); color:var(--text)}
+  header{padding:20px 16px; border-bottom:1px solid var(--line)}
+  header h1{margin:0; font-weight:700; font-size:20px}
+  header p{margin:6px 0 0; color:var(--muted); font-size:14px}
+  .wrap{max-width:1100px; margin:0 auto; padding:20px 16px 40px}
+  .row{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px}
+  .card h3{margin:0 0 10px 0; font-size:14px; color:var(--muted); font-weight:600; letter-spacing:.3px}
+  .controls .field{display:flex; flex-direction:column; gap:6px; min-width:170px}
+  .controls label{font-size:12px; color:var(--muted)}
+  .controls input[type="number"], .controls input[type="range"]{
+    background:#0d0e10; border:1px solid var(--line); color:var(--text);
+    padding:8px 10px; border-radius:10px; width:100%;
+  }
+  .controls input[type="range"]{height:30px}
+  .controls .row .btn{margin-top:4px}
+  .btn{
+    appearance:none; border:1px solid var(--line);
+    background:linear-gradient(180deg,#1d2024,#16181b); color:var(--text);
+    padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600;
+    transition:transform .05s ease, background .2s ease;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.6; cursor:not-allowed}
+  .btn.ghost{background:transparent}
+  .grid{display:grid; grid-template-columns:1.2fr .8fr; gap:12px}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+  canvas{width:100%; height:320px; background:#0b0c0d; border-radius:12px; border:1px solid var(--line)}
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+  .kpi{background:#101215; border:1px solid var(--line); border-radius:12px; padding:12px}
+  .kpi .label{font-size:11px; color:var(--muted); margin-bottom:6px}
+  .kpi .value{font-size:18px; font-weight:700}
+  .kpi .ci{font-size:10px; color:var(--muted); margin-top:4px}
+  .legend{display:flex; gap:16px; align-items:center; font-size:12px; color:var(--muted)}
+  .lg-item{display:flex; align-items:center; gap:8px}
+  .lg-line{width:30px; height:0; border-top:2px solid var(--accent)}
+  .lg-dash{width:30px; height:0; border-top:2px dashed var(--accent-2)}
+  .muted{color:var(--muted)}
+  .stat-ok{color:var(--ok)} .stat-warn{color:var(--warn)} .stat-bad{color:var(--bad)}
+  #conclusionText p{margin:.5em 0 0}
+  details{border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#0f1113}
+  summary{cursor:pointer; color:var(--muted); font-size:13px; font-weight:600}
+  code{background:#0f1113; padding:2px 6px; border-radius:8px; border:1px solid var(--line)}
+
+  /* PASS/FAIL badge */
+  .pf-badge{display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:#101215; font-weight:700}
+  .pf-pass{color:var(--ok)}
+  .pf-fail{color:var(--bad)}
+  .crit-list{margin:8px 0 0 0; padding-left:16px; font-size:13px; color:var(--muted)}
+  .crit-list li{margin:4px 0}
+  .crit-k{font-weight:700; color:#d0d2d6}
+</style>
+</head>
+<body>
+  <header>
+    <h1>HUMH — Simulação de Loop Observacional (Entropia Harmônica) + PASS/FAIL + IC95%</h1>
+    <p>EH = 1 − |2p − 1|. O loop observacional (experimental) empurra <em>p</em> para os atratores (0 ou 1), reduzindo EH ao longo do tempo. Controle: ruído sem força direcional. <strong>Agora com intervalos de confiança 95%!</strong></p>
+  </header>
+
+  <div class="wrap">
+    <div class="card controls">
+      <h3>Parâmetros</h3>
+      <div class="row">
+        <div class="field">
+          <label for="p0">p₀ (probabilidade inicial de "A")</label>
+          <input id="p0" type="number" step="0.01" min="0" max="1" value="0.50" />
+          <div class="row">
+            <button class="btn ghost" data-p0="0.50">EH alto (p=0,50)</button>
+            <button class="btn ghost" data-p0="0.70">EH médio (p=0,70)</button>
+            <button class="btn ghost" data-p0="0.90">EH baixo (p=0,90)</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="alpha">Força do loop (α)</label>
+          <input id="alpha" type="range" min="0" max="1" step="0.01" value="0.15" />
+          <small class="muted">0 = sem força; 1 = tendência extrema a 0/1</small>
+        </div>
+        <div class="field">
+          <label for="noise">Ruído por passo</label>
+          <input id="noise" type="range" min="0" max="0.2" step="0.005" value="0.02" />
+          <small class="muted">Perturbação uniforme em [-ruído, +ruído]</small>
+        </div>
+        <div class="field">
+          <label for="steps">Passos (máximo)</label>
+          <input id="steps" type="number" min="10" max="5000" step="10" value="400" />
+        </div>
+        <div class="field">
+          <label for="eps">Tolerância de convergência (ε)</label>
+          <input id="eps" type="number" min="0.0001" max="0.05" step="0.0001" value="0.01" />
+          <small class="muted">Convergiu se p≤ε ou p≥1−ε (ou EH≤ε)</small>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button id="runBatch" class="btn" style="width:100%">⟳ Executar Análise Completa (100 simulações + IC95%)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:12px">
+      <div class="card">
+        <h3>Séries temporais de EH</h3>
+        <div class="legend" style="margin-bottom:8px">
+          <div class="lg-item"><span class="lg-line"></span> Experimental (com loop)</div>
+          <div class="lg-item"><span class="lg-dash"></span> Controle (sem loop)</div>
+        </div>
+        <canvas id="chart" width="900" height="320"></canvas>
+        <details style="margin-top:10px">
+          <summary>Como o gráfico é desenhado?</summary>
+          <div class="muted" style="margin-top:8px">
+            Eixo X = passos; eixo Y = EH. Traço sólido: experimental; pontilhado: controle. Paleta neutra (sem azul/laranja).
+          </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <h3>Métricas da Execução</h3>
+        <div class="kpis">
+          <div class="kpi"><div class="label">EH₀ → EHᶠ (Exp.)</div><div id="kpiDeltaExp" class="value">–</div></div>
+          <div class="kpi"><div class="label">ΔEH (Exp.)</div><div id="kpiDEHExp" class="value">–</div></div>
+          <div class="kpi"><div class="label">Passos até convergir (Exp.)</div><div id="kpiStepsExp" class="value">–</div></div>
+          <div class="kpi"><div class="label">Vantagem vs. Controle</div><div id="kpiAdv" class="value">–</div></div>
+        </div>
+        <div class="muted" style="margin-top:8px; font-size:12px">
+          Vantagem = ΔEH<sub>controle</sub> − ΔEH<sub>experimental</sub> (mais negativo no exp. ⇒ maior queda ⇒ vantagem &gt; 0).
+        </div>
+
+        <div style="margin-top:14px">
+          <h3 style="margin-bottom:6px">Conclusão (segundo a HUMH)</h3>
+          <div id="conclusionText" class="muted" style="font-size:14px; line-height:1.4">
+            <em>Execute a simulação para gerar a conclusão automática.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Estatística de 100 Execuções (robustez) + PASS/FAIL + IC95%</h3>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">% ΔEH &lt; 0 (Exp.)</div>
+          <div id="kpiPctDown" class="value">–</div>
+          <div id="kpiPctDownCI" class="ci">–</div>
+        </div>
+        <div class="kpi">
+          <div class="label">p-binomial (≥80%)</div>
+          <div id="kpiBinomP" class="value">–</div>
+        </div>
+        <div class="kpi">
+          <div class="label">ρ(EH₀, 1/steps)</div>
+          <div id="kpiRho" class="value">–</div>
+          <div id="kpiRhoCI" class="ci">–</div>
+        </div>
+        <div class="kpi">
+          <div class="label">p (ρ)</div>
+          <div id="kpiRhoP" class="value">–</div>
+        </div>
+      </div>
+
+      <div class="kpis" style="margin-top:10px">
+        <div class="kpi">
+          <div class="label">Conv. (Exp.)</div>
+          <div id="kpiConvExp" class="value">–</div>
+          <div id="kpiConvExpCI" class="ci">–</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Conv. (Ctl.)</div>
+          <div id="kpiConvCtl" class="value">–</div>
+          <div id="kpiConvCtlCI" class="ci">–</div>
+        </div>
+        <div class="kpi">
+          <div class="label">p (2-prop)</div>
+          <div id="kpiPropP" class="value">–</div>
+        </div>
+        <div class="kpi">
+          <div class="label">ρ(exposição, steps)</div>
+          <div id="kpiExpoRho" class="value">–</div>
+          <div id="kpiExpoRhoCI" class="ci">–</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <span id="pfBadge" class="pf-badge"><span>—</span><span id="pfLabel">Aguardando execução</span></span>
+        <ul id="pfCrit" class="crit-list">
+          <li><span class="crit-k">C1</span> dEH/dt &lt; 0 em &gt;80% das simulações <em>(p-binomial &lt; 0.05)</em> — <span id="c1v" class="muted">–</span></li>
+          <li><span class="crit-k">C2</span> Correlação entre EH₀ e custo (esperado: ρ(EH₀, steps)&gt;0; opcional: ρ(EH₀,1/steps)&lt;0) — <span id="c2v" class="muted">–</span></li>
+          <li><span class="crit-k">C3</span> Grupo experimental converge significativamente mais que controles <em>(p &lt; 0.05)</em> — <span id="c3v" class="muted">–</span></li>
+          <li><span class="crit-k">C4</span> Número de ciclos diminui com exposição repetida ao mesmo estímulo <em>(ρ(exposição, steps) &lt; 0, p &lt; 0.05)</em> — <span id="c4v" class="muted">–</span></li>
+        </ul>
+        <p class="muted" style="font-size:12px; margin-top:6px">
+          <strong>Regra PASS/FAIL:</strong> PASS se (C1 &amp; C2 &amp; C3 &amp; C4). Valores, <em>p</em> e IC95% exibidos acima.
+        </p>
+      </div>
+    </div>
+
+    <footer class="muted" style="margin-top:18px; font-size:12px">
+      © HUMH — Simulação com IC95%. Monocromática, sem rótulos enviesados. Fórmula: EH = 1 − |2p − 1|.
+    </footer>
+  </div>
+
+<script>
+
+// === HUMH PATCH: validation & clamp ===
+
+// === HUMH PATCH: thresholds (can be tuned in UI) ===
+const HUMH_THRESHOLDS = Object.freeze({
+  C1_MIN_PCT_DOWN: 0.80,   // 80%
+  P_ALPHA: 0.05,           // significance
+  C2_RHO_MAX: -0.7         // target negative correlation
+});
+
+// === HUMH SETTINGS (Option A - Uniform p0) ===
+const HUMH_SETTINGS = Object.freeze({
+  RANDOMIZE_P0_IN_BATCH: true,
+  RANDOMIZE_P0_MODE: 'uniform', // 'uniform' | 'jitter'
+  P0_MIN: 0.05,
+  P0_MAX: 0.95,
+  JITTER_P0: 0.15,
+  BOOTSTRAP_ITERATIONS: 1000  // número de iterações para bootstrap
+});
+
+
+function __humhClamp01Soft(x){ return Math.min(1-1e-10, Math.max(1e-10, x)); }
+function __humhEnsureP0(prm){
+  if (prm && typeof prm.p0 === 'number'){
+    if(!(prm.p0 > 0 && prm.p0 < 1)){ throw new Error("p0 deve estar em (0,1)"); }
+  }
+  return prm;
+}
+// patched
+// ---------- Utilidades ----------
+const clamp = (x, lo=0, hi=1) => Math.max(lo, Math.min(hi, x));
+const EH = (p) => 1 - Math.abs(2*p - 1);
+
+// Normal CDF approximation
+function normCdf(z){
+  // Abramowitz & Stegun, 26.2.17 approximation
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = Math.exp(-0.5*z*z) / Math.sqrt(2*Math.PI);
+  const poly = 0.319381530*t - 0.356563782*Math.pow(t,2) + 1.781477937*Math.pow(t,3) - 1.821255978*Math.pow(t,4) + 1.330274429*Math.pow(t,5);
+  const prob = 1 - d*poly;
+  return z >= 0 ? prob : 1 - prob;
+}
+
+// Spearman rho + p-value (t-approx)
+function rankArray(a){
+  const n = a.length;
+  const idx = a.map((v,i)=>[v,i]).sort((x,y)=>x[0]-y[0]);
+  const ranks = Array(n);
+  for(let i=0;i<n;){
+    let j=i;
+    while(j<n && idx[j][0]===idx[i][0]) j++;
+    const r = (i + j - 1)/2 + 1; // average rank
+    for(let k=i;k<j;k++) ranks[idx[k][1]] = r;
+    i=j;
+  }
+  return ranks;
+}
+function pearson(xs, ys){
+  const n = xs.length;
+  let sx=0, sy=0, sxx=0, syy=0, sxy=0;
+  for(let i=0;i<n;i++){ const x=xs[i], y=ys[i]; sx+=x; sy+=y; sxx+=x*x; syy+=y*y; sxy+=x*y; }
+  const cov = sxy/n - (sx/n)*(sy/n);
+  const vx = sxx/n - (sx/n)*(sx/n);
+  const vy = syy/n - (sy/n)*(sy/n);
+  if(vx<=0 || vy<=0) return null;
+  return cov / Math.sqrt(vx*vy);
+}
+function spearmanRho(xs, ys){
+  const n = Math.min(xs.length, ys.length);
+  if(n<3) return {rho:null, p:null};
+  const rx = rankArray(xs.slice(0,n));
+  const ry = rankArray(ys.slice(0,n));
+  const rho = pearson(rx, ry);
+  if(rho===null) return {rho:null, p:null};
+  const t = rho * Math.sqrt((n-2)/(1-rho*rho));
+  // two-sided p
+  const p = __humhClamp01Soft(2*(1 - normCdf(Math.abs(t))));
+  return {rho, p};
+}
+
+// ========== NOVO: IC95% PARA SPEARMAN VIA BOOTSTRAP ==========
+function spearmanWithCI(xs, ys, nBoot=1000){
+  const result = spearmanRho(xs, ys);
+  if(result.rho === null) return {...result, ciLow: null, ciHigh: null};
+  
+  const n = xs.length;
+  const bootRhos = [];
+  
+  // Bootstrap: reamostragem com reposição
+  for(let i=0; i<nBoot; i++){
+    const xBoot = [], yBoot = [];
+    for(let j=0; j<n; j++){
+      const idx = Math.floor(Math.random() * n);
+      xBoot.push(xs[idx]);
+      yBoot.push(ys[idx]);
+    }
+    const bootResult = spearmanRho(xBoot, yBoot);
+    if(bootResult.rho !== null) bootRhos.push(bootResult.rho);
+  }
+  
+  if(bootRhos.length === 0) return {...result, ciLow: null, ciHigh: null};
+  
+  // Percentis 2.5% e 97.5%
+  bootRhos.sort((a,b) => a-b);
+  const ciLow = bootRhos[Math.floor(0.025 * bootRhos.length)];
+  const ciHigh = bootRhos[Math.floor(0.975 * bootRhos.length)];
+  
+  return {...result, ciLow, ciHigh};
+}
+
+// ========== NOVO: IC95% PARA PROPORÇÃO (MÉTODO WILSON) ==========
+function proportionCI(k, n, alpha=0.05){
+  if(n === 0) return {p: null, ciLow: null, ciHigh: null};
+  
+  const p = k/n;
+  const z = 1.96; // aproximação para 95% CI
+  const z2 = z*z;
+  
+  // Wilson score interval
+  const denominator = 1 + z2/n;
+  const center = (p + z2/(2*n)) / denominator;
+  const margin = z * Math.sqrt((p*(1-p)/n + z2/(4*n*n))) / denominator;
+  
+  const ciLow = Math.max(0, center - margin);
+  const ciHigh = Math.min(1, center + margin);
+  
+  return {p, ciLow, ciHigh};
+}
+
+// Binomial test (H0: p = p0) one-sided (greater)
+function binomTestGreater(k, n, p0){
+  if(n<=0) return null;
+  // Compute tail P(X >= k | n, p0)
+  // Start from pmf(0) and accumulate CDF up to k-1, then tail = 1 - cdf
+  const q0 = 1 - p0;
+  let pmf = Math.pow(q0, n);
+  let cdf = (k<=0) ? 0 : pmf;
+  for(let x=0; x<n; x++){
+    // pmf(x+1) from pmf(x)
+    pmf = pmf * (n - x) / (x + 1) * (p0 / q0);
+    if(x+1 < k) cdf += pmf;
+  }
+  const tail = 1 - cdf;
+  return tail;
+}
+
+// Two-proportion z-test (one-sided: p1 > p2)
+function twoPropZTest(k1, n1, k2, n2){
+  const p1 = k1/n1, p2 = k2/n2;
+  const p = __humhClamp01Soft((k1 + k2)/(n1 + n2));
+  const se = Math.sqrt(p*(1-p)*(1/n1 + 1/n2));
+  if(se===0) return {z:null, p:null, p1, p2};
+  const z = (p1 - p2)/se;
+  const pval = 1 - normCdf(z); // one-sided
+  return {z, p:pval, p1, p2};
+}
+
+// Simula uma trajetória de p(t) e EH(t)
+function simulateOne({p0, alpha, noise, stepsMax, eps, control=false}){
+  let p = clamp(p0);
+  const seriesP = [p];
+  const seriesEH = [EH(p)];
+  let convergedAt = null;
+
+  for(let t=1; t<=stepsMax; t++){
+    const eta = (Math.random()*2 - 1) * noise;
+    if(control){
+      // Sem loop: somente ruído
+      p = __humhClamp01Soft(clamp(p + eta));
+    } else {
+      // Com loop: empurra p para 0 ou 1 (atratores) conforme lado de 0.5
+      const target = (p >= 0.5) ? 1 : 0;
+      p = __humhClamp01Soft(clamp(p + (alpha)*(target - p) + eta));
+    }
+    seriesP.push(p);
+    const eh = EH(p);
+    seriesEH.push(eh);
+
+    if(convergedAt===null){
+      if (eh <= eps){
+        convergedAt = t;
+      }
+    }
+    /* removed premature break to avoid truncation bias */
+  }
+
+  const EH0 = seriesEH[0];
+  const EHf = seriesEH[seriesEH.length-1];
+  const dEH = EHf - EH0; // negativo = queda
+  return {seriesP, seriesEH, EH0, EHf, dEH, convergedAt};
+}
+
+// Desenha duas séries de EH no <canvas>
+function drawChart(canvas, seriesExp, seriesCtl){
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  // limpar
+  ctx.fillStyle = '#0b0c0d'; ctx.fillRect(0,0,W,H);
+  // grade sutil
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--line');
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let y=0; y<=1; y+=0.25){
+    const yy = H - y*H;
+    ctx.moveTo(40, yy); ctx.lineTo(W-10, yy);
+  }
+  ctx.stroke();
+  // Eixos
+  ctx.strokeStyle = '#2f343a'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(40,10); ctx.lineTo(40,H-20); ctx.lineTo(W-10,H-20); ctx.stroke();
+  // Labels
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted');
+  ctx.font = '12px ui-sans-serif, system-ui';
+  ctx.fillText('EH', 10, 18);
+  ctx.fillText('Passos', W-70, H-6);
+  // Função de normalização para plot
+  function plot(series, style){
+    const n = series.length;
+    ctx.beginPath();
+    for(let i=0; i<n; i++){
+      const x = 40 + (W-50) * (i/(n-1));
+      const y = (H-20) - (H-30) * series[i]; // 0..1 → pixel
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    if(style==='solid'){
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+      ctx.lineWidth = 2.0; ctx.setLineDash([]);
+    } else {
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-2');
+      ctx.lineWidth = 2.0; ctx.setLineDash([6,6]);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if(seriesCtl && seriesCtl.length>1) plot(seriesCtl, 'dash');
+  if(seriesExp && seriesExp.length>1) plot(seriesExp, 'solid');
+}
+
+// KPIs helpers
+const fmt = (x, d=3) => (x===null||x===undefined||Number.isNaN(x)) ? '–' : (typeof x==='number' ? x.toFixed(d) : String(x));
+const fmtCI = (low, high, d=3) => {
+  if(low===null || high===null || Number.isNaN(low) || Number.isNaN(high)) return '';
+  return `IC95%: [${low.toFixed(d)}, ${high.toFixed(d)}]`;
+};
+
+function fillKPIs({EH0Exp, EHfExp, dEHExp, stepsExp, dEHCtl}){
+  const kpiDeltaExp = document.getElementById('kpiDeltaExp');
+  const kpiDEHExp = document.getElementById('kpiDEHExp');
+  const kpiStepsExp = document.getElementById('kpiStepsExp');
+  const kpiAdv = document.getElementById('kpiAdv');
+  kpiDeltaExp.textContent = `${fmt(EH0Exp,3)} → ${fmt(EHfExp,3)}`;
+  kpiDEHExp.textContent = fmt(dEHExp,4);
+  kpiStepsExp.textContent = stepsExp!=null ? stepsExp : '–';
+  const adv = (dEHCtl!=null && dEHExp!=null) ? (dEHCtl - dEHExp) : null;
+  kpiAdv.textContent = fmt(adv,4);
+  // Color hints
+  kpiDEHExp.className = 'value ' + (dEHExp < 0 ? 'stat-ok' : (dEHExp == 0 ? '' : 'stat-bad'));
+  if(adv!=null){
+    kpiAdv.className = 'value ' + (adv>0 ? 'stat-ok' : (adv===0 ? '' : 'stat-bad'));
+  }
+}
+
+function writeConclusion({EH0Exp, EHfExp, dEHExp, stepsExp, pctDown, pBinom, rho, rhoP, convExp, convCtl, pProp, expoRho, expoP}){
+  const div = document.getElementById('conclusionText');
+  let html = '';
+  if(EH0Exp!=null && EHfExp!=null && dEHExp!=null){
+    const dir = dEHExp < 0 ? 'diminuiu' : (dEHExp > 0 ? 'aumentou' : 'manteve');
+    html += `<p><strong>Execução individual:</strong> Partindo de EH₀=${fmt(EH0Exp,3)}, a entropia harmônica ${dir} para EHᶠ=${fmt(EHfExp,3)} (ΔEH=${fmt(dEHExp,4)}).`;
+    if(stepsExp!=null){
+      html += ` Convergiu em ${stepsExp} passos.`;
+    }
+    html += `</p>`;
+  }
+  if(pctDown!=null){
+    html += `<p><strong>Robustez (100 execuções):</strong> Em ${pctDown.toFixed(1)}% dos casos, dEH&lt;0 (teste binomial: p=${fmt(pBinom,4)}).`;
+    if(rho!=null && rhoP!=null){
+      html += ` Correlação EH₀ vs. velocidade: ρ=${fmt(rho,3)} (p=${fmt(rhoP,4)}).`;
+    }
+    if(convExp!=null && convCtl!=null && pProp!=null){
+      html += ` Experimental convergiu ${(100*convExp).toFixed(1)}%, controle ${(100*convCtl).toFixed(1)}% (p=${fmt(pProp,4)}).`;
+    }
+    if(expoRho!=null && expoP!=null){
+      html += ` Exposição repetida: ρ=${fmt(expoRho,3)} (p=${fmt(expoP,4)}).`;
+  }
+    html += `</p>`;
+  }
+  if(!html) html = '<p><em>Execute a simulação para gerar a conclusão automática.</em></p>';
+  div.innerHTML = html;
+}
+
+function renderPassFail({c1ok, c2ok, c3ok, c4ok, c1txt, c2txt, c3txt, c4txt}){
+  const pfBadge = document.getElementById('pfBadge');
+  const pfLabel = document.getElementById('pfLabel');
+  const c1 = document.getElementById('c1v');
+  const c2 = document.getElementById('c2v');
+  const c3 = document.getElementById('c3v');
+  const c4 = document.getElementById('c4v');
+
+  const pass = c1ok && c2ok && c3ok && c4ok;
+  pfBadge.className = 'pf-badge ' + (pass ? 'pf-pass' : 'pf-fail');
+  pfLabel.textContent = pass ? 'PASS ✓' : 'FAIL ✗';
+  c1.className = c1ok ? 'stat-ok' : 'stat-bad';
+  c2.className = c2ok ? 'stat-ok' : 'stat-bad';
+  c3.className = c3ok ? 'stat-ok' : 'stat-bad';
+  c4.className = c4ok ? 'stat-ok' : 'stat-bad';
+  c1.textContent = c1txt + (c1ok ? ' ✓' : ' ✗');
+  c2.textContent = c2txt + (c2ok ? ' ✓' : ' ✗');
+  c3.textContent = c3txt + (c3ok ? ' ✓' : ' ✗');
+  c4.textContent = c4txt + (c4ok ? ' ✓' : ' ✗');
+}
+
+// ---------- Ligações de UI ----------
+const canvas = document.getElementById('chart');
+const btnsP0 = Array.from(document.querySelectorAll('button[data-p0]'));
+const p0Input = document.getElementById('p0');
+const alphaInput = document.getElementById('alpha');
+const noiseInput = document.getElementById('noise');
+const stepsInput = document.getElementById('steps');
+const epsInput = document.getElementById('eps');
+
+btnsP0.forEach(b => b.addEventListener('click', () => { p0Input.value = (+b.dataset.p0).toFixed(2); }));
+
+function getParams(){
+  return {
+    p0: clamp(parseFloat(p0Input.value)),
+    alpha: parseFloat(alphaInput.value),
+    noise: parseFloat(noiseInput.value),
+    stepsMax: Math.max(10, parseInt(stepsInput.value,10)||400),
+    eps: Math.max(1e-4, parseFloat(epsInput.value)||0.01),
+  };
+}
+
+function runSingle(){
+  const prm = getParams();
+  const exp = simulateOne({...prm, control:false});
+  const ctl = simulateOne({...prm, control:true});
+  drawChart(canvas, exp.seriesEH, ctl.seriesEH);
+  fillKPIs({
+    EH0Exp: exp.EH0, EHfExp: exp.EHf, dEHExp: exp.dEH, stepsExp: exp.convergedAt,
+    dEHCtl: ctl.dEH
+  });
+  writeConclusion({EH0Exp: exp.EH0, EHfExp: exp.EHf, dEHExp: exp.dEH, stepsExp: exp.convergedAt});
+}
+
+function runBatch(n=100){
+  const prm = getParams();
+  let countDown = 0, sumDEH = 0, sumSteps = 0, nSteps = 0;
+  let sumAdv = 0;
+  const EH0s = [], steps = [], speeds = [];
+  let convExpCnt=0, convCtlCnt=0;
+  let lastExp, lastCtl; // Guardar última execução para o gráfico
+
+  for(let i=0;i<n;i++){
+  let p0i = prm.p0;
+  if(HUMH_SETTINGS.RANDOMIZE_P0_IN_BATCH){
+    if(HUMH_SETTINGS.RANDOMIZE_P0_MODE==='uniform'){
+      p0i = clamp(HUMH_SETTINGS.P0_MIN + Math.random()*(HUMH_SETTINGS.P0_MAX-HUMH_SETTINGS.P0_MIN), 1e-10, 1-1e-10);
+    } else {
+      p0i = clamp(prm.p0 + (Math.random()*2-1)*HUMH_SETTINGS.JITTER_P0, 1e-10, 1-1e-10);
+    }
+  }
+  const exp = simulateOne({...prm, p0:p0i, control:false});
+  const ctl = simulateOne({...prm, p0:p0i, control:true});
+  
+  // Guardar última execução
+  if(i === n-1){
+    lastExp = exp;
+    lastCtl = ctl;
+  }
+  
+if(exp.dEH < 0) countDown++;
+    sumDEH += exp.dEH;
+    if(exp.convergedAt!=null){ sumSteps += exp.convergedAt; nSteps++; steps.push(exp.convergedAt); speeds.push(1/exp.convergedAt); EH0s.push(exp.EH0); }
+    sumAdv += (ctl.dEH - exp.dEH);
+    if(exp.convergedAt!=null) convExpCnt++;
+    if(ctl.convergedAt!=null) convCtlCnt++;
+  }
+  const pctDown = 100*countDown/n;
+  const meanDEH = sumDEH/n;
+  const meanSteps = nSteps>0 ? (sumSteps/nSteps) : null;
+  const meanAdv = sumAdv/n;
+
+  // C1: binomial test against 80% + IC95%
+  const pBinom = binomTestGreater(countDown, n, 0.80);
+  const c1ok = (pctDown >= (100*HUMH_THRESHOLDS.C1_MIN_PCT_DOWN) /* 80% */) && (pBinom !== null && pBinom < HUMH_THRESHOLDS.P_ALPHA);
+  const pctDownCI = proportionCI(countDown, n);
+
+  // C2: EH0 vs custo + IC95%
+  let rho_steps=null, p_steps=null, rho_inv=null, p_inv=null;
+  let rhoCI_inv = {ciLow: null, ciHigh: null};
+  if(steps.length >= 10){
+    const r1 = spearmanRho(EH0s, steps);
+    rho_steps = r1.rho; p_steps = r1.p;
+    const r2 = spearmanWithCI(EH0s, speeds, HUMH_SETTINGS.BOOTSTRAP_ITERATIONS);
+    rho_inv = r2.rho; p_inv = r2.p;
+    rhoCI_inv = {ciLow: r2.ciLow, ciHigh: r2.ciHigh};
+  }
+  const c2ok = (rho_steps !== null && p_steps !== null) && (rho_steps > 0) && (p_steps < HUMH_THRESHOLDS.P_ALPHA);
+
+
+  // C3: experimental converges more than control + IC95%
+  const prop = twoPropZTest(convExpCnt, n, convCtlCnt, n);
+  const c3ok = (prop.p !== null) && (prop.p < 0.05) && (prop.p1 > prop.p2);
+  const convExpCI = proportionCI(convExpCnt, n);
+  const convCtlCI = proportionCI(convCtlCnt, n);
+
+  
+// C4: repeated exposure → fewer ciclos + IC95%
+const S = 60, R = 6;
+const allXs = [], allYs = [];
+for (let s=0; s<S; s++){
+  let pStart = prm.p0;
+  for (let r=0; r<R; r++){
+    const exp = simulateOne({...prm, p0:pStart, control:false});
+    if (exp.convergedAt != null){ allXs.push(r+1); allYs.push(exp.convergedAt); }
+    pStart = exp.seriesP[exp.seriesP.length-1]; // memória (carryover)
+  }
+}
+let expoRho = null, expoP = null, expoPOne = null;
+let expoCI = {ciLow: null, ciHigh: null};
+if (allXs.length >= 10){
+  const res2 = spearmanWithCI(allXs, allYs, HUMH_SETTINGS.BOOTSTRAP_ITERATIONS);
+  expoRho = res2.rho; expoP = res2.p;
+  expoCI = {ciLow: res2.ciLow, ciHigh: res2.ciHigh};
+  // one-sided: esperamos correlação NEGATIVA (menos passos com mais exposição)
+  if (expoP != null){
+    expoPOne = (expoRho < 0) ? (expoP/2) : (1 - expoP/2);
+  }
+}
+// Critério: rho<0 e p(one-sided)<alpha
+const c4ok = (expoRho !== null) && (expoRho < 0) && ((expoPOne ?? expoP) < HUMH_THRESHOLDS.P_ALPHA);
+
+
+  // Update KPIs com IC95%
+  document.getElementById('kpiPctDown').textContent = pctDown.toFixed(1) + '%';
+  document.getElementById('kpiPctDownCI').textContent = fmtCI(pctDownCI.ciLow*100, pctDownCI.ciHigh*100, 1) + '%';
+  document.getElementById('kpiBinomP').textContent = (pBinom==null ? '–' : pBinom.toFixed(4));
+  document.getElementById('kpiRho').textContent = (rho_inv==null ? '–' : rho_inv.toFixed(3));
+  document.getElementById('kpiRhoCI').textContent = fmtCI(rhoCI_inv.ciLow, rhoCI_inv.ciHigh, 3);
+  document.getElementById('kpiRhoP').textContent = (p_inv==null ? '–' : p_inv.toFixed(4));
+  document.getElementById('kpiConvExp').textContent = (100*(convExpCnt/n)).toFixed(1)+'%';
+  document.getElementById('kpiConvExpCI').textContent = fmtCI(convExpCI.ciLow*100, convExpCI.ciHigh*100, 1) + '%';
+  document.getElementById('kpiConvCtl').textContent = (100*(convCtlCnt/n)).toFixed(1)+'%';
+  document.getElementById('kpiConvCtlCI').textContent = fmtCI(convCtlCI.ciLow*100, convCtlCI.ciHigh*100, 1) + '%';
+  document.getElementById('kpiPropP').textContent = (prop.p==null ? '–' : prop.p.toFixed(4));
+  document.getElementById('kpiExpoRho').textContent = (expoRho==null ? '–' : expoRho.toFixed(3));
+  document.getElementById('kpiExpoRhoCI').textContent = fmtCI(expoCI.ciLow, expoCI.ciHigh, 3);
+
+  // PASS/FAIL badge & checklist
+  const c1txt = `${pctDown.toFixed(1)}% (IC95%: ${fmtCI(pctDownCI.ciLow*100, pctDownCI.ciHigh*100, 1)}%, p=${(pBinom==null?'–':pBinom.toFixed(4))})`;
+  const c2txt = `ρ(EH₀, steps)=${(rho_steps==null?'–':rho_steps.toFixed(3))} (p=${(p_steps==null?'–':p_steps.toFixed(4))}); ρ(EH₀, 1/steps)=${(rho_inv==null?'–':rho_inv.toFixed(3))} (${fmtCI(rhoCI_inv.ciLow, rhoCI_inv.ciHigh, 3)}, p=${(p_inv==null?'–':p_inv.toFixed(4))})`;
+  const c3txt = `exp=${(100*(convExpCnt/n)).toFixed(1)}% (${fmtCI(convExpCI.ciLow*100, convExpCI.ciHigh*100, 1)}%) vs ctl=${(100*(convCtlCnt/n)).toFixed(1)}% (${fmtCI(convCtlCI.ciLow*100, convCtlCI.ciHigh*100, 1)}%) (p=${(prop.p==null?'–':prop.p.toFixed(4))})`;
+  const c4txt = `${(expoRho==null?'–':expoRho.toFixed(3))} (${fmtCI(expoCI.ciLow, expoCI.ciHigh, 3)}, p=${(expoP==null?'–':expoP.toFixed(4))})`;
+  renderPassFail({c1ok, c2ok, c3ok, c4ok, c1txt, c2txt, c3txt, c4txt});
+
+  // Desenhar gráfico e preencher KPIs individuais com a última execução
+  if(lastExp && lastCtl){
+    drawChart(canvas, lastExp.seriesEH, lastCtl.seriesEH);
+    fillKPIs({
+      EH0Exp: lastExp.EH0,
+      EHfExp: lastExp.EHf,
+      dEHExp: lastExp.dEH,
+      stepsExp: lastExp.convergedAt,
+      dEHCtl: lastCtl.dEH
+    });
+  }
+
+  // Atualizar conclusão com dados individuais e agregados
+  writeConclusion({
+    EH0Exp: lastExp ? lastExp.EH0 : null,
+    EHfExp: lastExp ? lastExp.EHf : null,
+    dEHExp: lastExp ? lastExp.dEH : null,
+    stepsExp: lastExp ? lastExp.convergedAt : null,
+    pctDown, pBinom, rho: rho_inv, rhoP: p_inv,
+    convExp: convExpCnt/n, convCtl: convCtlCnt/n, pProp: prop.p,
+    expoRho, expoP
+  });
+}
+
+document.getElementById('runBatch').addEventListener('click', () => runBatch(100));
+
+</script>
+</body>
+</html>

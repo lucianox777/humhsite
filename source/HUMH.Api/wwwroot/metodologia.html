@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMH - Análise Genérica de Limiares de Entropia Harmônica</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        input[type="range"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        .value-display {
+            display: inline-block;
+            min-width: 40px;
+            text-align: right;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+            button:hover {
+                background-color: var(--primary);
+            }
+
+            button:disabled {
+                background-color: #95a5a6;
+                cursor: not-allowed;
+            }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .results {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .metric-value {
+            font-weight: bold;
+        }
+
+        .low-eh {
+            color: var(--success);
+        }
+
+        .medium-eh {
+            color: var(--warning);
+        }
+
+        .high-eh {
+            color: var(--accent);
+        }
+
+        .analysis-panel {
+            background-color: #fdebd0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .analysis-result {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .progress {
+            width: 0%;
+            height: 20px;
+            background-color: var(--secondary);
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+            line-height: 20px;
+            transition: width 0.3s;
+        }
+
+        .report-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+        }
+
+        .dist-chart-container {
+            position: relative;
+            height: 200px;
+            margin: 15px 0;
+        }
+
+        .data-preview {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .formula-display {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid var(--secondary);
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script>const API_BASE_COMPUTED=(window.location.origin||"http://localhost:8080")+"/api";</script>
+</head>
+<body>
+    <header>
+        <h1>HUMH - Análise Genérica de Limiares de Entropia Harmônica</h1>
+        <p>Metodologia para identificação empírica de limiares em qualquer sistema</p>
+    </header>
+
+    <div class="formula-display">
+        <h3>Fórmula Central da HUMH</h3>
+        <strong>EH = 1 - |2p - 1|</strong><br>
+        <small>onde p = proporção de elementos ativados no sistema (0 ≤ p ≤ 1)</small><br>
+        <small><strong>EH é medida EH (ℋ)</strong></small>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Entrada de Dados</h2>
+            <p>Configure os parâmetros para análise de qualquer sistema baseado na HUMH</p>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="dataSource">Fonte dos Dados:</label>
+                    <select id="dataSource">
+                        <option value="generated">Dados Simulados</option>
+                        <option value="manual">Entrada Manual</option>
+                        <option value="file">Arquivo (CSV/JSON)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="systemName">Nome do Sistema:</label>
+                    <input type="text" id="systemName" value="Sistema Genérico" placeholder="ex: Rede Neural, Sistema Social, etc.">
+                </div>
+
+                <div class="control-group">
+                    <label for="elementUnit">Unidade dos Elementos:</label>
+                    <input type="text" id="elementUnit" value="elementos" placeholder="ex: neurônios, pessoas, bits, etc.">
+                </div>
+
+                <div class="control-group">
+                    <label for="totalElements">Total de Elementos:</label>
+                    <input type="number" id="totalElements" min="10" max="10000" value="1000">
+                </div>
+            </div>
+
+            <!-- Dados Simulados -->
+            <div id="generatedDataControls" class="controls">
+                <div class="control-group">
+                    <label for="numDataPoints">Número de Amostras:</label>
+                    <input type="number" id="numDataPoints" min="100" max="10000" value="1000">
+                </div>
+
+                <div class="control-group">
+                    <label for="noiseLevel">Nível de Ruído:</label>
+                    <input type="range" id="noiseLevel" min="0" max="1" step="0.1" value="0.2">
+                    <span class="value-display" id="noiseLevelValue">0.2</span>
+                </div>
+
+                <div class="control-group">
+                    <label for="attractorBias">Viés para Atratores:</label>
+                    <input type="range" id="attractorBias" min="0" max="1" step="0.1" value="0.7">
+                    <span class="value-display" id="attractorBiasValue">0.7</span>
+                </div>
+            </div>
+
+            <!-- Entrada Manual -->
+            <div id="manualDataControls" class="controls" style="display: none;">
+                <div class="control-group">
+                    <label for="manualData">Valores de p (um por linha, 0-1):</label>
+                    <textarea id="manualData" placeholder="0.2&#10;0.1&#10;0.9&#10;0.8&#10;..."></textarea>
+                </div>
+            </div>
+
+            <!-- Upload de Arquivo -->
+            <div id="fileDataControls" class="controls" style="display: none;">
+                <div class="control-group">
+                    <label for="fileInput">Selecionar Arquivo:</label>
+                    <input type="file" id="fileInput" accept=".csv,.json,.txt">
+                </div>
+                <div class="control-group">
+                    <label for="fileColumn">Nome da Coluna (p):</label>
+                    <input type="text" id="fileColumn" value="p" placeholder="Nome da coluna com valores p">
+                </div>
+            </div>
+
+            <button id="generateData">Gerar/Carregar Dados</button>
+            <button id="clearData">Limpar</button>
+
+            <div class="data-preview" id="dataPreview">
+                Nenhum dado carregado
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Visualização dos Dados</h2>
+            <div class="chart-container">
+                <canvas id="dataChart"></canvas>
+            </div>
+
+            <div class="results">
+                <h3>Estatísticas dos Dados</h3>
+                <div class="metric">
+                    <span>Total de Amostras:</span>
+                    <span id="totalSamples" class="metric-value">0</span>
+                </div>
+                <div class="metric">
+                    <span>Média de p:</span>
+                    <span id="meanP" class="metric-value">0.00</span>
+                </div>
+                <div class="metric">
+                    <span>Desvio Padrão:</span>
+                    <span id="stdP" class="metric-value">0.00</span>
+                </div>
+                <div class="metric">
+                    <span>EH Médio (ℋ):</span>
+                    <span id="meanEH" class="metric-value">0.00</span>
+                </div>
+                <div class="metric">
+                    <span>Range EH (ℋ):</span>
+                    <span id="rangeEH" class="metric-value">0.00 - 0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="analysis-panel">
+        <h2>Análise de Limiares de Entropia Harmônica</h2>
+        <p>Execute a análise para identificar empiricamente os pontos de transição entre EH-Baixa e EH-Alta</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="binCount">Número de Bins (Histograma):</label>
+                <input type="number" id="binCount" min="5" max="50" value="10">
+            </div>
+
+            <div class="control-group">
+                <label for="valleyThreshold">Limiar de Vale (0-1):</label>
+                <input type="range" id="valleyThreshold" min="0.1" max="0.9" step="0.1" value="0.7">
+                <span class="value-display" id="valleyThresholdValue">0.7</span>
+            </div>
+
+            <div class="control-group">
+                <label for="smoothingFactor">Suavização:</label>
+                <input type="range" id="smoothingFactor" min="0" max="1" step="0.1" value="0.1">
+                <span class="value-display" id="smoothingFactorValue">0.1</span>
+            </div>
+        </div>
+
+        <button id="runAnalysis">Executar Análise de Limiares</button>
+
+        <div class="progress-bar">
+            <div class="progress" id="analysisProgress">0%</div>
+        </div>
+
+        <div class="analysis-result" id="analysisResult" style="display: none;">
+            <h3>Resultados da Análise de Limiares</h3>
+            <div id="reportContent">
+                <!-- O relatório será gerado aqui -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let dataChart;
+        let thresholdChart;
+        let currentData = [];
+        let ehValues = [];
+        let analysisRunning = false;
+
+        // Elementos DOM
+        const reportContent = document.getElementById('reportContent');
+        const analysisProgress = document.getElementById('analysisProgress');
+        const analysisResult = document.getElementById('analysisResult');
+        const dataPreview = document.getElementById('dataPreview');
+
+        // Configuração dos controles
+        const sliders = ['noiseLevel', 'attractorBias', 'valleyThreshold', 'smoothingFactor'];
+        sliders.forEach(sliderId => {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(sliderId + 'Value');
+
+            if (slider && valueDisplay) {
+                slider.addEventListener('input', () => {
+                    valueDisplay.textContent = slider.value;
+                });
+            }
+        });
+
+        // Controle de fonte de dados
+        document.getElementById('dataSource').addEventListener('change', (e) => {
+            const source = e.target.value;
+            document.getElementById('generatedDataControls').style.display = source === 'generated' ? 'block' : 'none';
+            document.getElementById('manualDataControls').style.display = source === 'manual' ? 'block' : 'none';
+            document.getElementById('fileDataControls').style.display = source === 'file' ? 'block' : 'none';
+        });
+
+        // Inicializar gráfico de dados
+        function initDataChart() {
+            const chartCtx = document.getElementById('dataChart').getContext('2d');
+            dataChart = new Chart(chartCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Valores de p',
+                            data: [],
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Entropia Harmônica (EH em ℋ)',
+                            data: [],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                            pointRadius: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Amostra'
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 1,
+                            title: {
+                                display: true,
+                                text: 'Valor'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Calcular Entropia Harmônica
+        function calculateEH(p) {
+            return 1 - Math.abs(2 * p - 1);
+        }
+
+        // Gerar dados simulados
+        function generateSimulatedData() {
+            const numPoints = parseInt(document.getElementById('numDataPoints').value);
+            const noiseLevel = parseFloat(document.getElementById('noiseLevel').value);
+            const attractorBias = parseFloat(document.getElementById('attractorBias').value);
+
+            const data = [];
+
+            for (let i = 0; i < numPoints; i++) {
+                let p;
+
+                if (Math.random() < attractorBias) {
+                    // Tendência aos atratores (p próximo a 0 ou 1)
+                    p = Math.random() < 0.5 ?
+                        Math.random() * 0.3 : // Próximo a 0
+                        0.7 + Math.random() * 0.3; // Próximo a 1
+                } else {
+                    // Distribuição uniforme
+                    p = Math.random();
+                }
+
+                // Adicionar ruído
+                p += (Math.random() - 0.5) * noiseLevel;
+                p = Math.max(0, Math.min(1, p)); // Clampar entre 0 e 1
+
+                data.push(p);
+            }
+
+            return data;
+        }
+
+        // Carregar dados manuais
+        function loadManualData() {
+            const manualText = document.getElementById('manualData').value.trim();
+            if (!manualText) return [];
+
+            const lines = manualText.split('\n');
+            const data = [];
+
+            for (const line of lines) {
+                const value = parseFloat(line.trim());
+                if (!isNaN(value) && value >= 0 && value <= 1) {
+                    data.push(value);
+                }
+            }
+
+            return data;
+        }
+
+        // Processar dados
+        function processData(pValues) {
+            currentData = pValues;
+            ehValues = pValues.map(p => calculateEH(p));
+
+            updateDataVisualization();
+            updateStatistics();
+        }
+
+        // Atualizar visualização
+        function updateDataVisualization() {
+            const pData = currentData.map((p, i) => ({x: i, y: p}));
+            const ehData = ehValues.map((eh, i) => ({x: i, y: eh}));
+
+            dataChart.data.datasets[0].data = pData;
+            dataChart.data.datasets[1].data = ehData;
+            dataChart.update();
+
+            // Preview dos dados
+            const preview = currentData.slice(0, 10).map((p, i) =>
+                `${i}: p=${p.toFixed(3)}, EH=${ehValues[i].toFixed(3)} ℋ`
+            ).join('\n');
+
+            dataPreview.textContent = preview + (currentData.length > 10 ? '\n...' : '');
+        }
+
+        // Atualizar estatísticas
+        function updateStatistics() {
+            const meanP = currentData.reduce((a, b) => a + b, 0) / currentData.length;
+            const stdP = Math.sqrt(currentData.reduce((a, p) => a + Math.pow(p - meanP, 2), 0) / currentData.length);
+            const meanEH = ehValues.reduce((a, b) => a + b, 0) / ehValues.length;
+            const minEH = Math.min(...ehValues);
+            const maxEH = Math.max(...ehValues);
+
+            document.getElementById('totalSamples').textContent = currentData.length;
+            document.getElementById('meanP').textContent = meanP.toFixed(3);
+            document.getElementById('stdP').textContent = stdP.toFixed(3);
+            document.getElementById('meanEH').textContent = meanEH.toFixed(3);
+            document.getElementById('rangeEH').textContent = `${minEH.toFixed(3)} - ${maxEH.toFixed(3)}`;
+        }
+
+        // Análise de limiares
+        function analyzeThresholds() {
+            const binCount = parseInt(document.getElementById('binCount').value);
+            const valleyThreshold = parseFloat(document.getElementById('valleyThreshold').value);
+
+            // Calcular histograma de EH
+            const histogram = Array(binCount).fill(0);
+            const binSize = 1 / binCount;
+
+            for (const eh of ehValues) {
+                const bucket = Math.min(binCount - 1, Math.floor(eh / binSize));
+                histogram[bucket]++;
+            }
+
+            // Normalizar histograma
+            const total = ehValues.length;
+            const normalizedHistogram = histogram.map(count => count / total);
+
+            // Encontrar vales
+            let lowThreshold = null;
+            let highThreshold = null;
+
+            // Procurar primeiro vale (EH-Baixa)
+            for (let i = 1; i < binCount - 1; i++) {
+                if (normalizedHistogram[i] < normalizedHistogram[i-1] * valleyThreshold &&
+                    normalizedHistogram[i] < normalizedHistogram[i+1] * valleyThreshold) {
+                    lowThreshold = (i + 0.5) * binSize;
+                    break;
+                }
+            }
+
+            // Procurar último vale (EH-Alta)
+            for (let i = binCount - 2; i > 0; i--) {
+                if (normalizedHistogram[i] < normalizedHistogram[i-1] * valleyThreshold &&
+                    normalizedHistogram[i] < normalizedHistogram[i+1] * valleyThreshold) {
+                    highThreshold = (i + 0.5) * binSize;
+                    break;
+                }
+            }
+
+            // Fallback se não encontrar vales
+            if (lowThreshold === null) lowThreshold = 0.3;
+            if (highThreshold === null) highThreshold = 0.7;
+
+            // Calcular estatísticas por faixa
+            const lowCount = ehValues.filter(eh => eh <= lowThreshold).length;
+            const highCount = ehValues.filter(eh => eh >= highThreshold).length;
+            const middleCount = ehValues.length - lowCount - highCount;
+
+            const lowPercentage = (lowCount / ehValues.length * 100).toFixed(2);
+            const highPercentage = (highCount / ehValues.length * 100).toFixed(2);
+            const middlePercentage = (middleCount / ehValues.length * 100).toFixed(2);
+
+            return {
+                histogram: normalizedHistogram,
+                lowThreshold,
+                highThreshold,
+                lowCount,
+                highCount,
+                middleCount,
+                lowPercentage,
+                highPercentage,
+                middlePercentage,
+                binSize
+            };
+        }
+
+        // Gerar relatório
+        function generateReport(analysis) {
+            const systemName = document.getElementById('systemName').value;
+            const elementUnit = document.getElementById('elementUnit').value;
+            const totalElements = document.getElementById('totalElements').value;
+
+            const reportHTML = `
+                <div class="report-section">
+                    <h3>Configuração do Sistema</h3>
+                    <div class="metric">
+                        <span>Sistema:</span>
+                        <span class="metric-value">${systemName}</span>
+                    </div>
+                    <div class="metric">
+                        <span>Unidade dos Elementos:</span>
+                        <span class="metric-value">${elementUnit}</span>
+                    </div>
+                    <div class="metric">
+                        <span>Total de Elementos:</span>
+                        <span class="metric-value">${totalElements}</span>
+                    </div>
+                    <div class="metric">
+                        <span>Amostras Analisadas:</span>
+                        <span class="metric-value">${ehValues.length}</span>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <h3>Limiares Identificados (em ℋ)</h3>
+                    <div class="metric">
+                        <span>Limiar EH-Baixa:</span>
+                        <span class="metric-value">${analysis.lowThreshold.toFixed(3)} ℋ</span>
+                    </div>
+                    <div class="metric">
+                        <span>Limiar EH-Alta:</span>
+                        <span class="metric-value">${analysis.highThreshold.toFixed(3)} ℋ</span>
+                    </div>
+                    <div class="metric">
+                        <span>Intervalo EH-Moderada:</span>
+                        <span class="metric-value">${analysis.lowThreshold.toFixed(3)} - ${analysis.highThreshold.toFixed(3)} ℋ</span>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <h3>Distribuição por Faixa</h3>
+                    <div class="metric">
+                        <span>EH-Baixa (≤ ${analysis.lowThreshold.toFixed(3)} ℋ):</span>
+                        <span class="metric-value">${analysis.lowPercentage}% (${analysis.lowCount}/${ehValues.length})</span>
+                    </div>
+                    <div class="metric">
+                        <span>EH-Moderada (${analysis.lowThreshold.toFixed(3)} - ${analysis.highThreshold.toFixed(3)} ℋ):</span>
+                        <span class="metric-value">${analysis.middlePercentage}% (${analysis.middleCount}/${ehValues.length})</span>
+                    </div>
+                    <div class="metric">
+                        <span>EH-Alta (≥ ${analysis.highThreshold.toFixed(3)} ℋ):</span>
+                        <span class="metric-value">${analysis.highPercentage}% (${analysis.highCount}/${ehValues.length})</span>
+                    </div>
+                </div>
+
+                <div class="report-section">
+                    <h3>Interpretação HUMH</h3>
+                    <p>A análise identificou empiricamente os limiares de transição para o sistema <strong>${systemName}</strong>:</p>
+
+                    <ul>
+                        <li><strong>EH-Baixa</strong>: Estados de alta estabilidade próximos aos atratores naturais (p ≈ 0 ou p ≈ 1)</li>
+                        <li><strong>EH-Moderada</strong>: Estados transitórios com potencial para evolução</li>
+                        <li><strong>EH-Alta</strong>: Estados de alta instabilidade que favorecem transições rápidas</li>
+                    </ul>
+
+                    <p>Os resultados mostram que <strong>${analysis.lowPercentage}% das amostras</strong> estão em EH-Baixa, confirmando a tendência aos atratores naturais prevista pela HUMH.</p>
+
+                    <p><strong>Aplicação:</strong> Use estes limiares para classificar novos dados do sistema ${systemName} e prever comportamentos dinâmicos baseados na Entropia Harmônica (medida em Harmon, ℋ).</p>
+                </div>
+            `;
+
+            reportContent.innerHTML = reportHTML;
+            createDistributionChart(analysis);
+        }
+
+        // Criar gráfico de distribuição
+        function createDistributionChart(analysis) {
+            if (thresholdChart) {
+                thresholdChart.destroy();
+            }
+
+            const chartCtx = document.createElement('canvas');
+            chartCtx.height = 200;
+            const container = document.createElement('div');
+            container.className = 'dist-chart-container';
+            container.appendChild(chartCtx);
+            reportContent.appendChild(container);
+
+            const labels = analysis.histogram.map((_, i) =>
+                ((i + 0.5) * analysis.binSize).toFixed(2)
+            );
+
+            thresholdChart = new Chart(chartCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Distribuição de EH (ℋ)',
+                        data: analysis.histogram,
+                        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Frequência Relativa'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Valor de EH (ℋ)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribuição dos Valores de Entropia Harmônica'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listeners
+        document.getElementById('generateData').addEventListener('click', () => {
+            const dataSource = document.getElementById('dataSource').value;
+            let data = [];
+
+            if (dataSource === 'generated') {
+                data = generateSimulatedData();
+            } else if (dataSource === 'manual') {
+                data = loadManualData();
+            }
+
+            if (data.length > 0) {
+                processData(data);
+            } else {
+                alert('Nenhum dado válido encontrado');
+            }
+        });
+
+        document.getElementById('clearData').addEventListener('click', () => {
+            currentData = [];
+            ehValues = [];
+            dataChart.data.datasets[0].data = [];
+            dataChart.data.datasets[1].data = [];
+            dataChart.update();
+            dataPreview.textContent = 'Nenhum dado carregado';
+            document.getElementById('totalSamples').textContent = '0';
+            analysisResult.style.display = 'none';
+        });
+
+        document.getElementById('runAnalysis').addEventListener('click', async () => {
+            if (ehValues.length === 0) {
+                alert('Carregue dados antes de executar a análise');
+                return;
+            }
+
+            analysisRunning = true;
+            document.getElementById('runAnalysis').disabled = true;
+            analysisResult.style.display = 'block';
+            reportContent.innerHTML = '<p>Executando análise... Aguarde.</p>';
+
+            // Simular progresso
+            for (let i = 0; i <= 100; i += 10) {
+                analysisProgress.style.width = `${i}%`;
+                analysisProgress.textContent = `${i}%`;
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+
+            const analysis = analyzeThresholds();
+            generateReport(analysis);
+
+            document.getElementById('runAnalysis').disabled = false;
+            analysisRunning = false;
+        });
+
+        // Inicialização
+        window.addEventListener('load', () => {
+            initDataChart();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMH v1.5 - Análise de Dados (Prolific Filter + RT Conditional)</title>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js">
+    // ============================================
+    // VERSÃO 1.5 - HANDLER TOGGLE FILTRO
+    // ============================================
+    
+    function handleDataFilterChange() {
+        const checkbox = document.getElementById('includeTestes');
+        includeTestes = checkbox.checked;
+        
+        console.log('[HUMH][v1.5] Filter changed. Include testes:', includeTestes);
+        
+        // Reprocessar dados
+        if (processedDataAll && processedDataAll.length > 0) {
+            // Re-aplicar todos os filtros
+            let baseFiltered = processedDataAll.filter(d => !d.is_timeout && d.rt_ms > 0);
+            
+            let sourceFiltered;
+            if (includeTestes) {
+                sourceFiltered = baseFiltered;
+            } else {
+                sourceFiltered = baseFiltered.filter(d => isProlificData(d));
+            }
+            
+            // Reset stats
+            exclusionStats = {
+                total: sourceFiltered.length,
+                fast_incorrect_excluded: 0,
+                fast_correct_retained: 0,
+                slow_excluded: 0,
+                prolific_only: baseFiltered.filter(d => isProlificData(d)).length,
+                testes_only: 0
+            };
+            exclusionStats.testes_only = baseFiltered.length - exclusionStats.prolific_only;
+            
+            processedData = sourceFiltered.filter(d => {
+                const isMain = (d.fase === 'main' || d.phase === 'main');
+                if (!isMain) return true;
+                
+                if (d.rt_ms < 300 && !d.correct) {
+                    exclusionStats.fast_incorrect_excluded++;
+                    return false;
+                }
+                if (d.rt_ms < 300 && d.correct) {
+                    exclusionStats.fast_correct_retained++;
+                    return true;
+                }
+                if (d.rt_ms > 10000) {
+                    exclusionStats.slow_excluded++;
+                    return false;
+                }
+                return true;
+            });
+            
+            console.log('[HUMH][v1.5] Data reprocessed. New count:', processedData.length);
+            
+            // Atualizar UI
+            updateFilterStats();
+            
+            // Re-gerar análises
+            if (typeof generateAllAnalyses === 'function') {
+                generateAllAnalyses();
+            } else {
+                // Fallback: recarregar dados
+                if (typeof loadFromAPI === 'function') loadFromAPI();
+            }
+        }
+    }
+    
+    function updateFilterStats() {
+        const filterStats = document.getElementById('filterStats');
+        if (!filterStats) return;
+        
+        const mode = includeTestes ? 'TODOS' : 'PROLIFIC ONLY';
+        const participants = new Set(processedData.map(d => d.session_id)).size;
+        const modeColor = includeTestes ? '#ff9800' : '#4caf50';
+        
+        filterStats.innerHTML = `
+            <strong style="color: ${modeColor};">${mode}</strong> | 
+            ${participants} participantes | 
+            ${processedData.length} trials | 
+            <span style="color: #f44336;">❌${exclusionStats.fast_incorrect_excluded}</span> | 
+            <span style="color: #4caf50;">✅${exclusionStats.fast_correct_retained}</span>
+        `;
+    }
+    
+
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstat/1.9.5/jstat.min.js">
+    // ============================================
+    // VERSÃO 1.5 - HANDLER TOGGLE FILTRO
+    // ============================================
+    
+    function handleDataFilterChange() {
+        const checkbox = document.getElementById('includeTestes');
+        includeTestes = checkbox.checked;
+        
+        console.log('[HUMH][v1.5] Filter changed. Include testes:', includeTestes);
+        
+        // Reprocessar dados
+        if (processedDataAll && processedDataAll.length > 0) {
+            // Re-aplicar todos os filtros
+            let baseFiltered = processedDataAll.filter(d => !d.is_timeout && d.rt_ms > 0);
+            
+            let sourceFiltered;
+            if (includeTestes) {
+                sourceFiltered = baseFiltered;
+            } else {
+                sourceFiltered = baseFiltered.filter(d => isProlificData(d));
+            }
+            
+            // Reset stats
+            exclusionStats = {
+                total: sourceFiltered.length,
+                fast_incorrect_excluded: 0,
+                fast_correct_retained: 0,
+                slow_excluded: 0,
+                prolific_only: baseFiltered.filter(d => isProlificData(d)).length,
+                testes_only: 0
+            };
+            exclusionStats.testes_only = baseFiltered.length - exclusionStats.prolific_only;
+            
+            processedData = sourceFiltered.filter(d => {
+                const isMain = (d.fase === 'main' || d.phase === 'main');
+                if (!isMain) return true;
+                
+                if (d.rt_ms < 300 && !d.correct) {
+                    exclusionStats.fast_incorrect_excluded++;
+                    return false;
+                }
+                if (d.rt_ms < 300 && d.correct) {
+                    exclusionStats.fast_correct_retained++;
+                    return true;
+                }
+                if (d.rt_ms > 10000) {
+                    exclusionStats.slow_excluded++;
+                    return false;
+                }
+                return true;
+            });
+            
+            console.log('[HUMH][v1.5] Data reprocessed. New count:', processedData.length);
+            
+            // Atualizar UI
+            updateFilterStats();
+            
+            // Re-gerar análises
+            if (typeof generateAllAnalyses === 'function') {
+                generateAllAnalyses();
+            } else {
+                // Fallback: recarregar dados
+                if (typeof loadFromAPI === 'function') loadFromAPI();
+            }
+        }
+    }
+    
+    function updateFilterStats() {
+        const filterStats = document.getElementById('filterStats');
+        if (!filterStats) return;
+        
+        const mode = includeTestes ? 'TODOS' : 'PROLIFIC ONLY';
+        const participants = new Set(processedData.map(d => d.session_id)).size;
+        const modeColor = includeTestes ? '#ff9800' : '#4caf50';
+        
+        filterStats.innerHTML = `
+            <strong style="color: ${modeColor};">${mode}</strong> | 
+            ${participants} participantes | 
+            ${processedData.length} trials | 
+            <span style="color: #f44336;">❌${exclusionStats.fast_incorrect_excluded}</span> | 
+            <span style="color: #4caf50;">✅${exclusionStats.fast_correct_retained}</span>
+        `;
+    }
+    
+
+</script>
+    <style>
+        :root {
+            --primary: #2196f3;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --bg: #fafafa;
+            --card: #ffffff;
+            --border: #e0e0e0;
+            --text: #222;
+            --muted: #666;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+            header h1 {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+
+            header .meta {
+                font-size: 13px;
+                color: #aaa;
+            }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+            .card h2 {
+                font-size: 20px;
+                margin-bottom: 16px;
+                color: #111;
+                border-bottom: 2px solid var(--primary);
+                padding-bottom: 8px;
+            }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-right: 8px;
+        }
+
+            .btn:hover {
+                background: #1976d2;
+            }
+
+            .btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+            }
+
+            .btn.secondary {
+                background: #666;
+            }
+
+                .btn.secondary:hover {
+                    background: #555;
+                }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+            .upload-area:hover {
+                border-color: var(--primary);
+                background: #f0f8ff;
+            }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .stat-box {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .result-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success);
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 8px;
+        }
+
+            .result-box.warning {
+                background: #fff3e0;
+                border-left-color: var(--warning);
+            }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .plot {
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #555;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .formula {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 12px 0;
+            border-left: 3px solid var(--primary);
+            font-size: 13px;
+        }
+
+        .error-box {
+            background: #ffebee;
+            border: 1px solid #ef5350;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            color: #c62828;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Banner v1.5 NOMENCLATURA -->
+    <div style="background: #fff3cd; border-bottom: 2px solid #ffc107; padding: 12px 20px; text-align: center; font-size: 14px;">
+        <strong>📋 HUMH v1.5 NOMENCLATURA:</strong> 
+        H1 (EH→RT) | H2 (β>0) + H3 (α<0) testados juntos | E1 (Feedback) | E2 (Acurácia) | 
+        <span style="color: #856404;">⏸️ H4, H5, H6: Implementação futura</span>
+    </div>
+
+    <header>
+        <h1>HUMH v1.0 - Análise de Dados <span style="background: #4caf50; color: white; padding: 4px 12px; border-radius: 6px; font-size: 14px; margin-left: 12px;">✓ VERSÃO CORRIGIDA</span></h1>
+        <div class="meta">Experimento: 2 Grupos (FV vs SF) | N=70 | 49 Trials</div>
+        <div class="meta">ORCID: <a href="https://orcid.org/0009-0000-5591-3577" style="color: #fff;">0009-0000-5591-3577</a> | OSF: <a href="https://osf.io/s79zj/" style="color: #fff;">s79zj</a></div>
+    </header>
+
+    <div class="container">
+        <!-- Controles -->
+        
+    <!-- VERSÃO 1.5: Filtro Prolific vs All Data -->
+    <div class="card">
+        <h2>🔍 Filtro de Dados (v1.5)</h2>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="includeTestes" 
+                       onchange="handleDataFilterChange()" 
+                       style="width: 18px; height: 18px; cursor: pointer;">
+                <span style="font-weight: 500;">Incluir dados de teste (não-Prolific)</span>
+            </label>
+            <div id="filterStats" style="margin-left: auto; font-size: 13px; color: #666;">
+                <!-- Atualizado dinamicamente -->
+            </div>
+        </div>
+        <p style="margin-top: 12px; font-size: 13px; color: #666;">
+            <strong>Default:</strong> Apenas dados Prolific (análise oficial pré-registro)<br>
+            <strong>Com checkbox:</strong> Todos os dados (Prolific + testes manuais para debugging)
+        </p>
+    </div>
+
+        <div class="card">
+            <h2>🎯 Fonte de Dados</h2>
+            <div style="padding: 12px; background: #e3f2fd; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #2196f3;">
+                <strong>🔄 Carregamento Automático:</strong> Os dados são carregados automaticamente do backend ao abrir esta página.
+            </div>
+            <div class="actions">
+                <button class="btn" onclick="loadFromBackend()">🔄 Recarregar do Backend</button>
+                <button class="btn secondary" onclick="toggleUpload()">📁 Upload Manual (CSV)</button>
+                <button class="btn secondary" onclick="exportResults()" id="exportBtn" disabled>💾 Exportar Resultados</button>
+            </div>
+
+            <div class="upload-area hidden" id="uploadArea">
+                <p style="font-size: 18px; margin-bottom: 12px;">🎯 Arraste o CSV aqui ou clique para selecionar</p>
+                <p style="color: var(--muted); font-size: 14px;">Formato esperado: dados exportados do backend HUMH</p>
+                <input type="file" id="fileInput" accept=".csv">
+                <button class="btn" style="margin-top: 16px;" onclick="document.getElementById('fileInput').click()">
+                    Selecionar Arquivo
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="card" id="loadingCard">
+            <div class="loading">
+                <p style="font-size: 18px;">⏳ Carregando dados do backend...</p>
+                <p style="font-size: 14px; color: var(--muted); margin-top: 8px;">Aguarde enquanto buscamos os dados do experimento</p>
+            </div>
+        </div>
+
+        <!-- Resumo Geral -->
+        <div class="card hidden" id="summaryCard">
+            <h2>📊 Resumo Geral</h2>
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
+        <!-- H1: Efeito de Entropia Harmônica -->
+        <div class="card hidden" id="h1Card">
+            <h2>H1: Efeito de Entropia Harmônica no RT (Confirmatória)</h2>
+
+            <div class="formula">
+                <strong>Hipótese:</strong> RT(EH_Alto) &gt; RT(EH_Baixo)<br>
+                <strong>Predição:</strong> Cohen's d ≥ 0.40<br>
+                <strong>Grupo:</strong> SF (sem feedback = HUMH pura)
+            </div>
+
+            <div id="h1Plot" class="plot"></div>
+            <div id="h1Results"></div>
+        </div>
+
+        <!-- E1: Feedback Acelera Aprendizado -->
+        <div class="card hidden" id="h2aCard">
+            <h2>E1: Feedback Acelera Aprendizado (Exploratória)</h2>
+
+            <div class="formula">
+                <strong>Hipótese:</strong> slope_RT(FV) &lt; slope_RT(SF) &lt; 0<br>
+                <strong>Predição:</strong> Cohen's d ≥ 0.35
+            </div>
+
+            <div id="e1Plot" class="plot"></div>
+            <div id="e1Results"></div>
+        </div>
+
+        <!-- E2: Acurácia Final -->
+        <div class="card hidden" id="h2bCard">
+            <h2>E2: Acurácia Final (Exploratória)</h2>
+
+            <div class="formula">
+                <strong>Hipótese:</strong> Accuracy(FV, trials &gt; 20) &gt; Accuracy(SF, trials &gt; 20)<br>
+                <strong>Predição:</strong> Diferença ≥ 5% pontos | Cohen's d ≥ 0.30
+            </div>
+
+            <div id="e2Plot" class="plot"></div>
+            <div id="e2Results"></div>
+        </div>
+
+        <!-- H3: Compressão Simbólica com Memória Operacional Limitada -->
+        <div class="card hidden" id="h3Card">
+            <h2>H3: Compressão Simbólica com Memória Operacional Limitada (Confirmatória)</h2>
+
+            <div class="formula">
+                <strong>Modelo:</strong> ΔRT = α + β × lag<br>
+                <strong>H3a:</strong> α &lt; 0 (compressão existe)<br>
+                <strong>H3b:</strong> β &gt; 0 (memória decai)<br>
+                <strong>Magnitude de β:</strong> Descoberta empírica<br>
+                <strong>Contraste:</strong> Val. 6 (computacional) β ≈ 0; Humano β &gt; 0
+            </div>
+
+            <div id="h3Plot" class="plot"></div>
+            <div id="h3Results"></div>
+        </div>
+
+        <!-- Dados Brutos -->
+        <div class="card hidden" id="dataCard">
+            <h2>📋 Dados Brutos</h2>
+            <p style="color: var(--muted); margin-bottom: 16px;">Primeiras 100 linhas</p>
+            <div style="overflow-x: auto;">
+                <table id="dataTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+let rawData = [];
+    let processedData = [];
+
+    // ============================================
+    // VERSÃO 1.5 - VARIÁVEIS GLOBAIS
+    // ============================================
+    
+    let includeTestes = false; // Default: apenas Prolific
+    let exclusionStats = {
+        total: 0,
+        fast_incorrect_excluded: 0,
+        fast_correct_retained: 0,
+        slow_excluded: 0,
+        prolific_only: 0,
+        testes_only: 0
+    };
+    
+    // Função helper: detectar se é dado Prolific
+    // COERENTE COM DASHBOARD: usa mesma lógica
+    function isProlificData(d) {
+        // Método 1: Campo source explícito
+        if (d.source === 'prolific') return true;
+        
+        // Método 2: Prefixo em session_id ou participant_id  
+        if (d.session_id && d.session_id.startsWith('prolific_')) return true;
+        if (d.participant_id && d.participant_id.startsWith('prolific_')) return true;
+        
+        // Método 3: Padrão de ID do Prolific (24 hex chars - MongoDB ObjectId)
+        if (d.session_id && /^[0-9a-f]{24}$/i.test(d.session_id)) return true;
+        if (d.participant_id && /^[0-9a-f]{24}$/i.test(d.participant_id)) return true;
+        
+        // Default: assumir como teste
+        return false;
+    }
+    
+
+    let processedDataAll = [];
+    const API_BASE = window.location.origin;
+
+    // ==================== CARREGAR DO BACKEND ====================
+    async function loadFromBackend() {
+        try {
+            // Mostrar loading
+            document.getElementById('loadingCard').classList.remove('hidden');
+
+            // Esconder resultados anteriores se existirem
+            document.getElementById('summaryCard').classList.add('hidden');
+            document.getElementById('h1Card').classList.add('hidden');
+            document.getElementById('h2aCard').classList.add('hidden');
+            document.getElementById('h2bCard').classList.add('hidden');
+            document.getElementById('h3Card').classList.add('hidden');
+            document.getElementById('dataCard').classList.add('hidden');
+
+            const response = await fetch(`${API_BASE}/api/export/csv`);
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const csv = await response.text();
+
+            if (!csv || csv.trim().length === 0) {
+                throw new Error('Nenhum dado encontrado no backend');
+            }
+
+            // Verificar se há apenas header (1 linha)
+            const lines = csv.trim().split('\n');
+            if (lines.length <= 1) {
+                throw new Error('Nenhum dado válido encontrado. Verifique se há dados na fase "main" sem timeout.');
+            }
+
+            parseCSV(csv);
+
+        } catch (error) {
+            document.getElementById('loadingCard').classList.add('hidden');
+
+            // Mostrar mensagem de erro mais amigável
+            const errorMsg = `
+                <div class="card">
+                    <div class="error-box">
+                        <strong>⚠️ Erro ao carregar dados do backend</strong>
+                        <p style="margin-top: 8px;">${error.message}</p>
+                        <p style="margin-top: 8px;">Possíveis causas:</p>
+                        <ul style="margin-left: 20px; margin-top: 4px;">
+                            <li>Backend não está rodando</li>
+                            <li>Nenhum dado coletado ainda</li>
+                            <li>Problema de rede/CORS</li>
+                        </ul>
+                        <p style="margin-top: 12px;">
+                            <strong>Solução:</strong> Clique em "📁 Upload Manual (CSV)" e carregue um arquivo de dados.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector('.container').insertAdjacentHTML('afterbegin', errorMsg);
+
+            console.error('Erro ao carregar do backend:', error);
+        }
+    }
+
+    // ==================== TOGGLE UPLOAD ====================
+    function toggleUpload() {
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.classList.toggle('hidden');
+    }
+
+    // ==================== UPLOAD MANUAL ====================
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) processFile(file);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) processFile(file);
+    });
+
+    function processFile(file) {
+        uploadArea.classList.add('hidden');
+        document.getElementById('loadingCard').classList.remove('hidden');
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const csv = e.target.result;
+            parseCSV(csv);
+        };
+        reader.readAsText(file);
+    }
+
+    // ==================== PARSING CSV ====================
+    function splitCSVLine(str) {
+        const out = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < str.length; i++) {
+            const ch = str[i];
+            if (ch === '"') {
+                if (inQuotes && str[i + 1] === '"') {
+                    cur += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (ch === ',' && !inQuotes) {
+                out.push(cur);
+                cur = '';
+            } else {
+                cur += ch;
+            }
+        }
+        out.push(cur);
+        return out.map(s => s.trim());
+    }
+
+    function parseCSV(csv) {
+        const lines = csv.trim().split('\n').filter(l => l.trim().length);
+        if (!lines.length) return;
+
+        const headers = splitCSVLine(lines[0]);
+
+        rawData = lines.slice(1).map(line => {
+            const values = splitCSVLine(line);
+            const row = {};
+            headers.forEach((h, i) => {
+                row[h] = (i < values.length ? values[i] : '') || null;
+            });
+            return row;
+        });
+
+        processData();
+        renderAll();
+    }
+    function processData() {
+        processedDataAll = rawData.map(row => {
+            const p = parseFloat(row.p_level);
+            const eh = 1 - Math.abs(2 * p - 1);
+            const ehLevel = eh > 0.80 ? 'Alto' : 'Baixo';
+
+            return {
+                ...row,
+                trial: row.trial ? parseInt(row.trial) : null,
+                rt_ms: row.rt_ms ? parseInt(row.rt_ms) : 0,
+                correct: row.correct === '1' || row.correct === 'true' || row.correct === 1,
+                is_timeout: row.is_timeout === '1' || row.is_timeout === 'true' || row.is_timeout === 1,
+                is_attention_check: row.is_attention_check === '1' || row.is_attention_check === 'true' || row.is_attention_check === 1,
+                p_level: p,
+            eh,
+            ehLevel,
+            grupo: row.group || row.grupo || null,
+            phase: row.phase || null,
+            pair_id: row.pair_id,
+            pair_lag: row.pair_lag ? parseInt(row.pair_lag) : null,
+            timestamp: row.timestamp || null
+            };
+        });
+
+    // ============================================
+    // VERSÃO 1.5 - FILTRAGEM CONDICIONAL
+    // ============================================
+    
+    // ETAPA 1: Filtro básico (remove timeouts e RT inválidos)
+    let baseFiltered = processedDataAll.filter(d => !d.is_timeout && d.rt_ms > 0);
+    
+    // ETAPA 2: Filtro Prolific vs All Data
+    let sourceFiltered;
+    if (includeTestes) {
+        // Incluir TODOS os dados
+        sourceFiltered = baseFiltered;
+        console.log('[HUMH][v1.5] Modo: ALL DATA (Prolific + Testes)');
+    } else {
+        // Apenas Prolific (DEFAULT)
+        sourceFiltered = baseFiltered.filter(d => isProlificData(d));
+        console.log('[HUMH][v1.5] Modo: PROLIFIC ONLY (Default)');
+    }
+    
+    // ETAPA 3: Exclusão Condicional RT < 300ms
+    // Reset stats
+    exclusionStats = {
+        total: sourceFiltered.length,
+        fast_incorrect_excluded: 0,
+        fast_correct_retained: 0,
+        slow_excluded: 0,
+        prolific_only: baseFiltered.filter(d => isProlificData(d)).length,
+        testes_only: 0
+    };
+    exclusionStats.testes_only = baseFiltered.length - exclusionStats.prolific_only;
+    
+    processedData = sourceFiltered.filter(d => {
+        // Aplicar apenas à fase main (coerente com dashboard)
+        const isMain = (d.fase === 'main' || d.phase === 'main');
+        if (!isMain) return true;
+        
+        // EXCLUIR: RT < 300ms E incorreto (antecipação)
+        // COERENTE COM DASHBOARD: mesma lógica
+        if (d.rt_ms < 300 && !d.correct) {
+            exclusionStats.fast_incorrect_excluded++;
+            console.log(`[v1.5] ❌ Excluded trial ${d.trial}: RT=${d.rt_ms}ms, INCORRECT (anticipation)`);
+            return false;
+        }
+        
+        // RETER: RT < 300ms mas correto (compressão forte)
+        // COERENTE COM DASHBOARD: mesma lógica
+        if (d.rt_ms < 300 && d.correct) {
+            exclusionStats.fast_correct_retained++;
+            console.log(`[v1.5] ✅ Retained trial ${d.trial}: RT=${d.rt_ms}ms, CORRECT (compression)`);
+            return true;
+        }
+        
+        // EXCLUIR: RT > 10,000ms (disengagement)
+        // COERENTE COM DASHBOARD: mesma lógica
+        if (d.rt_ms > 10000) {
+            exclusionStats.slow_excluded++;
+            console.log(`[v1.5] ⏱️ Excluded trial ${d.trial}: RT=${d.rt_ms}ms, TOO SLOW`);
+            return false;
+        }
+        
+        // Manter todos os outros
+        return true;
+    });
+    
+    console.log('[HUMH][v1.5] ========== FILTRO DE DADOS ==========');
+    console.log('[HUMH][v1.5] Base (após timeouts):', baseFiltered.length);
+    console.log('[HUMH][v1.5] Prolific only:', exclusionStats.prolific_only);
+    console.log('[HUMH][v1.5] Testes only:', exclusionStats.testes_only);
+    console.log('[HUMH][v1.5] Source filtered:', sourceFiltered.length);
+    console.log('[HUMH][v1.5] ===== EXCLUSÃO RT < 300ms =====');
+    console.log('[HUMH][v1.5] Fast INCORRECT (excluded):', exclusionStats.fast_incorrect_excluded);
+    console.log('[HUMH][v1.5] Fast CORRECT (retained):', exclusionStats.fast_correct_retained);
+    console.log('[HUMH][v1.5] Slow > 10s (excluded):', exclusionStats.slow_excluded);
+    console.log('[HUMH][v1.5] FINAL processed data:', processedData.length);
+    console.log('[HUMH][v1.5] =====================================');
+    
+    // Atualizar UI de stats
+    if (typeof updateFilterStats === 'function') {
+        updateFilterStats();
+    }
+    console.log('[HUMH][dados] totais:', processedDataAll.length, 'válidos:', processedData.length);
+}function renderAll() {
+        if (processedData.length === 0) {
+            alert('Nenhum dado válido encontrado. Verifique se há dados na fase "main" sem timeout.');
+            return;
+        }
+
+
+        renderSummary();
+        testH1();
+        testE1();
+        testE2();
+        testH3();
+        renderDataTable();
+
+        document.getElementById('summaryCard').classList.remove('hidden');
+        document.getElementById('h1Card').classList.remove('hidden');
+        document.getElementById('h2aCard').classList.remove('hidden');
+        document.getElementById('h2bCard').classList.remove('hidden');
+        document.getElementById('h3Card').classList.remove('hidden');
+        document.getElementById('dataCard').classList.remove('hidden');
+    }
+
+    function renderSummary() {
+        const n = new Set(processedData.map(d => d.session_id)).size;
+        const nFV = new Set(processedData.filter(d => d.grupo === 'FV').map(d => d.session_id)).size;
+        const nSF = new Set(processedData.filter(d => d.grupo === 'SF').map(d => d.session_id)).size;
+        const totalTrials = processedData.length;
+        const avgRT = mean(processedData.map(d => d.rt_ms));
+        const avgAcc = mean(processedData.map(d => d.correct ? 1 : 0)) * 100;
+
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-box">
+                <div class="stat-label">Participantes Total</div>
+                <div class="stat-value">${n}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Grupo FV</div>
+                <div class="stat-value">${nFV}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Grupo SF</div>
+                <div class="stat-value">${nSF}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Trials Total</div>
+                <div class="stat-value">${totalTrials}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">RT Médio (ms)</div>
+                <div class="stat-value">${avgRT.toFixed(0)}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Acurácia Média (%)</div>
+                <div class="stat-value">${avgAcc.toFixed(1)}</div>
+            </div>
+        `;
+    }
+
+    // ==================== TESTES H1, H2a, H2b, H3 ====================
+    // (Código idêntico ao anterior - mantendo as mesmas funções)
+
+    function testH1() {
+        // H1: Apenas fase main, sem attention checks, grupo SF
+        const sfData = processedData.filter(d => 
+            d.grupo === 'SF' && 
+            d.phase === 'main' && 
+            !d.is_attention_check
+        );
+
+        if (sfData.length === 0) {
+            document.getElementById('h1Results').innerHTML = `
+                <div class="error-box">⚠️ Nenhum dado do grupo SF encontrado para análise H1</div>
+            `;
+            return;
+        }
+
+        const ehAlto = sfData.filter(d => d.ehLevel === 'Alto').map(d => d.rt_ms);
+        const ehBaixo = sfData.filter(d => d.ehLevel === 'Baixo').map(d => d.rt_ms);
+
+        const meanAlto = mean(ehAlto);
+        const meanBaixo = mean(ehBaixo);
+        const sdAlto = std(ehAlto);
+        const sdBaixo = std(ehBaixo);
+
+        const d = cohensD(ehAlto, ehBaixo);
+        const ttest = tTest(ehAlto, ehBaixo);
+
+        Plotly.newPlot('h1Plot', [
+            { y: ehBaixo, type: 'box', name: 'EH Baixo', marker: { color: '#5B9BD5' }},
+            { y: ehAlto, type: 'box', name: 'EH Alto', marker: { color: '#FF9F43' }}
+        ], {
+            title: 'RT por Nível de Entropia Harmônica (Grupo SF)',
+            yaxis: { title: 'RT (ms)' },
+            height: 400
+        });
+
+        const passed = d >= 0.40 && ttest.p < 0.05;
+        document.getElementById('h1Results').innerHTML = `
+            <div class="result-box ${passed ? '' : 'warning'}">
+                <div class="result-title">Resultados H1</div>
+                <p><strong>RT(EH_Alto):</strong> ${meanAlto.toFixed(2)} ms (SD = ${sdAlto.toFixed(2)}, N = ${ehAlto.length})</p>
+                <p><strong>RT(EH_Baixo):</strong> ${meanBaixo.toFixed(2)} ms (SD = ${sdBaixo.toFixed(2)}, N = ${ehBaixo.length})</p>
+                <p><strong>Diferença:</strong> ${(meanAlto - meanBaixo).toFixed(2)} ms</p>
+                <p><strong>Cohen's d:</strong> ${d.toFixed(3)} ${d >= 0.40 ? '✓' : '✗'}</p>
+                <p><strong>t(${ttest.df}):</strong> ${ttest.t.toFixed(3)}, <strong>p:</strong> ${ttest.p.toFixed(4)} ${ttest.p < 0.05 ? '✓' : '✗'}</p>
+                <p class="result-title" style="margin-top: 12px;">
+                    ${passed ? '✅ H1 CONFIRMADA' : '⚠️ H1 NÃO CONFIRMADA'}
+                </p>
+            </div>
+        `;
+    }
+
+    function testE1() {
+        // E1 (Exploratória): Efeito de Feedback ao longo do tempo, sem attention checks
+        const fvData = processedData.filter(d => 
+            d.grupo === 'FV' && 
+            d.phase === 'main' && 
+            !d.is_attention_check
+        );
+        const sfData = processedData.filter(d => 
+            d.grupo === 'SF' && 
+            d.phase === 'main' && 
+            !d.is_attention_check
+        );
+
+        const fvByTrial = groupBy(fvData, 'trial');
+        const sfByTrial = groupBy(sfData, 'trial');
+
+        const trialsFV = Object.keys(fvByTrial).map(Number).sort((a, b) => a - b);
+        const trialsSF = Object.keys(sfByTrial).map(Number).sort((a, b) => a - b);
+
+        const rtFV = trialsFV.map(t => mean(fvByTrial[t].map(d => d.rt_ms)));
+        const rtSF = trialsSF.map(t => mean(sfByTrial[t].map(d => d.rt_ms)));
+
+        const slopeFV = linearRegression(trialsFV, rtFV).slope;
+        const slopeSF = linearRegression(trialsSF, rtSF).slope;
+
+        Plotly.newPlot('h2aPlot', [
+            { x: trialsFV, y: rtFV, mode: 'lines+markers', name: 'FV (Feedback)', line: { color: '#5B9BD5', width: 2 }},
+            { x: trialsSF, y: rtSF, mode: 'lines+markers', name: 'SF (Sem Feedback)', line: { color: '#FF9F43', width: 2 }}
+        ], {
+            title: 'RT Médio ao Longo dos Trials',
+            xaxis: { title: 'Trial' },
+            yaxis: { title: 'RT (ms)' },
+            height: 400
+        });
+
+        const passed = slopeFV < slopeSF && slopeSF < 0;
+        document.getElementById('h2aResults').innerHTML = `
+            <div class="result-box ${passed ? '' : 'warning'}">
+                <div class="result-title">Resultados H2a</div>
+                <p><strong>Slope FV:</strong> ${slopeFV.toFixed(3)} ms/trial</p>
+                <p><strong>Slope SF:</strong> ${slopeSF.toFixed(3)} ms/trial</p>
+                <p><strong>Diferença:</strong> ${(slopeFV - slopeSF).toFixed(3)} ms/trial</p>
+                <p class="result-title" style="margin-top: 12px;">
+                    ${passed ? '✅ H2a SUPORTADA' : '⚠️ H2a NÃO SUPORTADA'}
+                </p>
+                <p style="font-size: 13px; color: var(--muted); margin-top: 8px;">
+                    Nota: H2a é exploratória. Análise completa requer modelo misto (lmer).
+                </p>
+            </div>
+        `;
+    }
+
+    function testE2() {
+        // E2 (Exploratória): Diferença de acurácia final entre grupos da fase main (trial > 29 = trial 13 da fase main em diante)
+        // Fase main começa no trial 13 (após 8 calibração + 4 treino)
+        const finalTrials = processedData.filter(d => 
+            d.phase === 'main' && 
+            d.trial > 29 && 
+            !d.is_attention_check
+        );
+        const fvFinal = finalTrials.filter(d => d.grupo === 'FV');
+        const sfFinal = finalTrials.filter(d => d.grupo === 'SF');
+
+        const accFV = mean(fvFinal.map(d => d.correct ? 1 : 0)) * 100;
+        const accSF = mean(sfFinal.map(d => d.correct ? 1 : 0)) * 100;
+
+        const diff = accFV - accSF;
+        const d = cohensD(
+            fvFinal.map(d => d.correct ? 1 : 0),
+            sfFinal.map(d => d.correct ? 1 : 0)
+        );
+
+        Plotly.newPlot('h2bPlot', [{
+            x: ['FV', 'SF'],
+            y: [accFV, accSF],
+            type: 'bar',
+            marker: { color: ['#5B9BD5', '#FF9F43'] },
+            text: [accFV.toFixed(1) + '%', accSF.toFixed(1) + '%'],
+            textposition: 'auto'
+        }], {
+            title: 'Acurácia Final (Trials > 20)',
+            yaxis: { title: 'Acurácia (%)' },
+            height: 400
+        });
+
+        const passed = diff >= 5 && d >= 0.30;
+        document.getElementById('h2bResults').innerHTML = `
+            <div class="result-box ${passed ? '' : 'warning'}">
+                <div class="result-title">Resultados H2b</div>
+                <p><strong>Acurácia FV:</strong> ${accFV.toFixed(2)}% (N = ${fvFinal.length})</p>
+                <p><strong>Acurácia SF:</strong> ${accSF.toFixed(2)}% (N = ${sfFinal.length})</p>
+                <p><strong>Diferença:</strong> ${diff.toFixed(2)}% ${diff >= 5 ? '✓' : '✗'}</p>
+                <p><strong>Cohen's d:</strong> ${d.toFixed(3)} ${d >= 0.30 ? '✓' : '✗'}</p>
+                <p class="result-title" style="margin-top: 12px;">
+                    ${passed ? '✅ H2b SUPORTADA' : '⚠️ H2b NÃO SUPORTADA'}
+                </p>
+            </div>
+        `;
+    }
+
+    function testH3() {
+        // H3: Compressão Simbólica (Proxy do Loop Perceptivo)
+        // NOTA: Este teste também calcula β (H2: Observational Resistance)
+        // H2 (β > 0) e H3 (α < 0) são testados juntos no modelo: ΔRT = α + β × lag
+        // Modelo: ΔRT = α + β × lag
+        // H3a: α < 0 (compressão existe)
+        // H3b: β > 0 (memória decai)
+        // Magnitude de β: descoberta empírica
+        
+        const h3Results = document.getElementById('h3Results');
+        const h3Plot = document.getElementById('h3Plot');
+
+        const source = (typeof processedDataAll !== 'undefined' && processedDataAll.length)
+            ? processedDataAll.filter(d => d.phase === 'main' && !d.is_attention_check)
+            : processedData.filter(d => d.phase === 'main' && !d.is_attention_check);
+
+        const pairs = source.filter(d =>
+            d.pair_id &&
+        String(d.pair_id).trim() !== '' &&
+        d.pair_id !== 'null'
+        );
+
+    if (!pairs.length) {
+        h3Results.innerHTML = '<div class="error-box">⚠️ Nenhum par encontrado para análise H3.</div>';
+            return;
+        }
+
+        // Agrupar pares por session_id + pair_id
+    const groups = {};
+        pairs.forEach(trial => {
+        const base = String(trial.pair_id).replace(/_(1|2)$/, '');
+            const key = trial.session_id + '::' + base;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(trial);
+        });
+
+        // Preparar dados para regressão
+        const dataPoints = [];
+    const discarded = [];
+
+    Object.entries(groups).forEach(([key, arr]) => {
+        if (arr.length < 2) {
+            discarded.push({key, reason: 'apenas 1 membro'});
+            return;
+        }
+
+        arr.sort((a, b) => {
+            const ta = a.timestamp ? Date.parse(a.timestamp) : 0;
+                const tb = b.timestamp ? Date.parse(b.timestamp) : 0;
+                return ta - tb;
+            });
+
+        const t1 = arr[0];
+        const t2 = arr[1];
+        const rt1 = Number(t1.rt_ms) || 0;
+        const rt2 = Number(t2.rt_ms) || 0;
+        const lag = t1.pair_lag || t2.pair_lag;
+
+            // Validações
+            if (!lag || lag < 1 || lag > 10) {
+                discarded.push({key, reason: 'lag inválido: ' + lag});
+            return;
+        }
+        if (rt1 <= 0 || rt2 <= 0) {
+            discarded.push({key, reason: 'rt <= 0', rts: [rt1, rt2]});
+            return;
+        }
+        if (rt1 > 5000 || rt2 > 5000) {
+            discarded.push({key, reason: 'rt>5000', rts: [rt1, rt2]});
+            return;
+        }
+
+            // ΔRT = RT(2ª) - RT(1ª)  [negativo = facilitação]
+            const deltaRT = rt2 - rt1;
+            
+            dataPoints.push({
+                lag: lag,
+                deltaRT: deltaRT,
+                session: t1.session_id,
+                grupo: t1.grupo
+            });
+        });
+
+        console.log('[HUMH][H3] Pares descartados:', discarded);
+        console.log('[HUMH][H3] Pares válidos:', dataPoints.length);
+
+        if (dataPoints.length < 5) {
+            h3Results.innerHTML = '<div class="error-box">⚠️ Poucos pares válidos (N=' + dataPoints.length + '). Mínimo: 5</div>';
+            return;
+        }
+
+        // ===== REGRESSÃO LINEAR: ΔRT = α + β × lag =====
+        const x = dataPoints.map(d => d.lag);
+        const y = dataPoints.map(d => d.deltaRT);
+        
+        const n = x.length;
+        const meanX = mean(x);
+        const meanY = mean(y);
+        
+        // Calcular β (slope)
+        let sumXY = 0, sumXX = 0;
+        for (let i = 0; i < n; i++) {
+            sumXY += (x[i] - meanX) * (y[i] - meanY);
+            sumXX += (x[i] - meanX) ** 2;
+        }
+        const beta = sumXY / sumXX;
+        
+        // Calcular α (intercepto)
+        const alpha = meanY - beta * meanX;
+        
+        // Calcular R²
+        const yPred = x.map(xi => alpha + beta * xi);
+        const ssRes = y.reduce((sum, yi, i) => sum + (yi - yPred[i]) ** 2, 0);
+        const ssTot = y.reduce((sum, yi) => sum + (yi - meanY) ** 2, 0);
+        const r2 = 1 - (ssRes / ssTot);
+        
+        // Erro padrão de β
+        const seResidual = Math.sqrt(ssRes / (n - 2));
+        const seBeta = seResidual / Math.sqrt(sumXX);
+        const tBeta = beta / seBeta;
+        const pBeta = 2 * (1 - jStat.studentt.cdf(Math.abs(tBeta), n - 2));
+        
+        // Erro padrão de α
+        const seAlpha = seResidual * Math.sqrt(1/n + meanX**2 / sumXX);
+        const tAlpha = alpha / seAlpha;
+        const pAlpha = 2 * (1 - jStat.studentt.cdf(Math.abs(tAlpha), n - 2));
+        
+        // IC95% para β
+        const tCrit = jStat.studentt.inv(0.975, n - 2);
+        const betaCI_lower = beta - tCrit * seBeta;
+        const betaCI_upper = beta + tCrit * seBeta;
+        
+        // IC95% para α
+        const alphaCI_lower = alpha - tCrit * seAlpha;
+        const alphaCI_upper = alpha + tCrit * seAlpha;
+        
+        // ===== TESTES DE HIPÓTESE =====
+        
+        // H3a: α < 0 (one-tailed)
+        const pAlpha_oneTailed = pAlpha / 2;
+        const h3a_pass = (alpha < 0) && (pAlpha_oneTailed < 0.05);
+        
+        // H3b: β > 0 (one-tailed)
+        const pBeta_oneTailed = pBeta / 2;
+        const h3b_pass = (beta > 0) && (pBeta_oneTailed < 0.05);
+
+        // ===== PLOTAGEM =====
+        if (typeof Plotly !== 'undefined') {
+            const lagRange = [Math.min(...x), Math.max(...x)];
+            const predLine = lagRange.map(lag => alpha + beta * lag);
+            
+            Plotly.newPlot(h3Plot, [
+                {
+                    x: x,
+                    y: y,
+                    mode: 'markers',
+                    type: 'scatter',
+                    name: 'Dados',
+                    marker: {
+                        size: 8,
+                        color: dataPoints.map(d => d.grupo === 'FV' ? '#5B9BD5' : '#FF9F43'),
+                        opacity: 0.6
+                    },
+                    text: dataPoints.map(d => `${d.grupo} | lag=${d.lag} | ΔRT=${d.deltaRT.toFixed(0)}ms`)
+                },
+                {
+                    x: lagRange,
+                    y: predLine,
+                    mode: 'lines',
+                    type: 'scatter',
+                    name: `ΔRT = ${alpha.toFixed(0)} + ${beta.toFixed(0)}×lag`,
+                    line: { color: 'red', width: 2 }
+                },
+                {
+                    x: lagRange,
+                    y: [0, 0],
+                    mode: 'lines',
+                    type: 'scatter',
+                    name: 'Zero (sem efeito)',
+                    line: { color: 'gray', width: 1, dash: 'dash' },
+                    showlegend: false
+                }
+            ], {
+                title: 'H3: Decaimento do Efeito de Repetição',
+                xaxis: { title: 'Lag (trials entre 1ª e 2ª apresentação)' },
+                yaxis: { title: 'ΔRT = RT(2ª) - RT(1ª) [ms]<br><i>Valores negativos = facilitação</i>' },
+                height: 450,
+                hovermode: 'closest'
+            });
+        }
+
+        // ===== RESULTADOS =====
+        h3Results.innerHTML = `
+            <div class="result-box">
+                <div class="result-title">Resultados H3: Regressão ΔRT ~ lag</div>
+                
+                <p><strong>N pares:</strong> ${n}</p>
+                <p><strong>Modelo:</strong> ΔRT = α + β × lag</p>
+                
+                <hr style="margin: 16px 0; border: none; border-top: 1px solid #ddd;">
+                
+                <div style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">H3a: Compressão Simbólica (α < 0)</p>
+                    <p><strong>α (intercepto):</strong> ${alpha.toFixed(2)} ms</p>
+                    <p><strong>IC95%:</strong> [${alphaCI_lower.toFixed(2)}, ${alphaCI_upper.toFixed(2)}]</p>
+                    <p><strong>t(${n-2}):</strong> ${tAlpha.toFixed(3)} | <strong>p (one-tailed):</strong> ${pAlpha_oneTailed.toFixed(4)}</p>
+                    <p style="margin-top: 8px; font-weight: 600; color: ${h3a_pass ? 'green' : 'orange'};">
+                        ${h3a_pass ? '✅ H3a SUPORTADA' : '⚠️ H3a NÃO SUPORTADA'}
+                    </p>
+            </div>
+
+                <div style="background: #f5f5f5; padding: 12px; border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">H3b: Decaimento por Lag (β > 0)</p>
+                    <p><strong>β (slope):</strong> ${beta.toFixed(2)} ms/trial</p>
+                    <p><strong>IC95%:</strong> [${betaCI_lower.toFixed(2)}, ${betaCI_upper.toFixed(2)}]</p>
+                    <p><strong>t(${n-2}):</strong> ${tBeta.toFixed(3)} | <strong>p (one-tailed):</strong> ${pBeta_oneTailed.toFixed(4)}</p>
+                    <p style="margin-top: 8px; font-weight: 600; color: ${h3b_pass ? 'green' : 'orange'};">
+                        ${h3b_pass ? '✅ H3b SUPORTADA' : '⚠️ H3b NÃO SUPORTADA'}
+                    </p>
+                    <p style="font-size: 12px; color: #666; margin-top: 4px;">
+                        Magnitude de β: <strong>Descoberta empírica</strong> (não predição fixa)
+                    </p>
+                </div>
+                
+                <hr style="margin: 16px 0; border: none; border-top: 1px solid #ddd;">
+                
+                <p><strong>R²:</strong> ${r2.toFixed(3)} (${(r2*100).toFixed(1)}% da variância explicada)</p>
+                <p style="font-size: 13px; color: var(--muted); margin-top: 12px;">
+                    <strong>Interpretação:</strong><br>
+                    • lag=1: ΔRT = ${(alpha + beta * 1).toFixed(0)}ms<br>
+                    • lag=2: ΔRT = ${(alpha + beta * 2).toFixed(0)}ms<br>
+                    • lag=3: ΔRT = ${(alpha + beta * 3).toFixed(0)}ms<br>
+                    ${(alpha + beta * 3) > 0 ? '(Efeito anulado em lag≥3)' : '(Efeito persiste)'}
+                </p>
+                
+                <p style="font-size: 13px; color: var(--muted); margin-top: 12px;">
+                    <strong>Contraste:</strong> Validação 6 (computacional) β ≈ 0; Humano β > 0
+                </p>
+            </div>
+        `;
+    }
+
+    function renderDataTable() {
+        const table = document.getElementById('dataTable');
+        if (!table) return;
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+
+        const headers = Object.keys(processedData[0] || {});
+        thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+        const rows = processedData.slice(0, 100).map(row => {
+            return '<tr>' + headers.map(h => `<td>${row[h]}</td>`).join('') + '</tr>';
+        }).join('');
+
+        tbody.innerHTML = rows;
+    }
+
+    function exportResults() {
+        const results = {
+            timestamp: new Date().toISOString(),
+            summary: {
+                n_total: new Set(processedData.map(d => d.session_id)).size,
+                n_fv: new Set(processedData.filter(d => d.grupo === 'FV').map(d => d.session_id)).size,
+                n_sf: new Set(processedData.filter(d => d.grupo === 'SF').map(d => d.session_id)).size,
+                total_trials: processedData.length
+            },
+            h1: document.getElementById('h1Results').textContent,
+            h2a: document.getElementById('h2aResults').textContent,
+            h2b: document.getElementById('h2bResults').textContent,
+            h3: document.getElementById('h3Results').textContent
+        };
+
+        const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `humh_v1_resultados_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+    }
+
+    // ==================== FUNÇÕES ESTATÍSTICAS ====================
+    function mean(arr) {
+        return arr.reduce((a, b) => a + b, 0) / arr.length;
+    }
+
+    function std(arr) {
+        const m = mean(arr);
+        const variance = arr.reduce((sum, x) => sum + Math.pow(x - m, 2), 0) / (arr.length - 1);
+        return Math.sqrt(variance);
+    }
+
+    function cohensD(arr1, arr2) {
+        const m1 = mean(arr1);
+        const m2 = mean(arr2);
+        const sd1 = std(arr1);
+        const sd2 = std(arr2);
+        const pooledSD = Math.sqrt(((arr1.length - 1) * sd1 * sd1 + (arr2.length - 1) * sd2 * sd2) / (arr1.length + arr2.length - 2));
+        return (m1 - m2) / pooledSD;
+    }
+
+    function tTest(arr1, arr2) {
+        const m1 = mean(arr1);
+        const m2 = mean(arr2);
+        const s1 = std(arr1);
+        const s2 = std(arr2);
+        const n1 = arr1.length;
+        const n2 = arr2.length;
+
+        const se = Math.sqrt((s1 * s1 / n1) + (s2 * s2 / n2));
+        const t = (m1 - m2) / se;
+        const df = n1 + n2 - 2;
+
+        const p = 2 * (1 - jStat.studentt.cdf(Math.abs(t), df));
+
+        return { t, df, p };
+    }
+
+    function pairedTTest(arr1, arr2) {
+        const diff = arr1.map((v, i) => v - arr2[i]);
+        const m = mean(diff);
+        const s = std(diff);
+        const n = diff.length;
+        const se = s / Math.sqrt(n);
+        const t = m / se;
+        const df = n - 1;
+        const p = 2 * (1 - jStat.studentt.cdf(Math.abs(t), df));
+
+        return { t, df, p };
+    }
+
+    function linearRegression(x, y) {
+        const n = x.length;
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+
+        return { slope, intercept };
+    }
+
+    function groupBy(arr, key) {
+        return arr.reduce((groups, item) => {
+            const val = item[key];
+            groups[val] = groups[val] || [];
+            groups[val].push(item);
+            return groups;
+        }, {});
+    }
+
+    // ==================== INICIALIZAÇÃO AUTOMÁTICA ====================
+    // Carregar dados do backend automaticamente ao abrir a página
+    window.addEventListener('load', () => {
+        console.log('HUMH v1.0 - Análise de Dados iniciada');
+        console.log('Carregando dados do backend automaticamente...');
+        loadFromBackend();
+    });
+    // ============================================
+    // VERSÃO 1.5 - HANDLER TOGGLE FILTRO
+    // ============================================
+    
+    function handleDataFilterChange() {
+        const checkbox = document.getElementById('includeTestes');
+        includeTestes = checkbox.checked;
+        
+        console.log('[HUMH][v1.5] Filter changed. Include testes:', includeTestes);
+        
+        // Reprocessar dados
+        if (processedDataAll && processedDataAll.length > 0) {
+            // Re-aplicar todos os filtros
+            let baseFiltered = processedDataAll.filter(d => !d.is_timeout && d.rt_ms > 0);
+            
+            let sourceFiltered;
+            if (includeTestes) {
+                sourceFiltered = baseFiltered;
+            } else {
+                sourceFiltered = baseFiltered.filter(d => isProlificData(d));
+            }
+            
+            // Reset stats
+            exclusionStats = {
+                total: sourceFiltered.length,
+                fast_incorrect_excluded: 0,
+                fast_correct_retained: 0,
+                slow_excluded: 0,
+                prolific_only: baseFiltered.filter(d => isProlificData(d)).length,
+                testes_only: 0
+            };
+            exclusionStats.testes_only = baseFiltered.length - exclusionStats.prolific_only;
+            
+            processedData = sourceFiltered.filter(d => {
+                const isMain = (d.fase === 'main' || d.phase === 'main');
+                if (!isMain) return true;
+                
+                if (d.rt_ms < 300 && !d.correct) {
+                    exclusionStats.fast_incorrect_excluded++;
+                    return false;
+                }
+                if (d.rt_ms < 300 && d.correct) {
+                    exclusionStats.fast_correct_retained++;
+                    return true;
+                }
+                if (d.rt_ms > 10000) {
+                    exclusionStats.slow_excluded++;
+                    return false;
+                }
+                return true;
+            });
+            
+            console.log('[HUMH][v1.5] Data reprocessed. New count:', processedData.length);
+            
+            // Atualizar UI
+            updateFilterStats();
+            
+            // Re-gerar análises
+            if (typeof generateAllAnalyses === 'function') {
+                generateAllAnalyses();
+            } else {
+                // Fallback: recarregar dados
+                if (typeof loadFromAPI === 'function') loadFromAPI();
+            }
+        }
+    }
+    
+    function updateFilterStats() {
+        const filterStats = document.getElementById('filterStats');
+        if (!filterStats) return;
+        
+        const mode = includeTestes ? 'TODOS' : 'PROLIFIC ONLY';
+        const participants = new Set(processedData.map(d => d.session_id)).size;
+        const modeColor = includeTestes ? '#ff9800' : '#4caf50';
+        
+        filterStats.innerHTML = `
+            <strong style="color: ${modeColor};">${mode}</strong> | 
+            ${participants} participantes | 
+            ${processedData.length} trials | 
+            <span style="color: #f44336;">❌${exclusionStats.fast_incorrect_excluded}</span> | 
+            <span style="color: #4caf50;">✅${exclusionStats.fast_correct_retained}</span>
+        `;
+    }
+    
+
+</script>
+</body>
+</html>

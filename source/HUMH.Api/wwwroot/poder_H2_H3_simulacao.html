@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUMH – Análise de Poder H2/H3 (v1.0)</title>
+<meta name="version" content="1.0">
+<meta name="date" content="2026-07-26">
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px;
+         margin: 24px auto; padding: 0 16px; color: #222; }
+  h1 { font-size: 1.4em; } h2 { font-size: 1.15em; margin-top: 28px; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; background:#fafafa; }
+  label { display:inline-block; min-width: 210px; margin: 4px 0; }
+  input, select { width: 110px; padding: 3px 6px; }
+  button { padding: 8px 18px; font-size: 1em; cursor: pointer; border-radius: 6px;
+           border: 1px solid #888; background:#fff; }
+  button:hover { background:#eef; }
+  table { border-collapse: collapse; margin: 12px 0; width: 100%; }
+  th, td { border: 1px solid #ccc; padding: 5px 9px; text-align: right; font-size: 0.92em; }
+  th { background: #f0f0f0; }
+  td.ok { background: #e6f7e6; font-weight: 600; }
+  td.bad { background: #fdeaea; }
+  .note { font-size: 0.88em; color: #555; }
+  code { background:#f2f2f2; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>HUMH – Análise de Poder por Simulação: H2 (β&gt;0) e H3 (benefício de repetição)</h1>
+
+<div class="card">
+<strong>Modelo gerador (pré-registrável):</strong>
+<p class="note">
+Para cada participante i: β<sub>i</sub> ~ N(β, τ<sub>β</sub>²), α<sub>i</sub> ~ N(α, τ<sub>α</sub>²).
+Para cada par j: ΔRT<sub>ij</sub> = α<sub>i</sub> + β<sub>i</sub>·lag<sub>ij</sub> + ε<sub>ij</sub>,
+com ε ~ N(0, 2σ²<sub>resid</sub>) — o fator 2 vem de ΔRT = RT2 − RT1 subtrair dois ruídos independentes.
+Análise: OLS por participante (forma fechada com desenho fixo), depois t unicaudal da média dos coeficientes
+(two-stage summary statistics, idêntico ao pré-registro).
+<br><br>
+<strong>H2:</strong> média de β̂<sub>i</sub> &gt; 0.&nbsp;
+<strong>H3 (redefinida):</strong> benefício previsto no <em>lag=1</em>
+(α̂<sub>i</sub> + β̂<sub>i</sub>·1 &lt; 0) — sem extrapolação para lag=0, que infla a variância do intercepto.
+</p>
+</div>
+
+<div class="card">
+<h2 style="margin-top:0">Parâmetros</h2>
+<label>N participantes</label><input id="N" type="number" value="70"><br>
+<label>β real (ms/lag)</label><input id="beta" type="number" value="15"><br>
+<label>α real (ms, benefício)</label><input id="alpha" type="number" value="-60"><br>
+<label>σ residual do RT (ms)</label><input id="sigma" type="number" value="250"><br>
+<label>τ_β (heterog. de β)</label><input id="taub" type="number" value="15"><br>
+<label>τ_α (heterog. de α)</label><input id="taua" type="number" value="30"><br>
+<label>Desenho (lag:pares, ...)</label><input id="design" type="text" value="1:4, 2:4, 3:4" style="width:180px"><br>
+<label>Nº de simulações</label><input id="nsim" type="number" value="20000"><br>
+<label>α do teste (unicaudal)</label><input id="alphaT" type="number" value="0.05" step="0.01"><br><br>
+<button onclick="runSingle()">Rodar célula única</button>
+<button onclick="runGrid()">Rodar grade completa (β × σ × N)</button>
+<span id="status" class="note"></span>
+</div>
+
+<div id="out"></div>
+
+<div class="card">
+<h2 style="margin-top:0">Resultados de referência (rodados em 26/07/2026, 20.000 sims/célula, seed fixa)</h2>
+<p class="note"><strong>Desenho atual {1,2,3}×4, N=70:</strong> poder de H2 = 0.16 / 0.25 / 0.37 / 0.64
+para β = 10 / 15 / 20 / 30 ms·lag⁻¹ (σ=250). Erro tipo-I ≈ 0.05 (β=0). Conclusão: H2 é
+severamente subpotenciada no desenho atual — e aumentar N quase não resolve, porque a
+variância dominante é a do slope individual (Var(β̂)=2σ²/S<sub>xx</sub>, com S<sub>xx</sub>=8).</p>
+<p class="note"><strong>Alternativas (N=70, σ=250):</strong>
+{1,2,5}×4 (+7 fillers, 56 trials totais): H2 = 0.63 (β=15) / 0.85 (β=20); H3(lag=1) = 0.81.
+{1,2,4}×6 (+26 trials, ~75 totais): H2 = 0.57 / 0.78; H3(lag=1) = 0.90.
+Alargar o intervalo de lags multiplica S<sub>xx</sub> e vale mais que dobrar N.</p>
+</div>
+
+<script>
+"use strict";
+// PRNG determinístico (mulberry32) para reprodutibilidade
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+let rand = mulberry32(2026);
+function randn(){ // Box-Muller
+  let u=0,v=0; while(u===0)u=rand(); while(v===0)v=rand();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+// CDF t de Student via aprox. de Hill (suficiente p/ N≥30)
+function tCdf(t, df){
+  const x = df/(df+t*t);
+  // I_x(df/2, 1/2) via série; para df≥30 usar aprox normal com correção Cornish-Fisher simples
+  const z = t*(1-1/(4*df))/Math.sqrt(1+t*t/(2*df));
+  return 0.5*(1+erf(z/Math.SQRT2));
+}
+function erf(x){ // Abramowitz-Stegun 7.1.26
+  const s=x<0?-1:1; x=Math.abs(x);
+  const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;
+}
+
+function parseDesign(s){
+  const lc={};
+  s.split(",").forEach(p=>{const [l,n]=p.split(":").map(v=>parseFloat(v.trim()));lc[l]=n;});
+  return lc;
+}
+function designStats(lc){
+  const xs=[]; for(const [l,n] of Object.entries(lc)) for(let i=0;i<n;i++) xs.push(parseFloat(l));
+  const n=xs.length, xm=xs.reduce((a,b)=>a+b,0)/n;
+  const sxx=xs.reduce((a,x)=>a+(x-xm)*(x-xm),0);
+  return {n,xm,sxx,nPairs:n};
+}
+
+function powerCell(N,beta,alpha,sigma,taub,taua,lc,nsim,alphaT){
+  const {n,xm,sxx}=designStats(lc);
+  const sd2=2*sigma*sigma;
+  // Forma fechada: β̂_i ~ N(β_i, sd2/sxx); previsão em lag=1:
+  // (α̂+β̂·1) ~ N(α_i+β_i, sd2·(1/n + (1-xm)²/sxx))
+  const seB=Math.sqrt(taub*taub + sd2/sxx);
+  const seP=Math.sqrt(taua*taua + taub*taub + sd2*(1/n + (1-xm)*(1-xm)/sxx));
+  const meanP=alpha+beta*1.0;
+  let rej2=0, rej3=0;
+  for(let s=0;s<nsim;s++){
+    let sum2=0,ss2=0,sum3=0,ss3=0;
+    for(let i=0;i<N;i++){
+      const b=beta+seB*randn(); sum2+=b; ss2+=b*b;
+      const p=meanP+seP*randn(); sum3+=p; ss3+=p*p;
+    }
+    const m2=sum2/N, sd2i=Math.sqrt((ss2-N*m2*m2)/(N-1));
+    const m3=sum3/N, sd3i=Math.sqrt((ss3-N*m3*m3)/(N-1));
+    const t2=m2/(sd2i/Math.sqrt(N)), t3=m3/(sd3i/Math.sqrt(N));
+    if(1-tCdf(t2,N-1)<alphaT) rej2++;
+    if(tCdf(t3,N-1)<alphaT) rej3++;
+  }
+  return {h2:rej2/nsim, h3:rej3/nsim};
+}
+
+function v(id){return parseFloat(document.getElementById(id).value);}
+function runSingle(){
+  rand = mulberry32(2026);
+  const lc=parseDesign(document.getElementById("design").value);
+  const r=powerCell(v("N"),v("beta"),v("alpha"),v("sigma"),v("taub"),v("taua"),lc,v("nsim"),v("alphaT"));
+  document.getElementById("out").innerHTML =
+    `<div class="card"><h2 style="margin-top:0">Resultado</h2>
+     Poder H2 (β&gt;0): <strong>${r.h2.toFixed(3)}</strong> ${r.h2>=0.8?"✅":"⚠️ abaixo de 0.80"}<br>
+     Poder H3 (benefício no lag=1): <strong>${r.h3.toFixed(3)}</strong> ${r.h3>=0.8?"✅":"⚠️ abaixo de 0.80"}</div>`;
+}
+function runGrid(){
+  rand = mulberry32(2026);
+  const lc=parseDesign(document.getElementById("design").value);
+  const Ns=[70,100,140], betas=[0,10,15,20,30,40], sigmas=[200,300];
+  const nsim=Math.min(v("nsim"),5000); // grade: menos sims por célula
+  let html=`<div class="card"><h2 style="margin-top:0">Grade (desenho: ${document.getElementById("design").value}; ${nsim} sims/célula)</h2>
+    <table><tr><th>N</th><th>β</th><th>σ</th><th>Poder H2</th><th>Poder H3(lag=1)</th></tr>`;
+  for(const N of Ns) for(const b of betas) for(const s of sigmas){
+    const r=powerCell(N,b,v("alpha"),s,v("taub"),v("taua"),lc,nsim,v("alphaT"));
+    const c2=b===0?"":(r.h2>=0.8?"ok":"bad"), c3=r.h3>=0.8?"ok":"bad";
+    html+=`<tr><td>${N}</td><td>${b}</td><td>${s}</td>
+           <td class="${c2}">${r.h2.toFixed(3)}${b===0?" (tipo-I)":""}</td>
+           <td class="${c3}">${r.h3.toFixed(3)}</td></tr>`;
+  }
+  html+="</table></div>";
+  document.getElementById("out").innerHTML=html;
+}
+</script>
+</body>
+</html>

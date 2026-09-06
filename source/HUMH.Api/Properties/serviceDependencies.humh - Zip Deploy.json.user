@@ -1,0 +1,25 @@
+{
+  "dependencies": {},
+  "parameters": {
+    "humh.subscriptionId": {
+      "Name": "humh.subscriptionId",
+      "Type": "subscription",
+      "Value": "690fb2c8-1879-4730-be20-7e7473c3a2c7"
+    },
+    "humh.resourceName": {
+      "Name": "humh.resourceName",
+      "Type": null,
+      "Value": "humh"
+    },
+    "humh.resourceGroupName": {
+      "Name": "humh.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "humh_group"
+    },
+    "humh.resourceGroupLocation": {
+      "Name": "humh.resourceGroupLocation",
+      "Type": null,
+      "Value": "brazilsouth"
+    }
+  }
+}

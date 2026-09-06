@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMH - Bibliografia Recomendada</title>
+    <style>
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #00CED1;
+            --accent-color: #FFD700;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #f8f9fa;
+            --text-secondary: #adb5bd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 50%, #16213e 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+            .nav-links a {
+                color: var(--text-light);
+                text-decoration: none;
+                transition: color 0.3s ease;
+                font-weight: 500;
+            }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .main-content {
+            padding-top: 80px;
+        }
+
+        .hero {
+            padding: 3rem 2rem;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+            .hero h1 {
+                font-size: clamp(2.5rem, 5vw, 3.5rem);
+                font-weight: 800;
+                margin-bottom: 1rem;
+                background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+            .back-button:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+            }
+
+        .bibliography-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .book-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+            .book-card:hover {
+                transform: translateY(-5px);
+                border-color: var(--primary-color);
+                box-shadow: 0 15px 35px rgba(138, 43, 226, 0.2);
+            }
+
+        .citation {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+            .citation strong {
+                color: var(--text-light);
+            }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px solid var(--secondary-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.3);
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3rem 2rem 1rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+    <script>const API_BASE_COMPUTED = (window.location.origin || "http://localhost:8080") + "/api";</script>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <header>
+        <nav>
+            <div class="logo">HUMH v1.00</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <section class="hero">
+            <h1>Bibliografia Recomendada</h1>
+            <p class="hero-subtitle">
+                Uma seleção de obras fundamentais que dialogam com os princípios da HUMH, abrangendo desde a teoria da informação e física quântica até a psicologia cognitiva e filosofia.
+            </p>
+        </section>
+
+        <section class="bibliography-container">
+            <div class="book-card">
+                <p class="citation">BATESON, G. <strong>Steps to an Ecology of Mind</strong>. Chicago: University of Chicago Press, 1972.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Passos+para+uma+ecologia+da+mente" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Steps+to+an+Ecology+of+Mind" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">CHAITIN, G. J. <strong>Meta Math!: The Quest for Omega</strong>. New York: Pantheon Books, 2005.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Meta+Math+Chaitin" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Meta+Math!+The+Quest+for+Omega" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">EKSTROM, A. D. et al. Human spatial navigation: representations across dimensions and scales. <strong>Current Opinion in Behavioral Sciences</strong>, v. 17, p. 84-89, 2018.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=Human+spatial+navigation%3A+representations+across+dimensions+and+scales" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">GIBSON, J. J. <strong>The Ecological Approach to Visual Perception</strong>. Boston: Houghton Mifflin, 1979.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=A+Abordagem+Ecol%C3%B3gica+da+Percep%C3%A7%C3%A3o+Visual" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=The+Ecological+Approach+to+Visual+Perception" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">KAHNEMAN, D. <strong>Attention and Effort</strong>. New Jersey: Prentice-Hall, 1973.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Aten%C3%A7%C3%A3o+e+Esfor%C3%A7o+Kahneman" class="btn btn-primary" target="_blank">🇧🇷 Buscar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Attention+and+Effort+Kahneman" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">KOLMOGOROV, A. N. <strong>Grundbegriffe der Wahrscheinlichkeitsrechnung</strong>. Berlin: Springer, 1933.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Foundations+of+the+Theory+of+Probability+Kolmogorov" class="btn btn-primary" target="_blank">🇧🇷 Buscar (Tradução)</a>
+                    <a href="https://www.amazon.com/s?k=Grundbegriffe+der+Wahrscheinlichkeitsrechnung" class="btn btn-secondary" target="_blank">🇺🇸 Buy Original/English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">LLOYD, S. <strong>Programming the Universe: A Quantum Computer Scientist Takes on the Cosmos</strong>. New York: Knopf, 2006.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Programando+o+Universo+Seth+Lloyd" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Programming+the+Universe" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">MACK, A.; ROCK, I. <strong>Inattentional Blindness</strong>. Cambridge: MIT Press, 1998.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Cegueira+por+Desaten%C3%A7%C3%A3o" class="btn btn-primary" target="_blank">🇧🇷 Buscar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Inattentional+Blindness+Mack+Rock" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">MILLER, G. A. The magical number seven, plus or minus two: Some limits on our capacity for processing information. <strong>Psychological Review</strong>, v. 63, n. 2, p. 81-97, 1956.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=The+magical+number+seven%2C+plus+or+minus+two" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">NEISSER, U. <strong>Cognition and Reality: Principles and Implications of Cognitive Psychology</strong>. New York: W.H. Freeman, 1976.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Cogni%C3%A7%C3%A3o+e+Realidade+Neisser" class="btn btn-primary" target="_blank">🇧🇷 Buscar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Cognition+and+Reality+Neisser" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">PASCUAL-LEONE, A. et al. Modulation of muscle responses evoked by transcranial magnetic stimulation during the acquisition of new fine motor skills. <strong>Journal of Neurophysiology</strong>, v. 74, n. 3, p. 1037-1045, 2005.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=Modulation+of+muscle+responses+evoked+by+transcranial+magnetic+stimulation" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">POSNER, M. I.; PETERSEN, S. E. The attention system of the human brain. <strong>Annual Review of Neuroscience</strong>, v. 13, n. 1, p. 25-42, 1990.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=The+attention+system+of+the+human+brain" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">RENSINK, R. A.; O'REGAN, J. K.; CLARK, J. J. To see or not to see: The need for attention to perceive changes in scenes. <strong>Psychological Science</strong>, v. 8, n. 5, p. 368-373, 1997.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=To+see+or+not+to+see%3A+The+need+for+attention+to+perceive+changes+in+scenes" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">SHANNON, C. E. A mathematical theory of communication. <strong>Bell System Technical Journal</strong>, v. 27, n. 3, p. 379-423, 1948.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=A+mathematical+theory+of+communication" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">SIMONS, D. J.; CHABRIS, C. F. Gorillas in our midst: Sustained inattentional blindness for dynamic events. <strong>Perception</strong>, v. 28, n. 9, p. 1059-1074, 1999.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=O+Gorila+Invis%C3%ADvel" class="btn btn-primary" target="_blank">🇧🇷 Comprar Livro Relacionado</a>
+                    <a href="https://scholar.google.com/scholar?q=Gorillas+in+our+midst" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">SIMONS, D. J.; RENSINK, R. A. Change blindness: Past, present, and future. <strong>Trends in Cognitive Sciences</strong>, v. 9, n. 1, p. 16-20, 2005.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=Change+blindness%3A+Past%2C+present%2C+and+future" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">SPINOZA, B. <strong>Ethica Ordine Geometrico Demonstrata</strong>. 1677.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=%C3%89tica+Spinoza" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Spinoza+Ethics" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">SUZUKI, D. T. <strong>Essays in Zen Buddhism</strong>. London: Rider & Company, 1949.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Ensaios+sobre+o+Zen+Budismo" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Essays+in+Zen+Buddhism" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">TEGMARK, M. <strong>Our Mathematical Universe: My Quest for the Ultimate Nature of Reality</strong>. New York: Knopf, 2014.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Nosso+Universo+Matem%C3%A1tico" class="btn btn-primary" target="_blank">🇧🇷 Comprar em Português</a>
+                    <a href="https://www.amazon.com/s?k=Our+Mathematical+Universe" class="btn btn-secondary" target="_blank">🇺🇸 Buy in English</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">TREISMAN, A. M.; GELADE, G. A feature-integration theory of attention. <strong>Cognitive Psychology</strong>, v. 12, n. 1, p. 97-136, 1980.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=A+feature-integration+theory+of+attention" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">WHEELER, J. A. <strong>Information, physics, quantum: The search for links</strong>. In: ZUREK, W. H. (Ed.). <strong>Complexity, Entropy, and the Physics of Information</strong>. Redwood City: Addison-Wesley, 1989.</p>
+                <div class="button-group">
+                    <a href="https://www.amazon.com.br/s?k=Complexity+Entropy+and+the+Physics+of+Information" class="btn btn-primary" target="_blank">🇧🇷 Buscar Livro</a>
+                    <a href="https://www.amazon.com/s?k=Complexity+Entropy+and+the+Physics+of+Information" class="btn btn-secondary" target="_blank">🇺🇸 Buy Book</a>
+                </div>
+            </div>
+            <div class="book-card">
+                <p class="citation">WICKENS, C. D. Multiple resources and mental workload. <strong>Human Factors</strong>, v. 50, n. 3, p. 449-455, 2008.</p>
+                <div class="button-group">
+                    <a href="https://scholar.google.com/scholar?q=Multiple+resources+and+mental+workload" class="btn btn-secondary" target="_blank">📄 Acessar Artigo</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2025 HUMH Theory. Como Associado da Amazon, eu recebo por compras qualificadas. Os links nesta página são links de afiliados.</p>
+    </footer>
+
+    <script>
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        window.addEventListener('load', () => { createParticles(); });
+    </script>
+
+</body>
+</html>

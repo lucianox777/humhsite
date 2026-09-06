@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMH v1.0 - A Realidade Manifestada pelo Observador</title>
+    <style>
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #00CED1;
+            --accent-color: #FFD700;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --content-max: 1100px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 50%, #16213e 100%);
+            color: var(--text-light);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255,255,255,.3);
+            border-radius: 50%;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Top bar */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+            .nav-links a {
+                color: var(--text-light);
+                text-decoration: none;
+                transition: color .3s ease;
+                font-weight: 500;
+            }
+
+                .nav-links a:hover {
+                    color: var(--accent-color);
+                }
+
+        /* Content */
+        .container {
+            max-width: var(--content-max);
+            margin: 120px auto 64px;
+            padding: 0 24px;
+        }
+
+        .prose {
+            font-size: 1.05rem;
+        }
+
+            .prose h1, .prose h2, .prose h3 {
+                margin: 1.3em 0 .6em;
+                line-height: 1.25;
+            }
+
+            .prose h1 {
+                font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+            border-bottom: 2px solid rgba(138, 43, 226, 0.3);
+            padding-bottom: 0.3em;
+            }
+
+            .prose h2 {
+                font-size: clamp(1.4rem, 2vw, 1.9rem);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+            padding-bottom: 0.2em;
+            }
+
+            .prose h3 {
+                font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+            color: var(--secondary-color);
+            }
+
+        .prose p, .prose ul, .prose ol, .prose blockquote {
+                margin: 1em 0;
+            }
+
+            .prose a {
+                color: #7dd3fc;
+                text-decoration: none;
+            border-bottom: 1px solid rgba(125, 211, 252, 0.3);
+            transition: border-color 0.2s;
+            }
+
+                .prose a:hover {
+            border-bottom-color: #7dd3fc;
+                }
+
+            .prose code {
+                background: rgba(255,255,255,.08);
+                padding: .15em .35em;
+                border-radius: .35em;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.9em;
+            }
+
+        /* PRE/CODE BLOCKS - MELHORADO PARA MOBILE */
+            .prose pre {
+            overflow-x: auto;
+            overflow-y: hidden;
+                background: rgba(255,255,255,.06);
+                padding: 14px;
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,.08);
+            margin: 1.5em 0;
+            /* Mobile scroll */
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(138, 43, 226, 0.5) rgba(255,255,255,.1);
+        }
+
+        .prose pre::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .prose pre::-webkit-scrollbar-track {
+            background: rgba(255,255,255,.1);
+            border-radius: 4px;
+        }
+
+        .prose pre::-webkit-scrollbar-thumb {
+            background: rgba(138, 43, 226, 0.5);
+            border-radius: 4px;
+        }
+
+        .prose pre::-webkit-scrollbar-thumb:hover {
+            background: rgba(138, 43, 226, 0.7);
+            }
+
+        .prose pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85em;
+            white-space: pre;
+            display: block;
+        }
+
+        .prose ul, .prose ol {
+            padding-left: 1.5em;
+        }
+
+        .prose li {
+            margin: 0.5em 0;
+        }
+
+        .prose strong {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .prose em {
+            color: var(--secondary-color);
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: rgba(255,255,255,.12);
+            margin: 28px 0;
+        }
+
+        /* Blockquote */
+        .prose blockquote {
+            border-left: 4px solid var(--secondary-color);
+            background: rgba(255,255,255,.04);
+            padding: .75rem 1rem;
+            margin-left: 0;
+            margin-right: 0;
+            border-radius: 8px;
+        }
+
+            .prose blockquote p {
+                margin: .4em 0;
+                color: var(--text-secondary);
+            }
+
+        /* TABLES - MELHORADO COM WRAPPER PARA MOBILE */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin: 2em 0;
+            /* Mobile scroll suave */
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+            border-radius: 10px;
+            background: rgba(255,255,255,.03);
+            box-shadow: 0 4px 6px rgba(0,0,0,.3);
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: rgba(255,255,255,.05);
+            border-radius: 5px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(138, 43, 226, 0.5);
+            border-radius: 5px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(138, 43, 226, 0.7);
+        }
+
+        .prose table {
+            width: 100%;
+            min-width: 500px; /* Força scroll em mobile */
+            border-collapse: collapse;
+            margin: 0;
+            background: transparent;
+        }
+
+        .prose thead {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(0, 206, 209, 0.3));
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .prose th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 2px solid rgba(255,255,255,.2);
+            white-space: nowrap;
+        }
+
+        .prose td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+
+        .prose tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        .prose tbody tr:hover {
+            background: rgba(255,255,255,.06);
+        }
+
+        .prose tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Mobile specific */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .prose {
+                font-size: 1rem;
+            }
+            
+            .prose table {
+                font-size: 0.85em;
+                min-width: 600px; /* Mais largo em mobile para forçar scroll */
+            }
+
+            .prose th, .prose td {
+                padding: 8px 12px;
+            }
+
+            .prose pre {
+                padding: 12px;
+                font-size: 0.8em;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Math equations */
+        .katex {
+            font-size: 1em !important;
+        }
+
+        eq {
+            display: inline-block;
+        }
+
+        eqn {
+            display: block;
+            margin: 1em 0;
+        }
+
+        section.eqno {
+            display: flex;
+            flex-direction: row;
+            align-content: space-between;
+            align-items: center;
+        }
+
+            section.eqno > eqn {
+                width: 100%;
+                margin-left: 3em;
+            }
+
+            section.eqno > span {
+                width: 3em;
+                text-align: right;
+            }
+
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            padding: 4rem 0;
+            color: var(--text-secondary);
+        }
+
+        .loading::after {
+            content: "Carregando documento...";
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            header, .particles {
+                display: none;
+            }
+            
+            .container {
+                margin: 0;
+                max-width: 100%;
+            }
+            
+            .table-wrapper {
+                overflow: visible;
+                box-shadow: none;
+            }
+            
+            .prose table {
+                border: 1px solid #ddd;
+                min-width: 100%;
+            }
+        }
+    </style>
+
+    <!-- Markdown-it com plugin de tabelas -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14/dist/markdown-it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath@1.0.0/texmath.min.js"></script>
+    <script>
+        window.MathJax = {
+            tex: { 
+                inlineMath: [['$', '$'], ['\\(', '\\)']], 
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <header>
+        <nav>
+            <div class="logo">HUMH v1.0</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="https://humh-deg8f0a6hzhtgyfu.brazilsouth-01.azurewebsites.net" target="_blank">Site Oficial</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="container">
+        <article id="content" class="prose loading"></article>
+    </main>
+
+    <script>
+        (function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        })();
+    </script>
+
+    <script>
+        async function render() {
+            try {
+                const res = await fetch('./content/teoria.md', { cache: 'no-store' });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                
+            const md = await res.text();
+                
+                // Configurar markdown-it com tabelas habilitadas
+                const mdp = window.markdownit({ 
+                    html: true, 
+                    breaks: true, 
+                    linkify: true,
+                    typographer: true,
+                    // Habilita tabelas GFM nativamente
+                    tables: true
+                })
+                .use(window.texmath, { 
+                    engine: window.MathJax, 
+                    delimiters: 'dollars' 
+                });
+                
+                // Renderizar
+                const contentEl = document.getElementById('content');
+                contentEl.className = 'prose';
+                let html = mdp.render(md);
+                
+                // Wrapper nas tabelas para scroll mobile
+                html = html.replace(/<table>/g, '<div class="table-wrapper"><table>');
+                html = html.replace(/<\/table>/g, '</table></div>');
+                
+                contentEl.innerHTML = html;
+                
+                // Processar equações matemáticas
+                if (window.MathJax?.typesetPromise) { 
+                    await window.MathJax.typesetPromise(); 
+                }
+                
+                // Scroll suave para âncoras
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+                
+                console.log('✅ Documento carregado com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro ao carregar documento:', error);
+                document.getElementById('content').innerHTML = `
+                    <div style="text-align: center; padding: 4rem 0; color: #ff6b6b;">
+                        <h2>Erro ao Carregar Documento</h2>
+                        <p>${error.message}</p>
+                        <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 1rem;">
+                            Verifique se o arquivo <code>teoria.md</code> está no diretório <code>content/</code>.
+                        </p>
+                        <p style="font-size: 0.85em; color: var(--text-secondary); margin-top: 0.5rem;">
+                            Se estiver abrindo como arquivo local, use um servidor web:<br>
+                            <code>python -m http.server 8000</code>
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Carregar quando o DOM estiver pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', render);
+        } else {
+        render();
+        }
+    </script>
+
+</body>
+</html>

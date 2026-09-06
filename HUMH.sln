@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HUMH", "source\HUMH.Api\HUMH.csproj", "{DA27585C-6C1C-3F20-F6F8-E6B52621D0C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA27585C-6C1C-3F20-F6F8-E6B52621D0C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA27585C-6C1C-3F20-F6F8-E6B52621D0C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA27585C-6C1C-3F20-F6F8-E6B52621D0C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA27585C-6C1C-3F20-F6F8-E6B52621D0C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E875BE3D-D925-4F88-B1A0-3C0B52C4BFB2}
+	EndGlobalSection
+EndGlobal

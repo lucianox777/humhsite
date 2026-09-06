@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinâmica Temporal – HUMH</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+function classificarEHQuartis(valoresEH){
+  const vs = [...valoresEH].sort((a,b)=>a-b);
+  const q1 = vs[Math.floor(0.25*vs.length)]||0;
+  const q2 = vs[Math.floor(0.50*vs.length)]||0;
+  const q3 = vs[Math.floor(0.75*vs.length)]||0;
+  return {q1,q2,q3};
+}
+
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .info-panel {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #007bff;
+        }
+
+        .controls {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-grow: 1;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            outline: none;
+            border-radius: 5px;
+        }
+
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                background: #007bff;
+                cursor: pointer;
+                border-radius: 50%;
+            }
+
+        .value-display {
+            color: #007bff;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+            button:disabled {
+                background: #6c757d;
+                cursor: not-allowed;
+            }
+
+        .simulation-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+            height: 800px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+
+            .panel h3 {
+                margin: 0 0 15px 0;
+                color: #495057;
+                font-size: 16px;
+                text-align: center;
+            }
+
+        #gridCanvas {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .metrics {
+            position: absolute;
+            top: 50px;
+            left: 15px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+            border: 1px solid #ddd;
+        }
+
+        .state-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 90%;
+        }
+
+        .report {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #007bff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .ab-test-panel {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .comparison-stats {
+            background: #d1ecf1;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* Notational hygiene: font fallbacks for math symbols */
+        :root {
+            --ui-font: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            --math-fonts: "Noto Sans Math","STIX Two Math","DejaVu Sans","Segoe UI Symbol","Symbola","Noto Emoji";
+        }
+
+        body {
+            font-family: var(--ui-font), var(--math-fonts);
+        }
+
+        .math, .units {
+            font-family: var(--math-fonts), var(--ui-font);
+        }
+
+        #startButton {
+            background: #007bff;
+        }
+
+        /* Ajuste discreto do tamanho dos sliders */
+        input[type="range"] {
+            width: 380px;
+            height: 24px;
+        }
+            /* WebKit */
+            input[type="range"]::-webkit-slider-runnable-track {
+                height: 6px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 18px;
+                height: 18px;
+                margin-top: -6px;
+            }
+            /* Firefox */
+            input[type="range"]::-moz-range-track {
+                height: 6px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 18px;
+                height: 18px;
+            }
+
+        /* Coloca os sliders e o botão 'Iniciar' na mesma linha */
+        .controls {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: nowrap;
+        }
+
+            .controls .control-group {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin: 0;
+            }
+
+        #startButton {
+            margin-left: 8px;
+        }
+
+        /* --- Linha de controles compacta (altura reduzida) --- */
+        .controls {
+            align-items: center;
+            margin-top: 2px;
+            margin-bottom: 2px;
+            gap: 10px;
+        }
+
+            .controls .control-group {
+                align-items: center;
+                gap: 6px;
+                margin: 0;
+            }
+
+                .controls .control-group label {
+                    margin: 0;
+                    line-height: 1.1;
+                    font-size: 13px;
+                }
+        /* Sliders mais baixos */
+        input[type="range"] {
+            height: 16px;
+        }
+            /* WebKit */
+            input[type="range"]::-webkit-slider-runnable-track {
+                height: 4px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 14px;
+                height: 14px;
+                margin-top: -5px;
+            }
+            /* Firefox */
+            input[type="range"]::-moz-range-track {
+                height: 4px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 14px;
+                height: 14px;
+            }
+    </style>
+
+    <script>const API_BASE_COMPUTED=(window.location.origin||"http://localhost:8080")+"/api";</script>
+</head>
+<body>
+    <div class="container">
+        <h1>Dinâmica Temporal – HUMH – Comparador: Reversão à média (logit)</h1>
+        <div class="info-panel">
+            <h3 style="color: #007bff; margin-top: 0;">🔬 Validação da Dinâmica Temporal com Testes A/B</h3>
+            <p style="margin: 5px 0; color: #333;">Esta simulação demonstra como um sistema evolui ao longo do tempo sob a influência de um observador, comparando a **HUMH** com modelos alternativos para validação científica rigorosa.</p>
+            <p style="margin: 5px 0 10px 0; font-size: 12px; color: #555;"><strong>Nota:</strong> EH medida EH (ℋ). Custo energético expresso em unidades adimensionais (escala 0-10) para visualização comparativa.</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group"><label for="frameSlider">Nº de Simulações:</label><input type="range" id="frameSlider" min="10" max="1000" value="250" step="10"><div class="value-display" id="frameValue">250</div></div>
+            <div class="control-group"><label for="compressionSlider">Compressão Harmônica (%):</label><input type="range" id="compressionSlider" min="0" max="100" value="70" step="1"><div class="value-display" id="compressionValue">70%</div></div>
+            <div class="control-group"><label for="radiusSlider">Raio de Ativação:</label><input type="range" id="radiusSlider" min="1" max="10" value="4" step="1"><div class="value-display" id="radiusValue">4</div></div>
+            <div class="control-group"><select id="modelSelector" style="display:none"><option value="ou_logit" selected>Reversão à média (logit)</option></select></div>
+            <button id="startButton">Iniciar</button>
+            <button id="batchButton" style="display:none">📊 Lote A/B (5x cada)</button>
+        </div>
+
+        <div class="simulation-area" id="simulationArea">
+            <div class="panel"><h3>Universo Observado</h3><canvas id="gridCanvas" width="300" height="300"></canvas><div class="metrics" id="metricsDisplay"></div></div>
+            <div class="panel"><h3>Análise de Custo Energético (HUMH vs Comparação)</h3><div class="chart-container"><canvas id="energyChart"></canvas></div></div>
+            <div class="panel"><h3>Evolução da Entropia Harmônica (EH) (ℋ)</h3><div class="chart-container"><canvas id="entropyChart"></canvas></div></div>
+            <div class="panel"><h3>Proporção de Manifestação (p)</h3><div class="chart-container"><canvas id="proportionChart"></canvas></div></div>
+        </div>
+
+        <div id="reportArea"></div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 30;
+        let isRunning = false;
+        let animationFrameId = null;
+        let grid = [], initialGrid = [];
+        let gridComparison = [], initialGridComparison = [];
+        let charts = {};
+        let batchResults = [];
+
+        const ui = {
+            frameSlider: document.getElementById('frameSlider'),
+            compressionSlider: document.getElementById('compressionSlider'),
+            radiusSlider: document.getElementById('radiusSlider'),
+            modelSelector: document.getElementById('modelSelector'),
+            startButton: document.getElementById('startButton'),
+            batchButton: document.getElementById('batchButton'),
+            gridCanvas: document.getElementById('gridCanvas'),
+            metricsDisplay: document.getElementById('metricsDisplay'),
+            reportArea: document.getElementById('reportArea')
+        };
+
+function scrollToReport(){
+    try{
+        const el = document.getElementById('reportArea');
+        if(!el) return;
+        if (el.scrollIntoView) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        setTimeout(() => {
+            let parent = el.parentElement;
+            while (parent && parent !== document.body) {
+                const sty = getComputedStyle(parent);
+                if (/(auto|scroll)/i.test(sty.overflowY)) {
+                    try {
+                        const top = el.getBoundingClientRect().top - parent.getBoundingClientRect().top + parent.scrollTop - 8;
+                        parent.scrollTo({ top, behavior: 'smooth' });
+                    } catch(e) {}
+                    break;
+                }
+                parent = parent.parentElement;
+            }
+            try { if (location.hash !== '#reportArea') location.hash = '#reportArea'; } catch(e){}
+        }, 60);
+    }catch(e){}
+}
+
+const gridCtx = ui.gridCanvas.getContext('2d');
+
+        const comparisonModels = {
+            classical: {
+                name: "Modelo Clássico",
+                description: "Sem compressão harmônica, custo bruto total",
+                computeEnergy: (bruteCost, compression) => bruteCost,
+                color: "#dc3545"
+            },
+            linear: {
+                name: "Modelo Linear",
+                description: "Crescimento linear da entropia",
+                computeEnergy: (bruteCost, compression) => bruteCost * 0.8,
+                computeEH: (iteration, initialEH) => Math.min(1, initialEH + iteration * 0.001),
+                color: "#fd7e14"
+            },
+            random: {
+                name: "Modelo Aleatório",
+                description: "Flutuações aleatórias",
+                computeEnergy: (bruteCost, compression) => bruteCost * (0.5 + Math.random() * 0.5),
+                computeEH: (iteration, initialEH) => Math.max(0, Math.min(1, initialEH + (Math.random() - 0.5) * 0.1)),
+                color: "#6f42c1"
+            },
+            maxentropy: {
+                name: "Máxima Entropia",
+                description: "Tendência à máxima desordem",
+                computeEnergy: (bruteCost, compression) => bruteCost * 1.2,
+                computeEH: (iteration, initialEH) => Math.min(1, initialEH + iteration * 0.002),
+                color: "#e83e8c"
+            },
+            ou_logit: {
+                name: "Reversão à média (logit)",
+                description: "OU discreto em logit: convergência suave a p*",
+                computeEnergy: (bruteCost, compression) => bruteCost * 0.85,
+                computeEH: (iteration, initialEH) => {
+                    const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+                    const p0 = clamp(1 - initialEH/2, 1e-6, 1-1e-6);
+                    const logit = p => Math.log(p/(1-p));
+                    const logistic = x => 1/(1+Math.exp(-x));
+                    const k = 0.05;
+                    const mu = 0.0;
+                    const xt = Math.pow(1-k, iteration) * logit(p0) + (1 - Math.pow(1-k, iteration)) * mu;
+                    const pt = logistic(xt);
+                    return 1 - Math.abs(2*pt - 1);
+                },
+                color: "#007bff"
+            }
+        };
+
+        function initializeCharts() {
+            ['energyChart', 'entropyChart', 'proportionChart'].forEach(id => {
+                if (charts[id]) charts[id].destroy();
+            });
+
+            const selectedModel = comparisonModels[ui.modelSelector.value];
+
+            charts.energyChart = new Chart(document.getElementById('energyChart').getContext('2d'), {
+                type: 'line', data: { labels: [], datasets: [
+                    { label: 'HUMH - Custo Energético (adim.)', data: [], borderColor: '#00bfff', tension: 0.1, fill: false },
+                    { label: 'HUMH - Custo Bruto (adim.)', data: [], borderColor: '#ff8c00', tension: 0.1, fill: false, borderDash: [5,5] },
+                    { label: `${selectedModel.name} - Custo (adim.)`, data: [], borderColor: selectedModel.color, tension: 0.1, fill: false, borderWidth: 3 }
+                ]}, options: { scales: { y: { beginAtZero: true, max: 10, title: { display: true, text: 'Custo (escala adimensional)' } } } }
+            });
+
+            charts.entropyChart = new Chart(document.getElementById('entropyChart').getContext('2d'), {
+                type: 'line', data: { labels: [], datasets: [
+                    { label: 'HUMH - EH (ℋ)', data: [], borderColor: '#8b00ff', tension: 0.1, fill: false },
+                    { label: `${selectedModel.name} - EH (ℋ)`, data: [], borderColor: selectedModel.color, tension: 0.1, fill: false, borderWidth: 3 }
+                ] },
+                options: { scales: { y: { beginAtZero: true, max: 1.1, title: { display: true, text: 'EH (ℋ)' } } } }
+            });
+
+            charts.proportionChart = new Chart(document.getElementById('proportionChart').getContext('2d'), {
+                type: 'line', data: { labels: [], datasets: [
+                    { label: 'HUMH - Proporção (p)', data: [], borderColor: '#28a745', tension: 0.1, fill: false },
+                    { label: `${selectedModel.name} - Proporção`, data: [], borderColor: selectedModel.color, tension: 0.1, fill: false, borderWidth: 3 }
+                ] },
+                options: { scales: { y: { beginAtZero: true, max: 1.1 } } }
+            });
+        }
+
+        function updateChart(chart, label, newData) {
+            chart.data.labels = Array.from({length: newData[0].length}, (_, i) => i + 1);
+            chart.data.datasets.forEach((dataset, i) => {
+                if (newData[i]) dataset.data = newData[i];
+            });
+            chart.update();
+        }
+
+        function setupEventListeners() {
+            ['frameSlider', 'compressionSlider', 'radiusSlider'].forEach(id => {
+                const slider = ui[id];
+                const display = document.getElementById(id.replace('Slider', 'Value'));
+                slider.addEventListener('input', () => {
+                    display.textContent = slider.id === 'compressionSlider' ? `${slider.value}%` : slider.value;
+                });
+            });
+
+            ui.modelSelector.addEventListener('change', () => {
+                if (!isRunning) initializeCharts();
+            });
+
+            ui.startButton.addEventListener('click', () => {
+                if (isRunning) stopSimulation();
+                else startSimulation();
+            });
+
+            ui.batchButton.addEventListener('click', runBatchABTest);
+        }
+
+        function initializeGrids() {
+            grid = Array.from({length: GRID_SIZE}, () => Array.from({length: GRID_SIZE}, () => Math.random() < 0.15 ? 1 : 0));
+            initialGrid = grid.map(row => [...row]);
+            gridComparison = grid.map(row => [...row]);
+            initialGridComparison = gridComparison.map(row => [...row]);
+        }
+
+        function computeHarmonicEntropy(g) {
+            const p = g.flat().reduce((a, b) => a + b, 0) / (GRID_SIZE * GRID_SIZE);
+            const EH = 1 - Math.abs(2 * p - 1);
+            return { EH, p };
+        }
+
+        function classifyHarmonicState(EH) {
+            if (typeof window !== 'undefined' && window.currentQuartis && typeof window.currentQuartis.q1 === 'number') {
+                const { q1, q3 } = window.currentQuartis;
+                if (EH <= q1) return "EH-Baixa";
+                if (EH >= q3) return "EH-Instável";
+                return "EH-Alta";
+            }
+            if (EH < 0.3) return "EH-Baixa";
+            if (EH > 0.95) return "EH-Instável";
+            return "EH-Alta";
+        }
+
+        function getStateColor(state) {
+            return { "EH-Baixa": "#28a745", "EH-Alta": "#ffc107", "EH-Instável": "#dc3545", "Inicial": "#6c757d" }[state] || "#6c757d";
+        }
+
+        function activate(g, x, y, radius) {
+            const newGrid = g.map(row => [...row]);
+            let newlyActivated = 0;
+            for (let i = Math.max(0, x - radius); i <= Math.min(GRID_SIZE - 1, x + radius); i++) {
+                for (let j = Math.max(0, y - radius); j <= Math.min(GRID_SIZE - 1, y + radius); j++) {
+                    if (newGrid[i][j] === 0) {
+                        newGrid[i][j] = 1;
+                        newlyActivated++;
+                    }
+                }
+            }
+            return { grid: newGrid, newlyActivated };
+        }
+
+        function drawGrid(iteration, radius, observerX, observerY, state, EH, p, frameCount) {
+            const cellSize = ui.gridCanvas.width / GRID_SIZE;
+            gridCtx.fillStyle = '#ffffff';
+            gridCtx.fillRect(0, 0, ui.gridCanvas.width, ui.gridCanvas.height);
+
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (grid[i][j] > 0) {
+                        gridCtx.fillStyle = '#007bff';
+                        gridCtx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    }
+                    if (gridComparison[i][j] > 0 && grid[i][j] === 0) {
+                        gridCtx.fillStyle = 'rgba(220, 53, 69, 0.7)';
+                        gridCtx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+
+            gridCtx.strokeStyle = 'red';
+            gridCtx.lineWidth = 2;
+            gridCtx.beginPath();
+            gridCtx.arc((observerY + 0.5) * cellSize, (observerX + 0.5) * cellSize, radius * cellSize, 0, 2 * Math.PI);
+            gridCtx.stroke();
+
+            const stateColor = getStateColor(state);
+            const comparisonMetrics = computeHarmonicEntropy(gridComparison);
+            const selectedModel = comparisonModels[ui.modelSelector.value];
+
+            ui.metricsDisplay.innerHTML = `
+                <div><strong>Iteração:</strong> ${iteration + 1}/${frameCount}</div>
+                <div><strong>Raio:</strong> ${radius}</div>
+                <div style="border-bottom: 1px solid #ddd; margin: 8px 0; padding-bottom: 5px;"><strong>HUMH:</strong></div>
+                <div>Estado: <span class="state-indicator" style="background-color: ${stateColor}">${state}</span></div>
+                <div>EH: ${EH.toFixed(4)} ℋ</div>
+                <div>p: ${p.toFixed(4)}</div>
+                <div style="border-bottom: 1px solid #ddd; margin: 8px 0; padding-bottom: 5px;"><strong>${selectedModel.name}:</strong></div>
+                <div>EH: ${comparisonMetrics.EH.toFixed(4)} ℋ</div>
+                <div>p: ${comparisonMetrics.p.toFixed(4)}</div>
+                <div style="margin-top: 8px; font-size: 10px; color: #666;">🔵 HUMH | 🔴 Comparação</div>
+            `;
+        }
+
+        function calculateABTestStatistics(huhm_data, comparison_data) {
+            const n = huhm_data.length;
+            if (n < 2) return null;
+
+            const huhm_mean = huhm_data.reduce((a,b) => a+b) / n;
+            const comp_mean = comparison_data.reduce((a,b) => a+b) / n;
+            const diff_mean = huhm_mean - comp_mean;
+
+            const huhm_var = huhm_data.reduce((acc, val) => acc + Math.pow(val - huhm_mean, 2), 0) / (n-1);
+            const comp_var = comparison_data.reduce((acc, val) => acc + Math.pow(val - comp_mean, 2), 0) / (n-1);
+            const pooled_se = Math.sqrt((huhm_var + comp_var) / n);
+
+            const t_statistic = pooled_se > 0 ? diff_mean / pooled_se : 0;
+            const df = 2 * n - 2;
+
+            const p_value = Math.abs(t_statistic) > 2.0 ? "< 0.05" : "≥ 0.05";
+
+            return {
+                huhm_mean,
+                comp_mean,
+                diff_mean,
+                t_statistic,
+                p_value,
+                effect_size: pooled_se > 0 ? Math.abs(diff_mean) / pooled_se : 0
+            };
+        }
+
+        function showABReport(simData) {
+            const { EH: EH_inicial_huhm, p: p_inicial_huhm } = computeHarmonicEntropy(initialGrid);
+            const { EH: EH_final_huhm, p: p_final_huhm } = computeHarmonicEntropy(grid);
+            const { EH: EH_inicial_comp, p: p_inicial_comp } = computeHarmonicEntropy(initialGridComparison);
+            const { EH: EH_final_comp, p: p_final_comp } = computeHarmonicEntropy(gridComparison);
+
+            const selectedModel = comparisonModels[ui.modelSelector.value];
+
+            const eh_stats = calculateABTestStatistics(simData.entropy_huhm, simData.entropy_comparison);
+            const energy_stats = calculateABTestStatistics(simData.energy.harmonic, simData.energy.comparison);
+
+            const mediaParcimonia = simData.energy.harmonic.reduce((a, b) => a + b, 0) / simData.energy.harmonic.length;
+            const mediaComparacao = simData.energy.comparison.reduce((a, b) => a + b, 0) / simData.energy.comparison.length;
+            const vantagem_energetica = mediaComparacao > 0 ? ((mediaComparacao - mediaParcimonia) / mediaComparacao * 100) : 0;
+
+            let report = `
+<div class="ab-test-panel">
+<h3>🧪 RESULTADOS DO TESTE A/B</h3>
+<p><strong>Modelos Comparados:</strong> HUMH vs ${selectedModel.name}</p>
+<p><strong>Descrição:</strong> ${selectedModel.description}</p>
+<p><strong>Frames Analisados:</strong> ${simData.entropy_huhm.length}</p>
+</div>
+
+<div class="comparison-stats">
+<h3>📊 ANÁLISE ESTATÍSTICA COMPARATIVA</h3>
+<table style="width: 100%; border-collapse: collapse;">
+<tr style="border-bottom: 1px solid #ddd;"><th style="text-align: left; padding: 8px;">Métrica</th><th style="padding: 8px;">HUMH</th><th style="padding: 8px;">${selectedModel.name}</th><th style="padding: 8px;">Diferença</th><th style="padding: 8px;">p-value</th></tr>
+<tr><td style="padding: 8px;">EH Média (ℋ)</td><td style="padding: 8px;">${eh_stats ? eh_stats.huhm_mean.toFixed(4) : 'N/A'}</td><td style="padding: 8px;">${eh_stats ? eh_stats.comp_mean.toFixed(4) : 'N/A'}</td><td style="padding: 8px; color: ${eh_stats && eh_stats.diff_mean < 0 ? 'green' : 'red'}">${eh_stats ? eh_stats.diff_mean.toFixed(4) : 'N/A'}</td><td style="padding: 8px;">${eh_stats ? eh_stats.p_value : 'N/A'}</td></tr>
+<tr><td style="padding: 8px;">Custo Médio (adim.)</td><td style="padding: 8px;">${energy_stats ? energy_stats.huhm_mean.toFixed(4) : 'N/A'}</td><td style="padding: 8px;">${energy_stats ? energy_stats.comp_mean.toFixed(4) : 'N/A'}</td><td style="padding: 8px; color: ${energy_stats && energy_stats.diff_mean < 0 ? 'green' : 'red'}">${energy_stats ? energy_stats.diff_mean.toFixed(4) : 'N/A'}</td><td style="padding: 8px;">${energy_stats ? energy_stats.p_value : 'N/A'}</td></tr>
+</table>
+</div>
+
+<div class="report">
+================================================
+RELATÓRIO A/B - VALIDAÇÃO CIENTÍFICA HUMH
+================================================
+Parâmetros da Simulação:
+- Compressão Harmônica: ${ui.compressionSlider.value}%
+- Raio de Ativação: ${ui.radiusSlider.value}
+- Frames simulados: ${simData.entropy_huhm.length}
+- Modelo de Comparação: ${selectedModel.name}
+
+Evolução da Entropia Harmônica (EH):
+HUMH:
+- EH Inicial: ${EH_inicial_huhm.toFixed(4)} ℋ (p=${p_inicial_huhm.toFixed(3)})
+- EH Final:   ${EH_final_huhm.toFixed(4)} ℋ (p=${p_final_huhm.toFixed(3)})
+- Tendência:  ${EH_final_huhm < EH_inicial_huhm ? '✅ Decrescente (ordem)' : '❌ Crescente (desordem)'}
+
+${selectedModel.name}:
+- EH Inicial: ${EH_inicial_comp.toFixed(4)} ℋ (p=${p_inicial_comp.toFixed(3)})
+- EH Final:   ${EH_final_comp.toFixed(4)} ℋ (p=${p_final_comp.toFixed(3)})
+- Tendência:  ${EH_final_comp < EH_inicial_comp ? '✅ Decrescente (ordem)' : '❌ Crescente (desordem)'}
+
+Análise de Custo Comparativa:
+- HUMH - Custo Médio (adim.):     ${mediaParcimonia.toFixed(4)}
+- ${selectedModel.name} - Custo Médio (adim.): ${mediaComparacao.toFixed(4)}
+- Vantagem Energética HUMH:           ${vantagem_energetica.toFixed(1)}% ${vantagem_energetica > 0 ? '✅' : '❌'}
+
+Validação Estatística:
+- Diferença EH (HUMH - Comparação):   ${eh_stats ? eh_stats.diff_mean.toFixed(4) : 'N/A'} ℋ
+- Significância Estatística (EH):     ${eh_stats ? eh_stats.p_value : 'N/A'}
+- Tamanho do Efeito (EH):             ${eh_stats ? eh_stats.effect_size.toFixed(2) : 'N/A'}
+- Diferença Custo (adim.):               ${energy_stats ? energy_stats.diff_mean.toFixed(4) : 'N/A'}
+
+CONCLUSÕES DO TESTE A/B:
+${EH_final_huhm < EH_inicial_huhm && EH_final_comp >= EH_inicial_comp ?
+'✅ HUMH demonstra superioridade: apenas ela conseguiu reduzir a entropia.' :
+EH_final_huhm < EH_inicial_huhm && EH_final_comp < EH_inicial_comp ?
+'⚠️ Ambos os modelos reduziram entropia, necessária análise adicional.' :
+'❌ HUMH não demonstrou superioridade clara sobre o modelo de comparação.'}
+
+${vantagem_energetica > 20 ?
+'✅ HUMH demonstra eficiência energética significativamente superior.' :
+vantagem_energetica > 0 ?
+'⚠️ HUMH mostra vantagem energética moderada.' :
+'❌ HUMH não demonstrou vantagem energética sobre o modelo comparado.'}
+
+${eh_stats && eh_stats.p_value === "< 0.05" ?
+'✅ Diferenças são estatisticamente significativas (p < 0.05).' :
+'⚠️ Diferenças não atingiram significância estatística (necessário mais dados).'}
+================================================</div>`;
+
+            ui.reportArea.innerHTML = report;
+        }
+
+        function runBatchABTest() {
+            ui.batchButton.disabled = true;
+            ui.batchButton.textContent = '⏳ Executando Lote A/B...';
+
+            batchResults = [];
+            let completedRuns = 0;
+            const totalRuns = 10;
+
+            function runSingleBatch() {
+                if (completedRuns >= totalRuns) {
+                    showBatchABReport();
+                    ui.batchButton.disabled = false;
+                    ui.batchButton.textContent = '📊 Lote A/B (5x cada)';
+                    return;
+                }
+
+                const isHUHM = completedRuns < 5;
+                const compression = isHUHM ? (60 + Math.random() * 30) : 0;
+                const radius = 2 + Math.floor(Math.random() * 4);
+
+                initializeGrids();
+                const results = quickABSimulation(100, compression, radius, isHUHM);
+                results.model = isHUHM ? 'HUMH' : ui.modelSelector.value;
+                batchResults.push(results);
+                completedRuns++;
+
+                setTimeout(runSingleBatch, 50);
+            }
+
+            runSingleBatch();
+        }
+
+        function quickABSimulation(frames, compression, radius, isHUHM) {
+            let testGrid = Array.from({length: GRID_SIZE}, () =>
+                Array.from({length: GRID_SIZE}, () => Math.random() < 0.15 ? 1 : 0)
+            );
+
+            const initialEH = computeHarmonicEntropy(testGrid).EH;
+            let totalEnergy = 0;
+
+            for (let i = 0; i < frames; i++) {
+                const x = Math.floor(((Math.sin(i / 15) + 1) / 2) * (GRID_SIZE - 1));
+                const y = Math.floor(((Math.cos(i / 20) + 1) / 2) * (GRID_SIZE - 1));
+
+                const {grid: newGrid, newlyActivated} = activate(testGrid, x, y, radius);
+                testGrid = newGrid;
+
+                const bruteCost = newlyActivated / (GRID_SIZE * GRID_SIZE) * 100;
+                const energy = isHUHM ?
+                    bruteCost * (1 - compression / 100) :
+                    comparisonModels[ui.modelSelector.value].computeEnergy(bruteCost, compression);
+
+                totalEnergy += energy;
+            }
+
+            const finalEH = computeHarmonicEntropy(testGrid).EH;
+            return {
+                compression,
+                radius,
+                initialEH,
+                finalEH,
+                deltaEH: finalEH - initialEH,
+                avgEnergy: totalEnergy / frames
+            };
+        }
+
+        function showBatchABReport() {
+            const huhmResults = batchResults.filter(r => r.model === 'HUMH');
+            const compResults = batchResults.filter(r => r.model !== 'HUMH');
+
+            const huhmDelta = huhmResults.reduce((sum, r) => sum + r.deltaEH, 0) / huhmResults.length;
+            const compDelta = compResults.reduce((sum, r) => sum + r.deltaEH, 0) / compResults.length;
+            const huhmEnergy = huhmResults.reduce((sum, r) => sum + r.avgEnergy, 0) / huhmResults.length;
+            const compEnergy = compResults.reduce((sum, r) => sum + r.avgEnergy, 0) / compResults.length;
+
+            const huhmSuccessRate = huhmResults.filter(r => r.deltaEH < 0).length / huhmResults.length * 100;
+            const compSuccessRate = compResults.filter(r => r.deltaEH < 0).length / compResults.length * 100;
+
+            const report = `
+<div class="ab-test-panel">
+<h3>📊 ANÁLISE ESTATÍSTICA EM LOTE A/B (N=5+5)</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
+<tr style="border-bottom: 2px solid #ddd; background: #f8f9fa;"><th style="text-align: left; padding: 10px;">Métrica</th><th style="padding: 10px;">HUMH</th><th style="padding: 10px;">${comparisonModels[ui.modelSelector.value].name}</th><th style="padding: 10px;">Vantagem HUMH</th></tr>
+<tr><td style="padding: 8px;"><strong>Taxa de Sucesso (EH↓)</strong></td><td style="padding: 8px;">${huhmSuccessRate.toFixed(1)}%</td><td style="padding: 8px;">${compSuccessRate.toFixed(1)}%</td><td style="padding: 8px; color: ${huhmSuccessRate > compSuccessRate ? 'green' : 'red'};">${(huhmSuccessRate - compSuccessRate).toFixed(1)}%</td></tr>
+<tr><td style="padding: 8px;"><strong>Variação Média EH (ℋ)</strong></td><td style="padding: 8px;">${huhmDelta.toFixed(4)}</td><td style="padding: 8px;">${compDelta.toFixed(4)}</td><td style="padding: 8px; color: ${huhmDelta < compDelta ? 'green' : 'red'};">${(huhmDelta - compDelta).toFixed(4)}</td></tr>
+<tr><td style="padding: 8px;"><strong>Custo Médio (adim.)</strong></td><td style="padding: 8px;">${huhmEnergy.toFixed(4)}</td><td style="padding: 8px;">${compEnergy.toFixed(4)}</td><td style="padding: 8px; color: ${huhmEnergy < compEnergy ? 'green' : 'red'};">${(compEnergy - huhmEnergy).toFixed(4)}</td></tr>
+</table>
+<p><strong>Validação Matemática:</strong> ${huhmSuccessRate > compSuccessRate && huhmDelta < compDelta ?
+'✅ HUMH demonstra consistência matemática superior - princípios de otimização confirmados' :
+huhmSuccessRate > compSuccessRate || huhmDelta < compDelta ?
+'⚠️ HUMH mostra consistência parcial - necessário refinamento dos parâmetros' :
+'❌ Consistência matemática HUMH não demonstrada neste conjunto de testes'}</p>
+<p><strong>Próximos Passos:</strong> Validação empírica com dados neurais, físicos ou sociais reais para confirmação definitiva da teoria.</p>
+</div>`;
+
+            ui.reportArea.innerHTML = report;
+            scrollToReport();
+            ui.reportArea.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+
+        function startSimulation() {
+            isRunning = true;
+            ui.startButton.textContent = '⏸ Parar Teste A/B';
+            ui.startButton.style.background = '#dc3545';
+            ui.reportArea.innerHTML = '';
+
+            const frameCount = parseInt(ui.frameSlider.value);
+            const compressionPercent = parseInt(ui.compressionSlider.value);
+            const activationRadius = parseInt(ui.radiusSlider.value);
+            const selectedModel = comparisonModels[ui.modelSelector.value];
+
+            initializeGrids();
+            initializeCharts();
+
+            let iteration = 0;
+            const simData = {
+                energy: { total: [], brute: [], harmonic: [], comparison: [] },
+                entropy_huhm: [],
+                entropy_comparison: [],
+                proportion_huhm: [],
+                proportion_comparison: []
+            };
+
+            function simulationStep() {
+                if (!isRunning || iteration >= frameCount) {
+                    stopSimulation();
+                    if (iteration > 0) showABReport(simData);
+                    return;
+                }
+
+                const x = Math.floor(((Math.sin(iteration / 15) + 1) / 2) * (GRID_SIZE - 1));
+                const y = Math.floor(((Math.cos(iteration / 20) + 1) / 2) * (GRID_SIZE - 1));
+
+                const { grid: newGrid, newlyActivated } = activate(grid, x, y, activationRadius);
+                grid = newGrid;
+
+                const { grid: newGridComp, newlyActivated: newlyActivatedComp } = activate(gridComparison, x, y, activationRadius);
+                gridComparison = newGridComp;
+
+                const custoBruto = newlyActivated / (GRID_SIZE * GRID_SIZE) * 100;
+                const energiaHarmonica = custoBruto * (1 - compressionPercent / 100);
+
+                let energiaComparacao;
+                if (selectedModel.computeEnergy) {
+                    energiaComparacao = selectedModel.computeEnergy(custoBruto, compressionPercent);
+                } else {
+                    energiaComparacao = custoBruto;
+                }
+
+                simData.energy.brute.push(custoBruto);
+                simData.energy.harmonic.push(energiaHarmonica);
+                simData.energy.comparison.push(energiaComparacao);
+
+                const { EH: eh_huhm, p: p_huhm } = computeHarmonicEntropy(grid);
+                let eh_comparison, p_comparison;
+
+                if (selectedModel.computeEH) {
+                    const initialEH = computeHarmonicEntropy(initialGridComparison).EH;
+                    eh_comparison = selectedModel.computeEH(iteration, initialEH);
+                    p_comparison = computeHarmonicEntropy(gridComparison).p;
+                } else {
+                    const metrics = computeHarmonicEntropy(gridComparison);
+                    eh_comparison = metrics.EH;
+                    p_comparison = metrics.p;
+                }
+
+                simData.entropy_huhm.push(eh_huhm);
+                simData.entropy_comparison.push(eh_comparison);
+                simData.proportion_huhm.push(p_huhm);
+                simData.proportion_comparison.push(p_comparison);
+
+                if (simData.entropy_huhm.length >= 20 && (simData.entropy_huhm.length % 5 === 0)) {
+                    window.currentQuartis = classificarEHQuartis(simData.entropy_huhm);
+                }
+
+                const currentState = classifyHarmonicState(eh_huhm);
+
+                drawGrid(iteration, activationRadius, x, y, currentState, eh_huhm, p_huhm, frameCount);
+                updateChart(charts.energyChart, 'Energia', [simData.energy.harmonic, simData.energy.brute, simData.energy.comparison]);
+                updateChart(charts.entropyChart, 'Entropia', [simData.entropy_huhm, simData.entropy_comparison]);
+                updateChart(charts.proportionChart, 'Proporção', [simData.proportion_huhm, simData.proportion_comparison]);
+
+                iteration++;
+                animationFrameId = requestAnimationFrame(simulationStep);
+            }
+            simulationStep();
+        }
+
+        function stopSimulation() {
+            isRunning = false;
+            cancelAnimationFrame(animationFrameId);
+            ui.startButton.textContent = '▶ Iniciar';
+            scrollToReport();
+            ui.startButton.style.background = '#007bff';
+        }
+
+        window.addEventListener('load', () => {
+            setupEventListeners();
+            ui.frameSlider.dispatchEvent(new Event('input'));
+            ui.compressionSlider.dispatchEvent(new Event('input'));
+            ui.radiusSlider.dispatchEvent(new Event('input'));
+            initializeGrids();
+            drawGrid(-1, parseInt(ui.radiusSlider.value), -1, -1, 'Inicial', 0, 0, 0);
+            initializeCharts();
+        });
+    </script>
+
+</body>
+</html>

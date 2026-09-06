@@ -1,0 +1,23 @@
+# VS/.NET
+bin/
+obj/
+.vs/
+publish/
+
+# Publish profiles/credenciais
+**/Properties/PublishProfiles/*.pubxml
+*.PublishSettings
+
+# SQLite (qualquer projeto)
+**/App_Data/*.db
+**/App_Data/*.db-wal
+**/App_Data/*.db-shm
+
+# Segredos locais (qualquer projeto)
+appsettings.Development.json
+**/secrets.local.json
+.env
+
+# Logs/temp
+*.log
+*.tmp

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <script src="js/api_base.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jogo da Vida – Parcimônia (Tema Claro)</title>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --fg: #1b1f24;
+            --muted: #5b6b7c;
+            --acc: #1d4ed8;
+            --grid: #e5e7eb;
+            --good: #0f766e;
+            --warn: #b45309;
+            --bad: #b91c1c;
+            --card: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            color: var(--fg);
+            font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+        }
+
+        .wrap {
+            max-width: 980px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin: 0 0 6px;
+        }
+
+        .sub {
+            color: var(--muted);
+            margin: 0 0 16px;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 6px 20px #0000000d;
+        }
+
+            .panel h2 {
+                margin: 0 0 8px;
+                font-size: 15px;
+                color: #111827;
+            }
+
+        #board {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .controls label {
+            display: block;
+            margin: 6px 0 2px;
+            color: #111827;
+        }
+
+        .controls input[type=range] {
+            width: 100%;
+        }
+
+        .controls input[type=number], .controls select {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--fg);
+        }
+
+        .btns button {
+            color: #fff;
+            border: 1px solid;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+            .btns button:hover {
+                filter: brightness(0.95);
+            }
+
+            .btns button:disabled {
+                background: #9ca3af;
+                border-color: #9ca3af;
+                color: #f3f4f6;
+            }
+
+        #runBtn {
+            background: var(--acc);
+            border-color: var(--acc);
+        }
+
+        #stepBtn {
+            background: var(--warn);
+            border-color: var(--warn);
+        }
+
+        #clearBtn {
+            background: var(--bad);
+            border-color: var(--bad);
+        }
+
+        #randBtn {
+            background: var(--good);
+            border-color: var(--good);
+        }
+
+        .kpi {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+            .kpi .card {
+                background: #fff;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 8px;
+            }
+
+            .kpi .label {
+                color: #6b7280;
+                font-size: 12px;
+            }
+
+            .kpi .val {
+                font-size: 16px;
+                color: #111827;
+            }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            border: 1px solid var(--border);
+            background: #f9fafb;
+        }
+
+        canvas {
+            image-rendering: pixelated;
+        }
+
+        .foot {
+            color: #6b7280;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        details {
+            margin-top: 8px;
+        }
+
+        summary {
+            cursor: pointer;
+            color: #111827;
+        }
+
+        code {
+            background: #f3f4f6;
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+    </style>
+    <script>const API_BASE_COMPUTED=(window.location.origin||"http://localhost:8080")+"/api";</script>
+</head>
+<body>
+    <div class="wrap">
+        <h1>HUMH – Parcimônia de Energia Harmônica (demo tipo "Jogo da Vida")</h1>
+        <div class="sub">
+            Demonstração didática da <strong>Parcimônia de Energia Harmônica</strong> na HUMH: sob disponibilidade fixa de energia por tick, nascimentos (ativação de células) podem ser <em>limitados</em> para respeitar o custo.
+            Você controla <strong>Disponibilidade de Energia</strong>, <strong>Custo por Ativação</strong> e <strong>p inicial</strong> (densidade).
+            <br><strong>Nota:</strong> A métrica EH teórica (HUMH) é <code>EH = 1 - |2p - 1|</code> medida EH (ℋ), onde <code>p</code> é a fração de elementos ativos.
+            Custos de ativação são expressos em unidades adimensionais para fins de comparação visual.
+        </div>
+
+        <div class="row">
+            <div class="panel">
+                <canvas id="board" width="420" height="420"></canvas>
+                <div class="foot">Clique/arraste para alternar células. Grid 60×60 (célula ≈ 7px).</div>
+            </div>
+
+            <div class="panel controls">
+                <h2>Controles HUMH</h2>
+                <div class="btns" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                    <button id="runBtn">Iniciar</button>
+                    <button id="stepBtn">Step</button>
+                    <button id="clearBtn">Limpar</button>
+                    <button id="randBtn">Random</button>
+                    <select id="presetSel">
+                        <option value="">Presets…</option>
+                        <option value="block">Still life – Block</option>
+                        <option value="beehive">Still life – Beehive</option>
+                        <option value="loaf">Still life – Loaf</option>
+                        <option value="blinker">Oscilador – Blinker</option>
+                        <option value="toad">Oscilador – Toad</option>
+                        <option value="glider">Móvel – Glider</option>
+                        <option value="gun">Glider Gun (Gosper)</option>
+                    </select>
+                </div>
+
+                <label>p inicial (densidade, 0–1)</label>
+                <input type="number" id="dens" min="0" max="1" step="0.01" value="0.20">
+
+                <h2 style="margin-top:10px;">Disponibilidade de Energia (por tick)</h2>
+                <label>Disponibilidade [adim./tick] <span id="budgetLbl" class="pill">50</span></label>
+                <input type="range" id="budget" min="0" max="10000" step="50" value="200">
+
+                <label style="margin-top:6px;">Custo por ativação (adim.) (fixos: vivo=1.0, morte=0.5)</label>
+                <input type="number" id="birthCost" min="0" step="0.1" value="3.0">
+
+                <label>Política de parcimônia (estouro de disponibilidade)</label>
+                <select id="policy">
+                    <option value="limit_births" selected>Limitar ativações</option>
+                    <option value="none">Sem restrição (pode estourar)</option>
+                </select>
+
+                <details>
+                    <summary>Como interpretar "parcimônia de energia" na HUMH?</summary>
+                    <div class="foot">
+                        Custo (adim.) por tick: <code>1.0·Ativos + birthCost·Ativações + 0.5·Desativações</code>.<br>
+                        Se o custo estimado ultrapassa a disponibilidade, permitimos apenas as ativações que "cabem" na <em>disponibilidade</em>.<br>
+                        <strong>Expectativa:</strong> sob restrição, o sistema tende a atratores de EH-baixa (HUMH), suprimindo padrões hiperativos.
+                    </div>
+                </details>
+            </div>
+
+            <div class="panel" style="flex:1; min-width:280px;">
+                <h2>Métricas HUMH (último tick)</h2>
+                <div class="kpi">
+                    <div class="card"><div class="label">Tick</div><div class="val" id="kTick">0</div></div>
+                    <div class="card"><div class="label">Ativos (N·p)</div><div class="val" id="kAlive">0</div></div>
+                    <div class="card"><div class="label">Ativações/Desativações</div><div class="val" id="kBD">0 / 0</div></div>
+                    <div class="card"><div class="label">Custo (adim.)</div><div class="val" id="kCost">0.0</div></div>
+                    <div class="card"><div class="label">Disponibilidade [adim./tick]</div><div class="val" id="kBudget">50.0</div></div>
+                    <div class="card"><div class="label">Eficiência η</div><div class="val" id="kEta">0.0000</div></div>
+                </div>
+                <div class="foot" style="margin-top:8px">
+                    Eficiência (didática): <code>η = Ativos_next / (Custo + 1)</code>.
+                    Nota: EH teórica (HUMH) usa <code>p</code>: <code>EH = 1 - |2p - 1|</code> medida EH (ℋ).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const ALIVE_COST = 1.0;
+const DEATH_COST = 0.5;
+
+function RNG(seed=1234567){
+    let s = seed >>> 0;
+    return function(){ s ^= s << 13; s >>>= 0; s ^= s >>> 17; s >>>= 0; s ^= s << 5; s >>>= 0; return (s >>> 0) / 0xFFFFFFFF; };
+}
+
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
+const N = 60;
+const cell = Math.floor(canvas.width / N);
+let grid = makeGrid(N);
+let running = false;
+let timer = null;
+let tickCount = 0;
+let rng = RNG(42);
+
+randomizeGrid();
+draw();
+
+let mouseDown = false;
+canvas.addEventListener('mousedown', (e)=>{ mouseDown = true; toggleAt(e); });
+canvas.addEventListener('mousemove', (e)=>{ if(mouseDown) toggleAt(e); });
+window.addEventListener('mouseup', ()=> mouseDown = false);
+function toggleAt(e){
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor((e.clientX - rect.left) / cell);
+    const y = Math.floor((e.clientY - rect.top) / cell);
+    if (x>=0 && x<N && y>=0 && y<N){ grid[y][x] = !grid[y][x]; draw(); }
+}
+
+document.getElementById('runBtn').onclick = ()=>{
+    running = !running;
+    document.getElementById('runBtn').textContent = running ? 'Parar' : 'Iniciar';
+    if (running){ stepLoop(); } else { clearTimeout(timer); timer=null; }
+};
+document.getElementById('stepBtn').onclick = ()=>{ if(!running){ step(); draw(); } };
+document.getElementById('clearBtn').onclick = ()=>{ clearGrid(); draw(); };
+document.getElementById('randBtn').onclick = ()=>{ randomizeGrid(); draw(); };
+document.getElementById('presetSel').onchange = (e)=>{ loadPreset(e.target.value); e.target.value=''; draw(); };
+document.getElementById('budget').oninput = (e)=>{ document.getElementById('budgetLbl').textContent = e.target.value; };
+
+function makeGrid(n){ return Array.from({length:n}, ()=> Array(n).fill(false)); }
+function clearGrid(){ tickCount=0; grid.forEach(row=>row.fill(false)); }
+function randomizeGrid(){
+    const dens = parseFloat(document.getElementById('dens').value)||0.2;
+    tickCount=0;
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++) grid[y][x] = (Math.random() < dens);
+}
+function neighbors(x,y){
+    let c=0;
+    for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+        if (dx===0 && dy===0) continue;
+        const xx=(x+dx+N)%N, yy=(y+dy+N)%N;
+        if (grid[yy][xx]) c++;
+    }
+    return c;
+}
+
+function step(){
+    const birthCost = parseFloat(document.getElementById('birthCost').value)||3.0;
+    const BUDGET = parseFloat(document.getElementById('budget').value)||200;
+    const policy = document.getElementById('policy').value;
+
+    const births=[], deaths=[], survive=[];
+    for(let y=0;y<N;y++){
+        survive[y] = new Array(N).fill(false);
+        for(let x=0;x<N;x++){
+            const n = neighbors(x,y);
+            const a = grid[y][x];
+            if (a && (n===2||n===3)) survive[y][x]=true;
+            else if (!a && n===3) births.push([x,y]);
+            else if (a && !(n===2||n===3)) deaths.push([x,y]);
+        }
+    }
+
+    const aliveNextIfAllBirths = countTrue(survive) + births.length;
+    const costIfAll = ALIVE_COST*aliveNextIfAllBirths + birthCost*births.length + DEATH_COST*deaths.length;
+
+    let birthsToApply = births;
+    if (policy==="limit_births" && costIfAll > BUDGET){
+        const base = ALIVE_COST*countTrue(survive) + DEATH_COST*deaths.length;
+        const maxBirths = Math.max(0, Math.floor((BUDGET - base) / Math.max(1e-9, birthCost)));
+        birthsToApply = pickSome(births, maxBirths);
+    }
+
+    const next = makeGrid(N);
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++) if (survive[y][x]) next[y][x]=true;
+    for(const [x,y] of birthsToApply) next[y][x]=true;
+
+    const aliveNext = countTrue(next);
+    const birthsApplied = birthsToApply.length;
+    const deathsApplied = deaths.length;
+    const cost = ALIVE_COST*aliveNext + birthCost*birthsApplied + DEATH_COST*deathsApplied;
+    const eta = aliveNext / (cost + 1);
+
+    grid = next; tickCount++;
+    document.getElementById('kTick').textContent = tickCount;
+    document.getElementById('kAlive').textContent = aliveNext;
+    document.getElementById('kBD').textContent = birthsApplied + " / " + deathsApplied;
+    document.getElementById('kCost').textContent = cost.toFixed(1);
+    document.getElementById('kBudget').textContent = BUDGET.toFixed(1);
+    document.getElementById('kEta').textContent = eta.toFixed(4);
+}
+
+function countTrue(mat){
+    let c=0; for(let y=0;y<mat.length;y++) for(let x=0;x<mat[y].length;x++) if (mat[y][x]) c++; return c;
+}
+function pickSome(arr, k){
+    if (k >= arr.length) return arr.slice();
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(rng()* (i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a.slice(0, k);
+}
+
+function stepLoop(){ if (!running) return; step(); draw(); timer = setTimeout(stepLoop, 80); }
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle = "#e5e7eb";
+    ctx.lineWidth = 1;
+    for(let x=0;x<=N;x++){ ctx.beginPath(); ctx.moveTo(x*cell,0); ctx.lineTo(x*cell,canvas.height); ctx.stroke(); }
+    for(let y=0;y<=N;y++){ ctx.beginPath(); ctx.moveTo(0,y*cell); ctx.lineTo(canvas.width,y*cell); ctx.stroke(); }
+    for(let y=0;y<N;y++) for(let x=0;x<N;x++){
+        if (grid[y][x]){ ctx.fillStyle = "#1d4ed8"; ctx.fillRect(x*cell+1, y*cell+1, cell-1, cell-1); }
+    }
+}
+
+function placePattern(cells, ox=2, oy=2){
+    for(const [x,y] of cells){
+        const X = (ox+x)%N, Y=(oy+y)%N;
+        if (X>=0&&X<N&&Y>=0&&Y<N) grid[Y][X] = true;
+    }
+}
+function loadPreset(name){
+    if (!name) return;
+    clearGrid();
+    const mid = Math.floor(N/2);
+    if (name==="block"){ placePattern([[0,0],[1,0],[0,1],[1,1]], mid-1, mid-1); }
+    if (name==="beehive"){ placePattern([[1,0],[2,0],[0,1],[3,1],[1,2],[2,2]], mid-2, mid-1); }
+    if (name==="loaf"){ placePattern([[1,0],[2,0],[0,1],[3,1],[1,2],[3,2],[2,3]], mid-2, mid-2); }
+    if (name==="blinker"){ placePattern([[0,0],[1,0],[2,0]], mid-1, mid); }
+    if (name==="toad"){ placePattern([[1,0],[2,0],[3,0],[0,1],[1,1],[2,1]], mid-2, mid); }
+    if (name==="glider"){ placePattern([[1,0],[2,1],[0,2],[1,2],[2,2]], mid-5, mid-5); }
+    if (name==="gun"){
+        placePattern([
+            [1,5],[2,5],[1,6],[2,6],
+            [13,3],[14,3],[12,4],[16,4],[11,5],[17,5],[11,6],[15,6],[17,6],[18,6],[11,7],[17,7],[12,8],[16,8],[13,9],[14,9],
+            [25,1],[23,2],[25,2],[21,3],[22,3],[21,4],[22,4],[21,5],[22,5],[23,6],[25,6],[25,7],
+            [35,3],[36,3],[35,4],[36,4]
+        ], mid-20, mid-10);
+    }
+    draw();
+}
+    </script>
+
+</body>
+</html>

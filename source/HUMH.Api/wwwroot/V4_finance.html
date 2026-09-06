@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HUMH — Finanças (Regimes de Volatilidade) — HOLDOUT & ABLATION (comparativo)</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --panel: #ffffff;
+            --muted: #6c757d;
+            --text: #212529;
+            --ok: #16a34a;
+            --warn: #f59e0b;
+            --fail: #ef4444;
+            --blue: #2563eb;
+            --card: #f8f9fa;
+            --border: #dee2e6;
+        }
+
+        html, body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin: 12px 0
+        }
+
+        .wrap {
+            max-width: 1150px;
+            margin: 20px auto;
+            padding: 0 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 12px;
+        }
+
+        .box {
+            background: var(--panel);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.25);
+        }
+
+        .controls {
+            grid-column: span 12;
+        }
+
+            .controls .row {
+                display: grid;
+                grid-template-columns: repeat(12,1fr);
+                gap: 10px;
+                align-items: end
+            }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 10px;
+            outline: none;
+        }
+
+        .btn {
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+            .btn:disabled {
+                opacity: .6;
+                cursor: not-allowed
+            }
+
+        .cards {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 12px
+        }
+
+        .card {
+            grid-column: span 3;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px;
+            min-height: 84px
+        }
+
+        .kpi {
+            font-size: 22px;
+            font-weight: 700
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .ok {
+            color: var(--ok)
+        }
+
+        .warn {
+            color: var(--warn)
+        }
+
+        .fail {
+            color: var(--fail)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px
+        }
+
+        th {
+            text-align: left;
+            color: #495057;
+            background-color: #e9ecef
+        }
+
+        canvas {
+            width: 100%;
+            height: 220px;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #dee2e6
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 11px
+        }
+
+            .badge.ok {
+                background: #d1f4e0;
+                color: #0f5132;
+                border: 1px solid #86efac
+            }
+
+            .badge.warn {
+                background: #fff3cd;
+                color: #664d03;
+                border: 1px solid #ffc107
+            }
+
+            .badge.fail {
+                background: #f8d7da;
+                color: #842029;
+                border: 1px solid #dc3545
+            }
+
+        .tip {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        /* Inline responsive controls */
+        .row.controls-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: end;
+        }
+
+            .row.controls-inline > div {
+                display: flex;
+                flex-direction: column;
+                min-width: 150px;
+            }
+        /* In telas largas, manter tudo numa única linha */
+        @media (min-width: 1200px) {
+            .row.controls-inline {
+                flex-wrap: nowrap;
+            }
+        }
+
+        .btnspin {
+            width: 14px;
+            height: 14px;
+            vertical-align: -2px;
+            animation: btnspn 1s linear infinite
+        }
+
+        @keyframes btnspn {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>HUMH — Regimes de Volatilidade <span class="muted">HOLDOUT & ABLATION (comparativo)</span></h1>
+
+        <div class="grid">
+            <div class="box controls">
+                <div class="row controls-inline">
+                    <div style="grid-column:span 2">
+                        <label>N (passos)</label>
+                        <input id="N" type="number" value="10000" min="200" max="20000" step="50" />
+                    </div>
+                    <div style="grid-column:span 2">
+                        <label>Seeds (médias)</label>
+                        <input id="seeds" type="number" value="30" min="1" max="100" step="1" />
+                    </div>
+                    <div style="grid-column:span 2">
+                        <label>σ<sub>low</sub> (% por passo)</label>
+                        <input id="sigmaLow" type="number" value="0.5" min="0.05" max="5" step="0.05" />
+                    </div>
+                    <div style="grid-column:span 2">
+                        <label>σ<sub>high</sub> (% por passo)</label>
+                        <input id="sigmaHigh" type="number" value="2.0" min="0.10" max="10" step="0.10" />
+                    </div>
+                    <div style="grid-column:span 2">
+                        <label>p<sub>LL</sub></label>
+                        <input id="pLL" type="number" value="0.98" min="0.5" max="0.999" step="0.001" />
+                    </div>
+                    <div style="grid-column:span 2">
+                        <label>p<sub>HH</sub></label>
+                        <input id="pHH" type="number" value="0.95" min="0.5" max="0.999" step="0.001" />
+                    </div>
+                    <div style="grid-column:span 2">
+                        <label>Ruído de medição (%)</label>
+                        <input id="measNoise" type="number" value="0.0" min="0" max="50" step="0.5" />
+                    </div>
+                    <div style="grid-column:span 3">
+                        <label>κ (escala do sensor) <span class="muted">× σ<sub>low</sub></span></label>
+                        <input id="scaleC" type="number" value="3.4" min="2.0" max="6.0" step="0.1" />
+                    </div>
+                    <div style="grid-column:span 3">
+                        <label>w<sub>EH</sub> (passos)</label>
+                        <input id="wEH" type="number" value="46" min="5" max="400" step="1" />
+                    </div>
+                    <div style="grid-column:span 3">
+                        <label>w<sub>Vol</sub> (passos)</label>
+                        <input id="wVol" type="number" value="46" min="5" max="400" step="1" />
+                    </div>
+                </div>
+                <div class="row" style="margin-top:8px">
+
+
+
+
+                    <div style="grid-column:span 2">
+                        <label>&nbsp;</label>
+                        <button id="runBtn" class="btn">Rodar simulação</button>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:8px">
+                    <div style="grid-column:span 3">
+                        <label>Holdout</label>
+                        <select id="holdout">
+                            <option value="on" selected>On (80% treino / 20% teste)</option>
+                            <option value="off">Off (tudo em um)</option>
+                        </select>
+                    </div>
+                    <div style="grid-column:span 6">
+                        <label>Ablação (redução de complexidade)</label>
+                        <select id="ablation">
+                            <option value="none" selected>None (modelo completo)</option>
+                            <option value="B1">B1 — Fixar q=90% (sem busca de q)</option>
+                            <option value="B2">B2 — α=1.0 (sem multi-escala)</option>
+                            <option value="B3">B3 — β=1.0 (sem realce de magnitude)</option>
+                            <option value="B4">B4 — Núcleo: apenas κ e w (α=1.0, β=1.0, q=90%)</option>
+                        </select>
+                    </div>
+                    <div style="grid-column:span 3">
+                        <label>Info</label>
+                        <div class="tip">Warm-up AUC-tuned (J=0.4·ρ + 0.6·AUCq), adaptativo no tempo</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card" id="card-status">
+                    <div class="muted">Status</div>
+                    <div class="kpi" id="statusKPI">—</div>
+                    <div class="muted" id="statusInfo">Aguardando...</div>
+                </div>
+                <div class="card">
+                    <div class="muted" id="aucTitle">AUC (ROC)</div>
+                    <div class="kpi" id="aucKPI">—</div>
+                    <div class="muted" id="aucTarget">Alvo ≥ 0.73</div>
+                </div>
+                <div class="card">
+                    <div class="muted" id="rhoTitle">ρ(EH, Vol)</div>
+                    <div class="kpi" id="rhoKPI">—</div>
+                    <div class="muted">Alvo ≥ 0.80</div>
+                </div>
+                <div class="card">
+                    <div class="muted">Calib κ,w,β,α,m2</div>
+                    <div class="kpi" id="calibKPI">—</div>
+                    <div class="muted" id="calibInfo">Warm-up ρ/AUCq: —</div>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="muted">Padrão Ouro (Ideal)</div>
+                    <div class="kpi" id="goldAucKPI">—</div>
+                    <div class="muted">AUC = 1.00 (perfeito)</div>
+                </div>
+                <div class="card">
+                    <div class="muted">EWMA Benchmark</div>
+                    <div class="kpi" id="ewmaAucKPI">—</div>
+                    <div class="muted" id="ewmaInfo">λ=0.94, AUC típico ~0.65</div>
+                </div>
+                <div class="card">
+                    <div class="muted">Δ vs Padrão Ouro</div>
+                    <div class="kpi" id="deltaGoldKPI">—</div>
+                    <div class="muted">Δ ≥ -0.20 = Excelente</div>
+                </div>
+                <div class="card">
+                    <div class="muted">Δ vs EWMA</div>
+                    <div class="kpi" id="deltaEwmaKPI">—</div>
+                    <div class="muted">≥ -0.10 (comparável ou melhor)</div>
+                </div>
+            </div>
+
+            <div class="box" style="grid-column:span 12">
+                <canvas id="plot" width="1050" height="220"></canvas>
+            </div>
+
+            <div class="box" style="grid-column:span 12">
+                <table id="report">
+                    <thead><tr><th>Métrica</th><th>Valor</th><th>Alvo</th><th>Check</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>function mulberry32(a){return function(){var t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296;}}
+function randn(rng){
+  let u=0, v=0, guard=0;
+  while(u===0 && guard<1000){ u=rng(); guard++; }
+  guard=0;
+  while(v===0 && guard<1000){ v=rng(); guard++; }
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function clamp(x,a,b){return Math.max(a, Math.min(b,x));}
+
+function simulateMSV(N, sigmaLow, sigmaHigh, pLL, pHH, seed){
+  const rng = mulberry32(seed>>>0);
+  const states=new Array(N).fill(0), rets=new Array(N).fill(0);
+  let s=0;
+  for(let t=0;t<N;t++){
+    if(s===0){ s = (rng() < pLL) ? 0 : 1; } else { s = (rng() < pHH) ? 1 : 0; }
+    states[t]=s;
+    const sig=(s===0? sigmaLow : sigmaHigh)/100.0;
+    rets[t]=randn(rng)*sig;
+  }
+  return {states,rets};
+}
+
+function movingMean(x,w){
+  const n=x.length, out=new Array(n).fill(0); let s=0;
+  for(let i=0;i<n;i++){ s+=x[i]; if(i>=w){ s-=x[i-w]; } const m=Math.min(i+1,w); out[i]=s/m; }
+  return out;
+}
+
+function rollingStd(x,w){
+  const n=x.length, out=new Array(n).fill(0);
+  let s=0,s2=0;
+  for(let i=0;i<n;i++){
+    const v=x[i]; s+=v; s2+=v*v;
+    if(i>=w){ const vo=x[i-w]; s-=vo; s2-=vo*vo; }
+    const m=Math.min(i+1,w);
+    const mu=s/m; const varr=Math.max(0, s2/m - mu*mu);
+    out[i]=Math.sqrt(varr);
+  }
+  return out;
+}
+
+// Teoria (Seção 3.2): p = 1 - exp(-|r|/scale) ∈ [0,1]; EH = 1 - |2p - 1|
+function EH_series(absr, wEH, scale){
+  const z = absr.map(v => v/Math.max(1e-12, scale));
+  const p = z.map(zv => Math.min(1, Math.max(0, 1 - Math.exp(-zv)))); // clamp [0,1]
+  const pbar = movingMean(p, wEH);
+  const EH = pbar.map(pp => 1 - Math.abs(2*pp - 1));
+  return EH;
+}
+// Gini estrutural (documentação): G = |2p - 1|
+function calculateGini(p){ return Math.abs(2*p - 1); }
+
+function aucROC(scores, labels){
+  const n = scores.length;
+  let pos=0,neg=0;
+  for(let i=0;i<n;i++){ if(labels[i]===1) pos++; else neg++; }
+  if(pos===0 || neg===0) return NaN;
+  const idx=[...scores.keys()].sort((a,b)=> scores[a]-scores[b] || (labels[a]-labels[b]));
+  let ranks=new Array(n).fill(0);
+  let i=0, r=1;
+  while(i<n){
+    let j=i+1;
+    while(j<n && scores[idx[j]]===scores[idx[i]]) j++;
+    const rank=(r + (r+(j-i)-1))/2;
+    for(let k=i;k<j;k++) ranks[idx[k]]=rank;
+    r+=(j-i); i=j;
+  }
+  let sumPos=0; for(let k=0;k<n;k++) if(labels[k]===1) sumPos+=ranks[k];
+  const auc=(sumPos - pos*(pos+1)/2) / (pos*neg);
+  return auc;
+}
+
+function spearmanRho(a,b){
+  const n=a.length; if(n!==b.length || n===0) return NaN;
+  function ranks(x){
+    const idx=[...x.keys()].sort((i,j)=> x[i]-x[j]);
+    const r=new Array(n).fill(0);
+    let i=0, rank=1;
+    while(i<n){
+      let j=i+1; while(j<n && x[idx[j]]===x[idx[i]]) j++;
+      const rr=(rank + (rank+(j-i)-1))/2;
+      for(let k=i;k<j;k++) r[idx[k]]=rr;
+      rank+=(j-i); i=j;
+    }
+    return r;
+  }
+  const rx=ranks(a), ry=ranks(b);
+  let sx=0, sy=0, sxy=0, sxx=0, syy=0;
+  for(let i=0;i<n;i++){ sx+=rx[i]; sy+=ry[i]; }
+  const mx=sx/n, my=sy/n;
+  for(let i=0;i<n;i++){ const dx=rx[i]-mx, dy=ry[i]-my; sxy+=dx*dy; sxx+=dx*dx; syy+=dy*dy; }
+  const den=Math.sqrt(sxx*syy);
+  return den>0? sxy/den : NaN;
+}
+
+// EWMA Volatility (Exponentially Weighted Moving Average)
+function ewmaVolatility(returns, lambda){
+  const n = returns.length;
+  const vol = new Array(n).fill(0);
+  let variance = 0;
+
+  // Inicialização: usar variância dos primeiros pontos
+  if (n > 0) {
+    const initWindow = Math.min(20, n);
+    let sum = 0, sum2 = 0;
+    for (let i = 0; i < initWindow; i++) {
+      sum += returns[i];
+      sum2 += returns[i] * returns[i];
+    }
+    const mean = sum / initWindow;
+    variance = Math.max(0, (sum2 / initWindow) - (mean * mean));
+  }
+
+  for (let t = 0; t < n; t++) {
+    variance = lambda * variance + (1 - lambda) * returns[t] * returns[t];
+    vol[t] = Math.sqrt(variance);
+  }
+
+  return vol;
+}
+
+
+
+function drawPlot(canvas, seriesEH, seriesVol, splitIdx, warmIdx){
+  const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
+  // bg + grid
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#e9ecef'; ctx.lineWidth=1;
+  for(let i=0;i<5;i++){ const y=i*(H-16)/4+8; ctx.beginPath(); ctx.moveTo(40,y); ctx.lineTo(W-8,y); ctx.stroke(); }
+  // scales
+  const n=Math.min(seriesEH.length, seriesVol.length);
+  const padL=40, padR=8, padT=8, padB=8;
+  const xscale=(W-padL-padR)/(Math.max(1,n-1));
+  const vol=seriesVol.slice(0,n);
+  const vSorted=vol.slice().sort((a,b)=>a-b);
+  const v95=vSorted[Math.floor(0.95*(vSorted.length-1))] || 1e-6;
+  const normVol=vol.map(v=> Math.max(0, Math.min(1, v/(v95||1e-6))));
+  const eh=seriesEH.slice(0,n).map(v=> Math.max(0, Math.min(1, v)));
+  const ymap=(u)=> padT+(1-u)*(H-padT-padB);
+  const xmap=(i)=> padL+i*xscale;
+
+  function drawSeries(yvals, color, from, to, dashed){
+    from=Math.max(0,from); to=Math.min(n-1,to);
+    if (to<=from) return;
+    ctx.beginPath();
+    for(let i=from;i<=to;i++){
+      const x=xmap(i), y=ymap(yvals[i]);
+      if(i===from) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=color; ctx.lineWidth=(color==='#22d3ee'?1.6:1.2);
+    if(dashed){ ctx.setLineDash([6,4]); }
+    ctx.stroke();
+    if(dashed){ ctx.setLineDash([]); }
+  }
+
+  const S=(typeof splitIdx==='number' && Number.isFinite(splitIdx)) ? splitIdx : null;
+
+  if (S===null){
+    drawSeries(eh,'#22d3ee',0,n-1,false);
+    drawSeries(normVol,'#f472b6',0,n-1,false);
+  } else {
+    drawSeries(eh,'#22d3ee',0,Math.max(0,S-1),false);
+    drawSeries(eh,'#22d3ee',Math.max(0,S-1),n-1,true);
+    drawSeries(normVol,'#f472b6',0,Math.max(0,S-1),false);
+    drawSeries(normVol,'#f472b6',Math.max(0,S-1),n-1,true);
+  }
+
+  // Warm-up boundary (left label, clamped)
+  if(typeof warmIdx==='number' && Number.isFinite(warmIdx)){
+    const xw = xmap(Math.max(0, Math.min(n-1, warmIdx)));
+    ctx.strokeStyle='#6c757d'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(xw, padT); ctx.lineTo(xw, H-padB); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#495057'; ctx.font='12px system-ui';
+    const _prevAlign = ctx.textAlign; ctx.textAlign='right';
+    const label='w-u'; const tw=ctx.measureText(label).width;
+    const xr=Math.max(4+tw, xw-6); ctx.fillText(label, xr, 32);
+    ctx.textAlign=_prevAlign;
+  }
+
+  // Split 80/20 (vertical dashed + label)
+  if(S!==null){
+    const xs = xmap(Math.max(0, Math.min(n-1, S)));
+    ctx.strokeStyle='#6c757d'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(xs, padT); ctx.lineTo(xs, H-padB); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#495057'; ctx.font='12px system-ui'; ctx.fillText('split (80/20)', xs+6, 18);
+  }
+
+  // legend
+  ctx.fillStyle='#495057'; ctx.font='12px system-ui';
+  ctx.fillText('EH (0–1)', 48, H-10);
+  ctx.fillText('Vol (esc. 95%)', 128, H-10);
+}
+
+
+const fmtN = (x,d)=> (typeof x==='number' && Number.isFinite(x)) ? x.toFixed(d) : '—';
+const fmtI = (x)=> (typeof x==='number' && Number.isFinite(x)) ? Math.round(x) : '—';
+
+function warmupCalibrate(N, seeds, measNoise, sigmaLow, sigmaHigh, pLL, pHH, kInit, wEH_in, wVol_in, ablation){
+  const tau = Math.min(1/(1-Math.max(0.00001,Math.min(0.99999,pLL))), 1/(1-Math.max(0.00001,Math.min(0.99999,pHH))));
+  const cB = 3.0;
+  let kGrid=[3.2,3.4,3.6,3.8,4.0], cGrid=[2.0,2.1,2.2,2.3,2.4], betaGrid=[1.0,1.1,1.2,1.3], alphaGrid=[1.0,0.8,0.6], w2MultGrid=[1.7,3.0], qGrid=[0.85,0.90];
+  if (ablation==='B1'){ qGrid=[0.90]; }
+  if (ablation==='B2'){ alphaGrid=[1.0]; }
+  if (ablation==='B3'){ betaGrid=[1.0]; }
+  if (ablation==='B4'){ qGrid=[0.90]; alphaGrid=[1.0]; betaGrid=[1.0]; }
+
+  const simSeeds = Math.max(1, Math.min(seeds, 8));
+  const sims = [];
+  for(let s=0;s<simSeeds;s++){
+    const base = simulateMSV(N, sigmaLow, sigmaHigh, pLL, pHH, 9001 + s*97);
+    if (measNoise>0){
+      const rng = mulberry32(700+s);
+      for (let t=0;t<N;t++){ base.rets[t] += (measNoise/100.0) * randn(rng); }
+    }
+    sims.push(base);
+  }
+  function quantile(arr, q){
+    const a = arr.slice().sort((x,y)=>x-y);
+    const i = Math.max(0, Math.min(a.length-1, Math.floor(q*(a.length-1))));
+    return a[i];
+  }
+  function objective(rho, aucProxy){
+    const r = (typeof rho==='number' && Number.isFinite(rho)) ? rho : -1;
+    const a = (typeof aucProxy==='number' && Number.isFinite(aucProxy)) ? aucProxy : 0.5;
+    return 0.4*r + 0.6*a;
+  }
+  function EH_series_local(absr, w, scale){
+    const z = absr.map(v => v/Math.max(1e-12, scale));
+    const p = z.map(zv => Math.min(1, Math.max(0, 1 - Math.exp(-zv))));
+    const n=p.length, out=new Array(n).fill(0); let s=0;
+    for(let i=0;i<n;i++){ s+=p[i]; if(i>=w){ s-=p[i-w]; } const m=Math.min(i+1,w); out[i]=s/m; }
+    return out.map(pp => 1 - Math.abs(2*pp - 1));
+  }
+  function rollingStd_local(x,w){
+    const n=x.length, out=new Array(n).fill(0); let s=0,s2=0;
+    for(let i=0;i<n;i++){ const v=x[i]; s+=v; s2+=v*v; if(i>=w){ const vo=x[i-w]; s-=vo; s2-=vo*vo; } const m=Math.min(i+1,w); const mu=s/m; const varr=Math.max(0,s2/m-mu*mu); out[i]=Math.sqrt(varr); }
+    return out;
+  }
+
+  let best = {J:-1e9, k:kInit||3.4, c:Math.max(wEH_in,wVol_in)/tau || 2.3, beta:1.0, alpha:1.0, w2m:3.0, q:0.85, meanR:null, meanA:null};
+
+  for(const kappa of kGrid){
+    for(const c of cGrid){
+      const w  = Math.max(2, Math.round(c*tau));
+      const minEff = Math.max(10, Math.round(0.5 * w));
+      const warmEnd = Math.max(Math.round(cB * tau), (w - 1) + minEff);
+      for(const beta of betaGrid){
+        for(const alpha of alphaGrid){
+          for(const w2m of w2MultGrid){
+            let rhos=[], aucs=[]; let used_q = qGrid[0];
+            for(let s=0;s<simSeeds;s++){
+              const {rets} = sims[s];
+              const absr = Array.from(rets, v => Math.abs(v));
+              const absrB = (beta===1.0) ? absr : absr.map(v=>Math.pow(v, beta));
+              const scale = (kappa * sigmaLow) / 100.0;
+              const EH1 = EH_series_local(absrB, w, scale);
+              const vol1 = rollingStd_local(rets, w);
+              const w2 = Math.max(2, Math.round(w2m * tau));
+              const EHcand = (alpha===1.0) ? EH1 : (function(){
+                const EH2 = EH_series_local(absrB, w2, scale);
+                const out = new Array(N);
+                for(let i=0;i<N;i++) out[i] = alpha*EH1[i] + (1-alpha)*EH2[i];
+                return out;
+              })();
+              const i0 = Math.max(w-1, 0);
+              const i1 = Math.min(N-1, Math.max(i0, warmEnd-1));
+              if ((i1 - i0) >= Math.max(10, Math.round(0.5 * w))){
+                const EH_w = EHcand.slice(i0, i1+1);
+                const vol_w = vol1.slice(i0, i1+1);
+                let bestA = -1, bestQ = qGrid[0];
+                for(const q of qGrid){
+                  const thr = quantile(vol_w, q);
+                  const lab = vol_w.map(v => v>=thr ? 1 : 0);
+                  const a = aucROC(EH_w, lab);
+                  if(Number.isFinite(a) && a>bestA){ bestA = a; bestQ = q; }
+                }
+                const r = spearmanRho(EH_w, vol_w);
+                if(Number.isFinite(r)) rhos.push(r);
+                if(Number.isFinite(bestA)) aucs.push(bestA);
+                used_q = bestQ;
+              }
+            }
+            if(rhos.length && aucs.length){
+              const meanR = rhos.reduce((A,B)=>A+B,0)/rhos.length;
+              const meanA = aucs.reduce((A,B)=>A+B,0)/aucs.length;
+              const J = objective(meanR, meanA);
+              if (J > best.J + 1e-9 ||
+                  (Math.abs(J-best.J)<=1e-9 && (meanA>best.meanA || (Math.abs(meanA-best.meanA)<=1e-9 && c<best.c)))){
+                best = {J, k:kappa, c, beta, alpha, w2m, q:used_q, meanR, meanA};
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  const w_star = Math.max(2, Math.round(best.c * tau));
+  return {tau, w_star, k:best.k, beta:best.beta, alpha:best.alpha, w2m:best.w2m, q:best.q, rhoWU:best.meanR, aucWU:best.meanA};
+}
+
+async function run(){
+  const btn = document.getElementById('runBtn');
+  const __old = btn ? btn.innerHTML : null;
+  if (btn){
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="btnspin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="3" opacity="0.2"/><path d="M21 12a9 9 0 0 1-9 9" fill="none" stroke="currentColor" stroke-width="3"/></svg><span style="margin-left:8px">Processando…</span>';
+  }
+  await new Promise(requestAnimationFrame);
+
+  const N = parseInt(document.getElementById('N').value,10);
+  const seeds = parseInt(document.getElementById('seeds').value,10);
+  const sigmaLow = parseFloat(document.getElementById('sigmaLow').value);
+  const sigmaHigh = parseFloat(document.getElementById('sigmaHigh').value);
+  const pLL = parseFloat(document.getElementById('pLL').value);
+  const pHH = parseFloat(document.getElementById('pHH').value);
+
+  // Normalização preventiva: garantir (estado 0 = low, estado 1 = high)
+  let sigL = sigmaLow, sigH = sigmaHigh, pLLn = pLL, pHHn = pHH;
+  if (sigL > sigH){
+    const __t1 = sigL; sigL = sigH; sigH = __t1;
+    const __t2 = pLLn; pLLn = pHHn; pHHn = __t2;
+  }
+const measNoise = parseFloat(document.getElementById('measNoise').value);
+  let wEH = parseInt(document.getElementById('wEH').value,10);
+  let wVol = parseInt(document.getElementById('wVol').value,10);
+  const scaleC0 = parseFloat(document.getElementById('scaleC').value);
+  const holdout = document.getElementById('holdout').value === 'on';
+  const ablation = document.getElementById('ablation').value;
+
+  const cal = warmupCalibrate(N, seeds, measNoise, sigL, sigH, pLLn, pHHn, scaleC0, wEH, wVol, ablation);
+  wEH = cal.w_star; wVol = cal.w_star;
+  const tau = cal.tau;
+  const scale = (cal.k * sigL) / 100.0;
+
+
+  // Índice do warm-up (constante por sim) baseado em tau e w*
+  const start0 = Math.max(wEH-1, wVol-1, 0);
+  (function(){
+    const cB = 3.0;
+    const w = wEH;
+    const minEff = Math.max(10, Math.round(0.5 * w));
+    const warmEnd = Math.max(Math.round(cB * tau), (w - 1) + minEff);
+    window.__WARM_IDX__ = Math.max(0, Math.round(warmEnd - start0));
+  })();
+const Atrain=[], Atest=[], Rtrain=[], Rtest=[];
+  let EH_last=null, Vol_last=null, splitIdx=null;
+
+  // Arrays para benchmarks
+  const GoldAtrain=[], GoldAtest=[], EwmaAtrain=[], EwmaAtest=[];
+  const lambda_ewma = 0.94; // parâmetro típico para EWMA diário
+
+  for(let s=0;s<seeds;s++){
+    const base = simulateMSV(N, sigL, sigH, pLLn, pHHn, 1234 + s*77);
+    if (measNoise>0){
+      const rng = mulberry32(123+s);
+      for (let t=0;t<N;t++){ base.rets[t] += (measNoise/100.0) * randn(rng); }
+    }
+    const absr = base.rets.map(v=>Math.abs(v));
+    const absrB = (cal.beta===1.0) ? absr : absr.map(v=>Math.pow(v, cal.beta));
+    const EH1 = EH_series(absrB, wEH, scale);
+    const Vol = rollingStd(base.rets, wVol);
+
+    // EWMA Benchmark
+    const EwmaVol = ewmaVolatility(base.rets, lambda_ewma);
+
+    let EHm = EH1;
+    if (cal.alpha < 1.0){
+      const w2 = Math.max(2, Math.round(cal.w2m * tau));
+      const EH2 = EH_series(absrB, w2, scale);
+      EHm = EH1.map((v,i)=> cal.alpha*v + (1-cal.alpha)*EH2[i]);
+    }
+    const start = Math.max(wEH-1, wVol-1, 0);
+
+    if (holdout){
+      const split = Math.floor(0.8 * N);
+
+      // séries de treino (cortadas do início efetivo 'start' até split)
+      const EH_tr  = EHm.slice(start, split);
+      const Vol_tr = Vol.slice(start, split);
+
+      // séries de teste (a partir de split)
+      let EH_te = EHm.slice(split);
+      let Vol_te = Vol.slice(split);
+
+      // rótulos
+      const lab_tr = base.states.slice(start, split);
+      const lab_te = base.states.slice(split);
+
+      // métricas HUMH
+      const auc_tr = aucROC(EH_tr, lab_tr);
+      const auc_te = aucROC(EH_te, lab_te);
+      const rho_tr = spearmanRho(EH_tr, Vol_tr);
+      const rho_te = spearmanRho(EH_te, Vol_te);
+
+      if(Number.isFinite(auc_tr)) Atrain.push(auc_tr);
+      if(Number.isFinite(auc_te)) Atest.push(auc_te);
+      if(Number.isFinite(rho_tr)) Rtrain.push(rho_tr);
+      if(Number.isFinite(rho_te)) Rtest.push(rho_te);
+
+      // Padrão Ouro (usa estados verdadeiros como scores - AUC = 1.0 sempre)
+      const gold_auc_tr = aucROC(lab_tr.map(x=>x), lab_tr);
+      const gold_auc_te = aucROC(lab_te.map(x=>x), lab_te);
+      if(Number.isFinite(gold_auc_tr)) GoldAtrain.push(gold_auc_tr);
+      if(Number.isFinite(gold_auc_te)) GoldAtest.push(gold_auc_te);
+
+      // EWMA Benchmark
+      const Ewma_tr = EwmaVol.slice(start, split);
+      const Ewma_te = EwmaVol.slice(split);
+      const ewma_auc_tr = aucROC(Ewma_tr, lab_tr);
+      const ewma_auc_te = aucROC(Ewma_te, lab_te);
+      if(Number.isFinite(ewma_auc_tr)) EwmaAtrain.push(ewma_auc_tr);
+      if(Number.isFinite(ewma_auc_te)) EwmaAtest.push(ewma_auc_te);
+
+      EH_last  = EH_tr.concat(EH_te);
+      Vol_last = Vol_tr.concat(Vol_te);
+
+
+      // definir índice do split no gráfico (após o último ponto de treino)
+      splitIdx = EH_tr.length;
+}else{
+      const EH_use = EHm.slice(start);
+      const Vol_use = Vol.slice(start);
+      const lab_use = base.states.slice(start);
+
+      // HUMH
+      const auc = aucROC(EH_use, lab_use);
+      const rho = spearmanRho(EH_use, Vol_use);
+      if(Number.isFinite(auc)) Atest.push(auc);
+      if(Number.isFinite(rho)) Rtest.push(rho);
+
+      // Padrão Ouro
+      const gold_auc = aucROC(lab_use.map(x=>x), lab_use);
+      if(Number.isFinite(gold_auc)) GoldAtest.push(gold_auc);
+
+      // EWMA
+      const Ewma_use = EwmaVol.slice(start);
+      const ewma_auc = aucROC(Ewma_use, lab_use);
+      if(Number.isFinite(ewma_auc)) EwmaAtest.push(ewma_auc);
+
+      if(s===seeds-1){ EH_last=EH_use; Vol_last=Vol_use; splitIdx = null; }
+    }
+  }
+
+  const mean = a => a.reduce((A,B)=>A+B,0)/a.length;
+  const std = a => {const m=mean(a); return Math.sqrt(a.reduce((A,x)=>A+(x-m)*(x-m),0)/Math.max(1,a.length-1));};
+  const z = 1.96;
+  function mci(a){ if(a.length<=1) return {m:NaN,ci:NaN}; const m=mean(a), ci=z*std(a)/Math.sqrt(a.length); return {m,ci}; }
+
+  const T = mci(Atest), R = mci(Rtest);
+  const TR = (document.getElementById('holdout').value==='on')? mci(Atrain) : null;
+  const RR = (document.getElementById('holdout').value==='on')? mci(Rtrain) : null;
+
+  // Benchmarks
+  const GoldT = mci(GoldAtest);
+  const GoldTR = (document.getElementById('holdout').value==='on')? mci(GoldAtrain) : null;
+  const EwmaT = mci(EwmaAtest);
+  const EwmaTR = (document.getElementById('holdout').value==='on')? mci(EwmaAtrain) : null;
+
+  // valores seguros para evitar .toFixed em null/undefined
+  const Tm   = (T  && Number.isFinite(T.m))  ? T.m  : null;
+  const Tci  = (T  && Number.isFinite(T.ci)) ? T.ci : null;
+  const TRm  = (TR && Number.isFinite(TR.m)) ? TR.m : null;
+  const TRci = (TR && Number.isFinite(TR.ci))? TR.ci: null;
+  const Rm   = (R  && Number.isFinite(R.m))  ? R.m  : null;
+  const Rci  = (R  && Number.isFinite(R.ci)) ? R.ci : null;
+  const RRm  = (RR && Number.isFinite(RR.m)) ? RR.m : null;
+  const RRci = (RR && Number.isFinite(RR.ci))? RR.ci: null;
+
+  const GoldTm = (GoldT && Number.isFinite(GoldT.m)) ? GoldT.m : null;
+  const EwmaTm = (EwmaT && Number.isFinite(EwmaT.m)) ? EwmaT.m : null;
+
+
+  const tbody = document.querySelector('#report tbody');
+  tbody.innerHTML='';
+  function row(name, val, target, pass){
+    const tr=document.createElement('tr');
+    const td1=document.createElement('td'); td1.textContent=name;
+    const td2=document.createElement('td'); td2.textContent=val;
+    const td3=document.createElement('td'); td3.textContent=target;
+    const td4=document.createElement('td');
+    const span=document.createElement('span'); span.className='badge '+(pass?'ok':'warn'); span.textContent=pass?'PASS':'Verificar';
+    td4.appendChild(span);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
+    tbody.appendChild(tr);
+  }
+
+  const pass_auc = Number.isFinite(T.m) && T.m>=0.73;
+  const pass_rho = Number.isFinite(R.m) && R.m>=0.80;
+
+  const hold = (document.getElementById('holdout').value==='on');
+  if (hold){
+    document.getElementById('aucTitle').textContent = 'AUC (Teste)';
+    document.getElementById('rhoTitle').textContent = 'ρ(EH, Vol) (Teste)';
+    row('AUC (Treino) ± IC95', `${fmtN(TRm,3)} ± ${fmtN(TRci,3)}`, '—', true);
+    row('AUC (Teste) ± IC95', `${fmtN(Tm,3)} ± ${fmtN(Tci,3)}`, '≥ 0.73', pass_auc);
+    row('Δ AUC (Teste − Treino)', `${(Tm!=null && TRm!=null)?(Tm-TRm).toFixed(3):'—'}`, '≈ 0 (ideal)', true);
+    row('ρ (Treino) ± IC95', `${fmtN(RRm,3)} ± ${fmtN(RRci,3)}`, '—', true);
+    row('ρ (Teste) ± IC95', `${fmtN(Rm,3)} ± ${fmtN(Rci,3)}`, '≥ 0.80', pass_rho);
+    row('Δ ρ (Teste − Treino)', `${(Rm!=null && RRm!=null)?(Rm-RRm).toFixed(3):'—'}`, '≈ 0 (ideal)', true);
+  }else{
+    document.getElementById('aucTitle').textContent = 'AUC (ROC)';
+    document.getElementById('rhoTitle').textContent = 'ρ(EH, Vol)';
+    row('AUC (ROC) ± IC95', `${fmtN(Tm,3)} ± ${fmtN(Tci,3)}`, '≥ 0.73', pass_auc);
+    row('ρ (média) ± IC95', `${fmtN(Rm,3)} ± ${fmtN(Rci,3)}`, '≥ 0.80', pass_rho);
+  }
+
+  const calibStr = `${(Number.isFinite(Number(cal.k))?Number(cal.k).toFixed(1):'—')}, ${(Number.isFinite(Number(wEH))?Math.round(Number(wEH)):'—')}, ${(Number.isFinite(Number(cal.beta))?Number(cal.beta).toFixed(2):'—')}, ${(Number.isFinite(Number(cal.alpha))?Number(cal.alpha).toFixed(2):'—')}, ${(Number.isFinite(Number(cal.w2m))?Number(cal.w2m).toFixed(1):'—')}`;
+  const wuStr = `${(isFinite(cal.rhoWU)?cal.rhoWU.toFixed(3):'—')} / ${(isFinite(cal.aucWU)?cal.aucWU.toFixed(3):'—')} (q=${(isFinite(cal.q)?Math.round(cal.q*100):'—')}%)`;
+  row('Calib κ,w,β,α,m2', calibStr, '—', true);
+  row('Warm-up ρ / AUCq', wuStr, '—', true);
+  row('Teoria: EH = 1 − |2p−1|', 'p = 1 − e^{−|r|/scale}', 'Princípio Gini–EH', true);
+  row('Config: Holdout / Ablação', (hold?'On 80/20':'Off') + ' / ' + document.getElementById('ablation').value, '—', true);
+
+  // Comparações com benchmarks
+  tbody.appendChild(document.createElement('tr')).innerHTML = '<td colspan="4" style="padding-top:16px;font-weight:700;color:#495057">Comparações com Benchmarks</td>';
+
+  const deltaGold = (Tm != null && GoldTm != null) ? (Tm - GoldTm) : null;
+  const deltaEwma = (Tm != null && EwmaTm != null) ? (Tm - EwmaTm) : null;
+
+  row('AUC Padrão Ouro (Ideal)', fmtN(GoldTm, 3), '1.000 (perfeito)', Math.abs((GoldTm||0) - 1.0) < 0.001);
+  row('AUC EWMA Benchmark', fmtN(EwmaTm, 3), '— (informativo)', true);
+  row('Δ EH vs Padrão Ouro', fmtN(deltaGold, 3), '≈ -0.20 (comparável)', deltaGold != null && deltaGold >= -0.30);
+  row('Δ EH vs EWMA', fmtN(deltaEwma, 3), '≥ -0.10 (comparável ou melhor)', deltaEwma != null && deltaEwma >= -0.10);
+
+  // Adicionar nota explicativa
+
+  const noteRow = document.createElement('tr');
+  const interpGold =
+    (deltaGold == null) ? '' :
+    (deltaGold >= -0.20) ? '✅ <strong>Excelente</strong>: Δ ≥ -0.20 (muito próximo do ideal).' :
+    (deltaGold >= -0.30) ? '🔹 <strong>Comparável ao Padrão Ouro</strong> (−0.30 ≤ Δ < −0.20).' :
+                           '❌ <strong>Abaixo do esperado</strong>: ajuste parâmetros ou reavalie a calibração.';
+  const interpEwma =
+    (deltaEwma == null) ? '' :
+    (deltaEwma > 0) ? ' O EH <strong>supera</strong> o EWMA.' :
+    (deltaEwma >= -0.10) ? ' O EH é <strong>comparável</strong> ao EWMA.' :
+                           ' O EH está <strong>abaixo</strong> do EWMA.';
+
+  noteRow.innerHTML = `
+    <td colspan="4" style="padding:12px 8px;background:#e7f3ff;border-radius:4px;font-size:11px;color:#0c5ba0;line-height:1.5">
+      <strong>📊 Interpretação:</strong> O Padrão Ouro (AUC=1.0) é perfeito por definição.
+      ${interpGold}${interpEwma}
+    </td>`;
+  tbody.appendChild(noteRow);
+
+
+  document.getElementById('aucKPI').textContent = fmtN(Tm,3);
+  document.getElementById('rhoKPI').textContent = fmtN(Rm,3);
+  document.getElementById('calibKPI').textContent = calibStr;
+  document.getElementById('calibInfo').textContent = 'Warm-up ρ/AUCq: ' + wuStr;
+
+  // Atualizar cards de benchmark
+  document.getElementById('goldAucKPI').textContent = fmtN(GoldTm, 3);
+  document.getElementById('ewmaAucKPI').textContent = fmtN(EwmaTm, 3);
+
+  const deltaGoldStr = deltaGold != null ? (deltaGold >= 0 ? '+' : '') + deltaGold.toFixed(3) : '—';
+  const deltaEwmaStr = deltaEwma != null ? (deltaEwma >= 0 ? '+' : '') + deltaEwma.toFixed(3) : '—';
+
+  document.getElementById('deltaGoldKPI').textContent = deltaGoldStr;
+  document.getElementById('deltaEwmaKPI').textContent = deltaEwmaStr;
+
+  // Colorir deltas
+  const deltaGoldEl = document.getElementById('deltaGoldKPI');
+  const deltaEwmaEl = document.getElementById('deltaEwmaKPI');
+
+  if (deltaGold != null) {
+    if (deltaGold >= -0.20) {
+      deltaGoldEl.className = 'kpi ok';  // Muito próximo do ideal
+    } else if (deltaGold >= -0.30) {
+      deltaGoldEl.className = 'kpi warn';  // Aceitável
+    } else {
+      deltaGoldEl.className = 'kpi fail';  // Precisa melhorar
+    }
+  }
+
+  if (deltaEwma != null) {
+    if (deltaEwma > 0) {
+      deltaEwmaEl.className = 'kpi ok';  // Qualquer melhoria é boa
+    } else if (deltaEwma >= -0.05) {
+      deltaEwmaEl.className = 'kpi warn';  // Comparável
+    } else {
+      deltaEwmaEl.className = 'kpi fail';  // Inferior
+    }
+  }
+
+  const statusOK = pass_auc && pass_rho;
+  document.getElementById('statusKPI').innerHTML = statusOK ? '<span class="ok">PASS</span>' : '<span class="warn">VERIFICAR</span>';
+  document.getElementById('statusInfo').textContent = statusOK
+      ? (hold? 'PASS (Teste ≥ alvos).' : 'PASS (média ≥ alvos).')
+      : (hold? 'Teste abaixo de pelo menos um alvo.' : 'Média abaixo de pelo menos um alvo.');
+
+  if (EH_last && Vol_last){
+    const cv=document.getElementById('plot');
+    drawPlot(cv, EH_last, Vol_last, splitIdx, window.__WARM_IDX__);
+  }
+  if (btn){ btn.disabled = false; if (__old!=null) btn.innerHTML = __old; }
+}
+
+document.getElementById('runBtn').addEventListener('click', run);</script>
+
+    <!-- Hide κ, wEH, wVol controls (UI only) -->
+    <script>document.addEventListener('DOMContentLoaded', () => {
+  function hideByLabelStartsWith(patterns){
+    const labels = Array.from(document.querySelectorAll('label, .label, .muted, span'));
+    patterns.forEach(pat => {
+      labels.forEach(el => {
+        const t = (el.textContent || '').trim().toLowerCase();
+        if (t.startsWith(pat.toLowerCase())) {
+          // sobe até container com input/select
+          let node = el;
+          for (let i=0; i<8 && node; i++){
+            if (node.querySelector && node.querySelector('input,select,textarea')) break;
+            node = node.parentElement;
+          }
+          if (node) node.style.display = 'none';
+        }
+      });
+    });
+  }
+  hideByLabelStartsWith([
+    'κ (escala do sensor)', 'k (escala do sensor)',
+    'weh (passos)', 'wvol (passos)'
+  ]);
+});</script>
+
+</body>
+</html>

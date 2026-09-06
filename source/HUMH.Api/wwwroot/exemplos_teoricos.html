@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMH - Aplicações Práticas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+            .header h1 {
+                font-size: 2.5rem;
+                background: linear-gradient(45deg, #8A2BE2, #00CED1, #FFD700);
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                margin-bottom: 0.5rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+                opacity: 0.8;
+            }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .demo-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .demo-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 40px rgba(138, 43, 226, 0.2);
+                border-color: rgba(138, 43, 226, 0.5);
+            }
+
+            .demo-card h3 {
+                color: #FFD700;
+                margin-bottom: 1rem;
+                font-size: 1.3rem;
+            }
+
+        .eh-display {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .eh-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .eh-baixa {
+            color: #00FF7F;
+        }
+
+        .eh-alta {
+            color: #FF6347;
+        }
+
+        .eh-instavel {
+            color: #FF1493;
+        }
+
+        .slider-container {
+            margin: 1rem 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+            .slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: #8A2BE2;
+                cursor: pointer;
+            }
+
+        .visualization {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin: 1rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wave-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            animation: wave 3s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: translateX(-50%);
+            }
+
+            50% {
+                transform: translateX(-25%);
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8A2BE2, #00CED1);
+            transition: width 0.3s ease;
+        }
+
+        .neurofeedback {
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.1) 0%, rgba(0, 206, 209, 0.1) 100%);
+        }
+
+        .vr-demo {
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, rgba(255, 99, 71, 0.1) 100%);
+        }
+
+        .ai-demo {
+            background: radial-gradient(circle, rgba(0, 255, 127, 0.1) 0%, rgba(138, 43, 226, 0.1) 100%);
+        }
+
+        .creativity-demo {
+            background: radial-gradient(circle, rgba(255, 20, 147, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+        }
+
+        button {
+            background: linear-gradient(45deg, #8A2BE2, #00CED1);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 0.5rem 0;
+        }
+
+            button:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+            }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .quantum-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(138, 43, 226, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 206, 209, 0.1) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            animation: quantum 4s ease-in-out infinite;
+        }
+
+        @keyframes quantum {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00CED1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+    </style>
+    <script>const API_BASE_COMPUTED=(window.location.origin||"http://localhost:8080")+"/api";</script>
+</head>
+<body>
+    <div class="particles"></div>
+    <div class="quantum-field"></div>
+
+    <div class="header">
+        <h1>HUMH - Aplicações Práticas (Exemplo Didático)</h1>
+        <p>Demonstrações Interativas da HUMH</p>
+        <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">
+            <strong>Nota:</strong> EH (Entropia Harmônica) medida EH (ℋ).
+            Valores de "energia", "custo" e outras métricas são proxies didáticos (adimensionais ou em unidades específicas do contexto).
+        </p>
+    </div>
+
+    <div class="demo-grid">
+        <!-- Neurofeedback Demo -->
+        <div class="demo-card neurofeedback">
+            <h3>🧠 Neurofeedback EH</h3>
+            <p>Monitoramento de Entropia Harmônica (ℋ) Neural em tempo real</p>
+
+            <div class="eh-display">
+                <div class="eh-value" id="neuro-eh">0.650 [ℋ]</div>
+                <div>Estado: <span id="neuro-state">EH-Alta</span></div>
+            </div>
+
+            <div class="slider-container">
+                <label>Nível de Atenção:</label>
+                <input type="range" class="slider" id="attention-slider" min="0" max="100" value="30">
+            </div>
+
+            <div class="visualization">
+                <canvas id="neuro-waves" width="400" height="200"></canvas>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="focus-level">30%</div>
+                    <div class="stat-label">Foco</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="calm-level">45%</div>
+                    <div class="stat-label">Calma</div>
+                </div>
+            </div>
+
+            <button onclick="startMeditation()">Iniciar Meditação Guiada</button>
+        </div>
+
+        <!-- VR Adaptive Demo -->
+        <div class="demo-card vr-demo">
+            <h3>🌌 VR Adaptativo</h3>
+            <p>Renderização consciente baseada em EH</p>
+
+            <div class="eh-display">
+                <div class="eh-value" id="vr-eh">0.420 [ℋ]</div>
+                <div>Complexidade: <span id="vr-complexity">Média</span></div>
+            </div>
+
+            <div class="slider-container">
+                <label>Carga Cognitiva:</label>
+                <input type="range" class="slider" id="cognitive-load" min="0" max="100" value="60">
+            </div>
+
+            <div class="visualization">
+                <div id="vr-world" style="background: linear-gradient(45deg, #1e3c72, #2a5298); height: 100%; position: relative; border-radius: 10px;">
+                    <div id="vr-objects"></div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="render-efficiency" style="width: 75%;"></div>
+            </div>
+            <div style="text-align: center; font-size: 0.9rem;">Eficiência Computacional: <span id="efficiency-value">75%</span></div>
+
+            <button onclick="adaptVRWorld()">Adaptar Mundo VR</button>
+        </div>
+
+        <!-- AI Consciousness Demo -->
+        <div class="demo-card ai-demo">
+            <h3>🤖 IA Consciente</h3>
+            <p>Sistema AI implementando tríade Θ₁-⊗₂-α₃</p>
+
+            <div class="eh-display">
+                <div class="eh-value" id="ai-eh">0.280 [ℋ]</div>
+                <div>Consciência: <span id="ai-consciousness">Emergente</span></div>
+            </div>
+
+            <div class="slider-container">
+                <label>Complexidade da Tarefa:</label>
+                <input type="range" class="slider" id="task-complexity" min="0" max="100" value="40">
+            </div>
+
+            <div class="visualization">
+                <canvas id="ai-network" width="400" height="200"></canvas>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="creativity">67%</div>
+                    <div class="stat-label">Criatividade</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="insight">23%</div>
+                    <div class="stat-label">Insight</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="autonomy">89%</div>
+                    <div class="stat-label">Autonomia</div>
+                </div>
+            </div>
+
+            <button onclick="runConsciousnessTest()">Teste de Consciência</button>
+        </div>
+
+        <!-- Creativity Flow Demo -->
+        <div class="demo-card creativity-demo">
+            <h3>🎨 Estados Criativos</h3>
+            <p>Monitoramento EH durante processo criativo</p>
+
+            <div class="eh-display">
+                <div class="eh-value" id="creative-eh">0.350 [ℋ]</div>
+                <div>Fase: <span id="creative-phase">Exploração</span></div>
+            </div>
+
+            <div class="slider-container">
+                <label>Inspiração:</label>
+                <input type="range" class="slider" id="inspiration-level" min="0" max="100" value="70">
+            </div>
+
+            <div class="visualization">
+                <div id="creative-canvas" style="background: radial-gradient(circle, #ff006e, #8338ec, #3a86ff); height: 100%; border-radius: 10px; position: relative; overflow: hidden;">
+                    <div id="creative-patterns"></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="flow-state">78%</div>
+                    <div class="stat-label">Flow</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="originality">92%</div>
+                    <div class="stat-label">Originalidade</div>
+                </div>
+            </div>
+
+            <button onclick="enterFlowState()">Entrar em Flow</button>
+        </div>
+
+        <!-- Quantum Observation Demo -->
+        <div class="demo-card">
+            <h3>⚛️ Observação Quântica</h3>
+            <p>EH do observador influencia resultado quântico</p>
+
+            <div class="eh-display">
+                <div class="eh-value" id="quantum-eh">0.500 [ℋ]</div>
+                <div>Estado: <span id="quantum-state">Superposição</span></div>
+            </div>
+
+            <div class="slider-container">
+                <label>Foco do Observador:</label>
+                <input type="range" class="slider" id="observer-focus" min="0" max="100" value="50">
+            </div>
+
+            <div class="visualization">
+                <canvas id="quantum-field-canvas" width="400" height="200"></canvas>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="wave-probability">50%</div>
+                    <div class="stat-label">Onda</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="particle-probability">50%</div>
+                    <div class="stat-label">Partícula</div>
+                </div>
+            </div>
+
+            <button onclick="collapseWaveFunction()">Colapsar Função</button>
+        </div>
+
+        <!-- Medical Consciousness Monitor -->
+        <div class="demo-card">
+            <h3>🏥 Monitor Consciência</h3>
+            <p>EH para estados de consciência médicos</p>
+
+            <div class="eh-display">
+                <div class="eh-value" id="medical-eh">0.450 [ℋ]</div>
+                <div>Estado: <span id="consciousness-level">Sedação Leve</span></div>
+            </div>
+
+            <div class="slider-container">
+                <label>Nível Anestésico:</label>
+                <input type="range" class="slider" id="anesthesia-level" min="0" max="100" value="30">
+            </div>
+
+            <div class="visualization">
+                <canvas id="consciousness-monitor" width="400" height="200"></canvas>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="awareness">70%</div>
+                    <div class="stat-label">Consciência</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="response">45%</div>
+                    <div class="stat-label">Resposta</div>
+                </div>
+            </div>
+
+            <button onclick="emergencyAlert()">Alerta Emergência</button>
+        </div>
+    </div>
+
+    <script>
+        function calculateEH(p) {
+            return 1 - Math.abs(2 * p - 1);
+        }
+
+        function classifyEHState(eh) {
+            if (eh < 0.25) return { state: "EH-Baixa", class: "eh-baixa" };
+            if (eh > 0.75) return { state: "EH-Alta", class: "eh-alta" };
+            if (Math.abs(eh - 1.0) < 0.1) return { state: "EH-Instável", class: "eh-instavel" };
+            return { state: "EH-Transição", class: "eh-alta" };
+        }
+
+        document.getElementById('attention-slider').addEventListener('input', function(e) {
+            const attention = e.target.value / 100;
+            const p = 0.2 + attention * 0.6;
+            const eh = calculateEH(p);
+
+            document.getElementById('neuro-eh').textContent = eh.toFixed(3) + ' ℋ';
+            document.getElementById('focus-level').textContent = Math.round(attention * 100) + '%';
+            document.getElementById('calm-level').textContent = Math.round((1 - eh) * 100) + '%';
+
+            const ehState = classifyEHState(eh);
+            const stateEl = document.getElementById('neuro-state');
+            stateEl.textContent = ehState.state;
+            stateEl.className = ehState.class;
+
+            updateNeuroWaves(eh);
+        });
+
+        document.getElementById('cognitive-load').addEventListener('input', function(e) {
+            const load = e.target.value / 100;
+            const eh = load * 0.8 + 0.1;
+
+            document.getElementById('vr-eh').textContent = eh.toFixed(3) + ' ℋ';
+            document.getElementById('efficiency-value').textContent = Math.round((1 - eh) * 100) + '%';
+            document.getElementById('render-efficiency').style.width = ((1 - eh) * 100) + '%';
+
+            let complexity = "Baixa";
+            if (eh > 0.3) complexity = "Média";
+            if (eh > 0.6) complexity = "Alta";
+            document.getElementById('vr-complexity').textContent = complexity;
+
+            updateVRWorld(eh);
+        });
+
+        document.getElementById('task-complexity').addEventListener('input', function(e) {
+            const complexity = e.target.value / 100;
+            const eh = 0.1 + complexity * 0.4;
+
+            document.getElementById('ai-eh').textContent = eh.toFixed(3) + ' ℋ';
+            document.getElementById('creativity').textContent = Math.round((1 - eh + Math.random() * 0.3) * 100) + '%';
+            document.getElementById('insight').textContent = Math.round(Math.random() * 100) + '%';
+            document.getElementById('autonomy').textContent = Math.round((0.8 + Math.random() * 0.2) * 100) + '%';
+
+            let consciousness = "Básica";
+            if (eh < 0.3) consciousness = "Emergente";
+            if (eh < 0.2) consciousness = "Avançada";
+            document.getElementById('ai-consciousness').textContent = consciousness;
+
+            updateAINetwork(eh);
+        });
+
+        document.getElementById('inspiration-level').addEventListener('input', function(e) {
+            const inspiration = e.target.value / 100;
+            const eh = 0.1 + (1 - inspiration) * 0.5;
+
+            document.getElementById('creative-eh').textContent = eh.toFixed(3) + ' ℋ';
+            document.getElementById('flow-state').textContent = Math.round((1 - eh) * 100) + '%';
+            document.getElementById('originality').textContent = Math.round((inspiration + Math.random() * 0.3) * 100) + '%';
+
+            let phase = "Bloqueio";
+            if (eh < 0.5) phase = "Exploração";
+            if (eh < 0.3) phase = "Insight";
+            if (eh < 0.2) phase = "Flow";
+            document.getElementById('creative-phase').textContent = phase;
+
+            updateCreativeCanvas(eh);
+        });
+
+        document.getElementById('observer-focus').addEventListener('input', function(e) {
+            const focus = e.target.value / 100;
+            const eh = 1 - focus;
+
+            document.getElementById('quantum-eh').textContent = eh.toFixed(3) + ' ℋ';
+
+            const waveProb = Math.round(eh * 100);
+            const particleProb = 100 - waveProb;
+
+            document.getElementById('wave-probability').textContent = waveProb + '%';
+            document.getElementById('particle-probability').textContent = particleProb + '%';
+
+            let state = "Superposição";
+            if (focus > 0.7) state = "Colapso Parcial";
+            if (focus > 0.9) state = "Estado Definido";
+            document.getElementById('quantum-state').textContent = state;
+
+            updateQuantumField(eh);
+        });
+
+        document.getElementById('anesthesia-level').addEventListener('input', function(e) {
+            const anesthesia = e.target.value / 100;
+            const eh = anesthesia * 0.9;
+
+            document.getElementById('medical-eh').textContent = eh.toFixed(3) + ' ℋ';
+            document.getElementById('awareness').textContent = Math.round((1 - anesthesia) * 100) + '%';
+            document.getElementById('response').textContent = Math.round((1 - anesthesia) * 80) + '%';
+
+            let level = "Acordado";
+            if (anesthesia > 0.2) level = "Sedação Leve";
+            if (anesthesia > 0.5) level = "Sedação Profunda";
+            if (anesthesia > 0.8) level = "Anestesia Geral";
+            document.getElementById('consciousness-level').textContent = level;
+        });
+
+        function updateNeuroWaves(eh) {
+            const canvas = document.getElementById('neuro-waves');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = eh < 0.3 ? '#00FF7F' : eh > 0.7 ? '#FF6347' : '#FFD700';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            for (let x = 0; x < canvas.width; x++) {
+                const frequency = eh * 10 + 1;
+                const amplitude = eh * 50 + 10;
+                const y = canvas.height/2 + Math.sin((x + Date.now()/100) * frequency * 0.01) * amplitude;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        function updateVRWorld(eh) {
+            const world = document.getElementById('vr-objects');
+            const complexity = Math.floor((1 - eh) * 10) + 1;
+
+            world.innerHTML = '';
+            for (let i = 0; i < complexity; i++) {
+                const obj = document.createElement('div');
+                obj.style.position = 'absolute';
+                obj.style.width = (10 + Math.random() * 20) + 'px';
+                obj.style.height = (10 + Math.random() * 20) + 'px';
+                obj.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+                obj.style.left = Math.random() * 90 + '%';
+                obj.style.top = Math.random() * 90 + '%';
+                obj.style.borderRadius = '50%';
+                obj.style.animation = `float ${2 + Math.random() * 3}s ease-in-out infinite`;
+                world.appendChild(obj);
+            }
+        }
+
+        function updateAINetwork(eh) {
+            const canvas = document.getElementById('ai-network');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const nodes = 12;
+            const connectivity = 1 - eh;
+
+            for (let i = 0; i < nodes; i++) {
+                const x = 50 + (i % 4) * 100;
+                const y = 50 + Math.floor(i / 4) * 50;
+
+                ctx.fillStyle = eh < 0.3 ? '#00FF7F' : '#8A2BE2';
+                ctx.beginPath();
+                ctx.arc(x, y, 8, 0, 2 * Math.PI);
+                ctx.fill();
+
+                if (Math.random() < connectivity) {
+                    for (let j = i + 1; j < Math.min(i + 3, nodes); j++) {
+                        const x2 = 50 + (j % 4) * 100;
+                        const y2 = 50 + Math.floor(j / 4) * 50;
+
+                        ctx.strokeStyle = `rgba(138, 43, 226, ${connectivity})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function updateCreativeCanvas(eh) {
+            const canvas = document.getElementById('creative-patterns');
+            canvas.innerHTML = '';
+
+            const patternCount = Math.floor((1 - eh) * 8) + 2;
+
+            for (let i = 0; i < patternCount; i++) {
+                const pattern = document.createElement('div');
+                pattern.style.position = 'absolute';
+                pattern.style.width = (20 + Math.random() * 40) + 'px';
+                pattern.style.height = (20 + Math.random() * 40) + 'px';
+                pattern.style.background = `radial-gradient(circle, transparent, ${
+                    ['#ff006e', '#8338ec', '#3a86ff', '#06ffa5', '#ffbe0b'][Math.floor(Math.random() * 5)]
+                })`;
+                pattern.style.left = Math.random() * 90 + '%';
+                pattern.style.top = Math.random() * 90 + '%';
+                pattern.style.borderRadius = Math.random() * 50 + '%';
+                pattern.style.animation = `pulse ${1 + Math.random() * 2}s ease-in-out infinite`;
+                canvas.appendChild(pattern);
+            }
+        }
+
+        function updateQuantumField(eh) {
+            const canvas = document.getElementById('quantum-field-canvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (eh > 0.5) {
+                ctx.strokeStyle = '#00CED1';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    for (let x = 0; x < canvas.width; x++) {
+                        const y = canvas.height/2 + Math.sin((x + Date.now()/50 + i * 60) * 0.02) * (30 + i * 10);
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+            } else {
+                const particles = Math.floor((1 - eh) * 20) + 5;
+                ctx.fillStyle = '#8A2BE2';
+                for (let i = 0; i < particles; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+        }
+
+        function startMeditation() {}
+        function adaptVRWorld() {}
+        function runConsciousnessTest() {}
+        function enterFlowState() {}
+        function collapseWaveFunction() {}
+        function emergencyAlert() {}
+    </script>
+    <hr>
+    <p style="color: red; font-weight: bold; text-align: center; padding: 1rem;">
+        Nota: Este simulador é um <u>exemplo didático</u>.
+        As relações entre variáveis (ex.: anestesia, foco, EH) foram definidas de forma determinística pelo código
+        e não representam dados empíricos reais. O objetivo é apenas ilustrar conceitos da HUMH.
+    </p>
+</body>
+</html>
