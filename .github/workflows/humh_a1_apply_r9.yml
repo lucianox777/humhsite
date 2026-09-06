@@ -18,6 +18,15 @@ jobs:
       - name: Check source and apply R9
         run: |
           test "$(git merge-base HEAD origin/main)" = "1eca4981671edac19fede8d1e18d9a73d434a72e"
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/humh_a1_apply_r9.py')
+          s = p.read_text(encoding='utf-8')
+          old = "s=rep(s,'**Status:** `PRE_CODE_SCHEDULE_FEASIBILITY_AND_DERIVATIONAL_AUDIT`','**Status:** `PRE_CODE_INDEPENDENT_CONTENT_AUDIT_CLOSED_R9`')"
+          assert s.count(old) == 1
+          new = old + "\ns=s.replace('**Status:** `PRE_CODE_INDEPENDENT_CONTENT_AUDIT_CLOSED_R9`  \\n','**Status:** `PRE_CODE_INDEPENDENT_CONTENT_AUDIT_CLOSED_R9`\\n',1)"
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
           python3 scripts/humh_a1_apply_r9.py
           git diff --check
       - name: Verify normative tree
