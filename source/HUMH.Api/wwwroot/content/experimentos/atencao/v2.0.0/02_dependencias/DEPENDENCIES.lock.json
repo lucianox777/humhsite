@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_PARAMETER_IDENTIFIABILITY_AND_PROVENANCE_R4",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_WORK_UNIT_NORMALIZATION_R5",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "7afdcf2fe140c1082c3348ea65685a84b14c7cb526eb2fd83148e57e21d08d8e"
+      "sha256": "de0a535f5eb1a3c4cd6f4b8cbb1c70e30c0cc3b961de48e147f0288b6523cb89"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "bb017f8f4fbdaafe610b81af6f3c419277017b89a5d105b9f8f57fcf9d194e49"
+      "sha256": "e568f2777c8fd54afa44b67f11efb35b34a8a6a87281942b87ac454e048aeb68"
     }
   ],
   "active_canonical_dependencies": [
@@ -51,5 +51,6 @@
   "A1b_assignment_semantics": "FROZEN_FIXED_PREASSIGNED_STRATA",
   "parameter_identifiability": "FROZEN_ETA_EH0_PLUS_LAMBDA_STATE",
   "demand_generation": "FROZEN_D_i_EQUALS_W",
-  "parameter_provenance_policy": "FROZEN_PRE_BENCHMARK"
+  "parameter_provenance_policy": "FROZEN_PRE_BENCHMARK",
+  "work_unit_normalization": "FROZEN_B_EQUALS_1_OBSERVER_CAPACITY_UNIT"
 }

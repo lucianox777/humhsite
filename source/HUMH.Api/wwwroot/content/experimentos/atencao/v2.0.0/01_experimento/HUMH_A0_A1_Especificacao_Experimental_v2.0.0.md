@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_PARAMETER_IDENTIFIABILITY_AND_PROVENANCE_FREEZE`  
+**Status:** `PRE_CODE_WORK_UNIT_NORMALIZATION_FREEZE`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. Em A1b, `D` permanece candidato canônico sob auditoria estrutural. A geração de demanda do primeiro A1 passa a ser fechada em uma requisição exógena por observador por ciclo (`D_i(W)=W`), e a dinâmica basal é reparametrizada apenas para fins numéricos pelos dois graus identificáveis `eta_EH0` e `lambda_state`, sem inventar valores separados de `omega`, `iota_obs` e `kappa` que A1 não identifica. A proveniência permitida para cada número fica congelada antes de qualquer benchmark ou trajetória científica.
+**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`. A1b permanece em auditoria estrutural. Depois de fechar `D_i(W)=W`, a reparametrização basal identificável e a proveniência numérica, elimina-se agora mais um grau de liberdade puramente computacional: no regime homogêneo do primeiro A1, a unidade de trabalho é definida pela própria capacidade basal por oportunidade, de modo que `B_i=B=1` por normalização de unidade e não por calibração científica.
 
 ---
 
@@ -296,8 +296,41 @@ A escolha é de **isolamento experimental**, não uma afirmação ontológica da
 é operacionalização computacional auxiliar e sua heterogeneidade acrescentaria uma segunda
 fonte de variação à distribuição de atenção que A1 pretende isolar.
 
-O valor numérico de `B` permanece `UNFROZEN_REQUIRED_BEFORE_RUN` e não poderá ser
-selecionado com base em outcomes v1.0.x ou em qualquer outcome A1.
+Como o primeiro A1 já congela `B_i=B` para todos os observadores e braços, o valor
+absoluto de `B` não contém informação científica: somente a razão entre trabalho exigido e
+capacidade por oportunidade afeta a fila.
+
+Escolhe-se, portanto, a própria capacidade homogênea como **unidade de trabalho lógico**:
+
+\[
+\boxed{B_i=B=1\ \text{unidade de capacidade por oportunidade}.}
+\]
+
+Para qualquer representação anterior com `B>0`, defina:
+
+\[
+\widetilde C_j=C_j/B,
+\qquad
+\widetilde R_j=remaining\_work_j/B.
+\]
+
+Então uma oportunidade executa:
+
+\[
+q'=\min(1,\widetilde R_j),
+\]
+
+e preserva exatamente a sequência de conclusões em **número de oportunidades**, desde que
+o workload seja expresso nessa unidade normalizada. Portanto a escolha `B=1` é mudança de
+unidade, não alteração de atenção, velocidade física ou capacidade relativa entre braços.
+
+Status:
+
+```text
+OBSERVER_CAPACITY_UNIT = 1
+OBSERVER_BUFFER_CAPACITY_VALUE = NORMALIZED_NOT_FITTED
+B_i = 1 para todo i no primeiro A1
+```
 
 `B_i` continua não sendo atenção, não é `P_i_obs` e não pode entrar como outcome ou
 resgate explicativo. Heterogeneidade de `B_i` fica reservada para robustez/sucessor
@@ -343,6 +376,31 @@ existe deadline, a tarefa pode ser concluída mesmo quando `C_j>B_i`.
 
 O buffer define **quanto pode ser processado por oportunidade**, não o tamanho máximo
 de tarefa que o observador consegue resolver.
+
+
+Na unidade normalizada do primeiro A1:
+
+\[
+\boxed{B_i=1}
+\]
+
+\[
+\boxed{C_j=\texttt{required\_capacity\_units}_j>0}
+\]
+
+logo:
+
+\[
+\boxed{n^{req}_{ij}=\lceil C_j\rceil.}
+\]
+
+A regra/distribuição prospectiva de `C_j` continua pendente e poderá ser calibrada somente
+pelo caminho técnico cego autorizado; o valor de `B` não é mais parâmetro dessa calibração.
+
+```text
+REQUIRED_WORK_UNIT = OBSERVER_CAPACITY_UNIT
+OBSERVER_CAPACITY_UNIT = 1
+```
 
 ## 5.1.3. Instrumento de atenção: oportunidades
 
@@ -437,10 +495,11 @@ deadline_cycle = arrival_cycle + L_A
 `required_work` é `arm-blind`.
 
 ```text
-WORK_QUANTUM = 1
+OBSERVER_CAPACITY_UNIT = 1
+WORK_QUANTUM = 1 observer_capacity_unit
 ```
 
-é unidade abstrata de trabalho lógico, não ms, instrução física, MHz ou %CPU.
+é unidade abstrata normalizada de trabalho lógico, não ms, instrução física, MHz ou %CPU.
 
 ## 5.1.7. Fila observacional
 
@@ -2348,6 +2407,10 @@ CANONICAL_FIXED
   massa global A1b igual por ciclo
   barreira síncrona
 
+IMPLEMENTATION_NORMALIZATION
+  observer_buffer_capacity B = 1 unidade por oportunidade
+  WORK_QUANTUM = 1 observer_capacity_unit
+
 THEORY_CONSTRAINED_NOT_FITTED
   eta_EH0 in (0,1]
   lambda_state >= 0
@@ -2355,7 +2418,6 @@ THEORY_CONSTRAINED_NOT_FITTED
   alvo estacionário por episódio
 
 BLIND_INSTRUMENT_CALIBRATION_ABENCH0
-  observer_buffer_capacity_value
   required_work rule/range
   L_grid e L_A
   regras/níveis de oportunidades
@@ -2418,6 +2480,7 @@ Já estão congelados prospectivamente no primeiro A1:
 ```text
 observer_basal_parameter_regime = HOMOGENEOUS
 observer_buffer_capacity_heterogeneity_regime = HOMOGENEOUS
+observer_buffer_capacity_value = NORMALIZED_B_EQUALS_1
 logical_cycle_commit = SYNCHRONOUS_SNAPSHOT_BARRIER
 A1b_global_opportunity_mass = MATCHED_PER_LOGICAL_CYCLE
 first_A1_demand_generation = D_i(W)=W
@@ -2431,7 +2494,6 @@ N
 W
 eta_EH0_value
 lambda_state_resistance_value
-observer_buffer_capacity_value
 required_work_rule
 required_work_range_or_distribution
 p_A
@@ -2479,7 +2541,7 @@ A ordem prospectiva passa a ser:
 
 1. preservar a microdinâmica basal já congelada e `ANBC0=FAIL_DERIVATIONAL`;
 2. preservar o regime homogêneo e a barreira síncrona já congelados por isolamento;
-3. congelar `eta_EH0`, `lambda_state`, `B`, `p_A`, `p_B`, `p_0` e os demais números
+3. preservar `B=1` como normalização de unidade e congelar `eta_EH0`, `lambda_state`, `p_A`, `p_B`, `p_0` e os demais números
    por suas classes de proveniência prospectivamente autorizadas, sem inventar decomposição separada de `omega/iota_obs/kappa`;
 4. verificar que os valores congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
 5. congelar os níveis numéricos A1b (`q_H`, `q_L`, proporção dos estratos e discretização por ciclo) sob a semântica de atribuição já congelada e com massa global de oportunidades igual em cada ciclo;

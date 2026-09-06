@@ -5,10 +5,10 @@
 - `ANBC0 = FAIL_DERIVATIONAL`;
 - `A1a = MECHANISM_DEMONSTRATION_ONLY [C1]`;
 - A1b: `D` candidato em auditoria estrutural `CONDITIONAL_DISCRIMINATIVE`;
-- regime basal/B homogêneo e barreira síncrona congelados;
-- demanda primária congelada em `D_i(W)=W`;
-- dinâmica basal numericamente reduzida aos compostos identificáveis `eta_EH0` e `lambda_state`, sem falsa decomposição de `omega/iota_obs/kappa`;
-- semântica A1b HIGH/LOW fixa e exógena congelada, níveis ainda pendentes;
+- `D_i(W)=W`, regime basal homogêneo e barreira síncrona congelados;
+- capacidade auxiliar homogênea normalizada em `B=1 observer_capacity_unit`;
+- basal numérico reduzido a `eta_EH0` e `lambda_state`, sem falsa decomposição de `omega/iota_obs/kappa`;
+- A1b HIGH/LOW fixo e exógeno, níveis ainda pendentes;
 - proveniência dos parâmetros congelada antes de `ABENCH0`;
 - `SCIENTIFIC_RUN_NOT_AUTHORIZED`.
 

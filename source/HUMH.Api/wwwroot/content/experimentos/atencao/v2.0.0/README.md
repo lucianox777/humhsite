@@ -6,13 +6,12 @@ A1b mantém `D` como candidato auditado, com classificação estrutural `CONDITI
 
 Congelamentos correntes:
 
-- primeiro A1 basal e `B_i` homogêneos por isolamento;
-- ciclo científico em `SYNCHRONOUS_SNAPSHOT_BARRIER`;
-- exatamente uma demanda elegível por observador/ciclo: `D_i(W)=W`;
-- admissibilidade basal e reparametrização identificável: `eta0(EH)=eta_EH0/(1+lambda_state*EH)`, com `0<eta_EH0<=1` e `lambda_state>=0`;
-- `omega`, `iota_obs` e `kappa` continuam conceitos teóricos, mas sua decomposição numérica individual não é identificada nem exigida por A1;
-- A1b usa estratos HIGH/LOW pré-atribuídos, fixos durante `W`, com massa global de oportunidades igual por ciclo;
-- política de proveniência numérica congelada: calibração instrumental só pode usar saídas cegas permitidas por `ABENCH0`;
-- valores científicos e instrumentais ainda pendentes não podem ser escolhidos por outcomes v1.0.x/A1.
+- uma demanda elegível por observador/ciclo: `D_i(W)=W`;
+- regime basal homogêneo e ciclo em `SYNCHRONOUS_SNAPSHOT_BARRIER`;
+- capacidade computacional homogênea normalizada por unidade: `B_i=B=1`; o workload passa a ser medido em `observer_capacity_unit`;
+- dinâmica basal numericamente representada pelos compostos identificáveis `eta_EH0` e `lambda_state`;
+- A1b HIGH/LOW pré-atribuído e massa global de oportunidades igual por ciclo;
+- política de proveniência numérica congelada; `B` não é mais número a calibrar por `ABENCH0`;
+- `required_work`, `L_A`, níveis instrumentais e números científicos continuam pendentes sob seus canais autorizados.
 
 `SCIENTIFIC_RUN_NOT_AUTHORIZED`.
