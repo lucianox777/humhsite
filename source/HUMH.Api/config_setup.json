@@ -1,6 +1,7 @@
 {
-  "server": "https://humh-deg8f0a6hzhtgyfu.brazilsouth-01.azurewebsites.net",
-  "contact": "luciano.vianna@outlook.com",
-  "version": "1.0",
-  "mode": "production"
+  "READ_ONLY": false,
+  "API_WRITE_KEY": "9dCQ88N5INQk8NcPla2PdY7gKzlQCLljfedU0VXK",
+  "ConnectionStrings": {
+    "SQLite": "Data Source=App_Data/humh.db;Version=3;foreign keys=true;journal mode=WAL;"
+  }
 }
