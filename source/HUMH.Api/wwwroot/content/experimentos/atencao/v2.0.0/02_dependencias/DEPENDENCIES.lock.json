@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_DISCRETE_WORKLOAD_NORMALIZATION_R6",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_MINIMAL_WORKLOAD_LA1_R7",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "2dc68c985c907c3d6c365e85123f11fc21df08769a7826abad939ba1cfae590d"
+      "sha256": "84fe1a8cd756f70b691c34551554640015adc2c6e3e1398c51c91edc42f50474"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "195112a264bdb4d88bc69bca718dde474c4728c0a52cba4fa18b21f991714b80"
+      "sha256": "008ec6a21149114ffc3cd5a4b08abf908eeec49f33deb558a641f5e554889ae9"
     }
   ],
   "active_canonical_dependencies": [
@@ -53,5 +53,6 @@
   "demand_generation": "FROZEN_D_i_EQUALS_W",
   "parameter_provenance_policy": "FROZEN_PRE_BENCHMARK",
   "work_unit_normalization": "FROZEN_B_EQUALS_1_OBSERVER_CAPACITY_UNIT",
-  "workload_contract": "FROZEN_HOMOGENEOUS_K_C_EQUALS_CEIL_C_FIRST_A1"
+  "workload_contract": "FROZEN_K_C_EQUALS_2_MINIMAL_NONTRIVIAL",
+  "deadline_contract": "FROZEN_L_A_EQUALS_1_CANONICAL_PREFERENCE"
 }

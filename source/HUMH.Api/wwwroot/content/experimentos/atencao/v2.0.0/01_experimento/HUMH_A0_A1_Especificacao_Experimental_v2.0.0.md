@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_DISCRETE_WORKLOAD_NORMALIZATION_FREEZE`  
+**Status:** `PRE_CODE_MINIMAL_WORKLOAD_AND_DEADLINE_FREEZE`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`; A1b permanece em auditoria estrutural. Com `D_i(W)=W`, `B=1` e serviço sem spill entre demandas, o valor contínuo de `required_work` contém graus de liberdade sem efeito científico: a conclusão de uma demanda isolada depende somente de `ceil(C_j)`. O primeiro A1 passa, portanto, a usar workload homogêneo representado por um único inteiro `K_C>=1`, o número de oportunidades exigidas por demanda isolada; apenas `K_C` permanece para calibração técnica cega.
+**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`; A1b permanece em auditoria estrutural. A classe de workload já reduzida a `K_C` é agora fechada no menor caso não trivial, `K_C=2`, que exige processamento em mais de uma oportunidade sem introduzir profundidade de fila desnecessária. Como a arquitetura lógica consegue conceder duas oportunidades e concluir a atualização no mesmo ciclo, aplica-se a preferência canônica do §16 e congela-se `L_A=1`. Assim `K_C` e `L_A` deixam de ser parâmetros de tuning.
 
 ---
 
@@ -126,8 +126,7 @@ termina dentro do deadline lógico comum.
 
 Janela em ciclos lógicos.
 
-### L_A
-
+### 
 Uma requisição criada em `t` entra em `U_i` somente se:
 
 \[
@@ -135,6 +134,36 @@ t_{complete}\le t+L_A.
 \]
 
 `L_A` é comum aos braços e independente de atenção, `EH`, inércia e outcome.
+
+
+### L_A do primeiro A1 — CONGELADO
+
+A definição canônica §16 determina que o primeiro A1 deve **preferir `L_A=1` ciclo** quando
+a arquitetura comportar uma atualização completa nesse intervalo. A arquitetura aqui
+congelada satisfaz essa condição: `B=1`, `K_C=2`, e o scheduler pode conceder duas
+opotunidades lógicas no mesmo ciclo; ao completar a segunda, a rotina basal é executada
+imediatamente antes da barreira de commit.
+
+Portanto:
+
+\[
+\boxed{L_A=1.}
+\]
+
+Uma demanda criada em `t` pode concluir em `t` ou em `t+1`; expira somente quando
+`current_cycle > t+1`.
+
+```text
+FIRST_A1_L_A = 1
+L_A_SELECTION = CANONICAL_PREFERENCE_ARCHITECTURE_SUPPORTED
+L_GRID = NOT_REQUIRED_FOR_SELECTION
+ABENCH0_L_A_ROLE = VALIDATION_ONLY
+```
+
+`ABENCH0` continua obrigatório como auditoria cega do instrumento, mas não pode aumentar o
+deadline simplesmente para produzir um contraste mais conveniente. Se uma futura
+implementação não conseguir executar o contrato lógico acima, ela não é esta construção e
+deve voltar à fase pré-run antes de coletar qualquer trajetória científica.
 
 ## 4.1.1 Geração de demanda do primeiro A1 — CONGELADA
 
@@ -438,15 +467,25 @@ Assim:
 para toda demanda isolada do primeiro A1.
 
 Isso **não** afirma que demandas reais tenham dificuldade idêntica. É isolamento experimental:
-heterogeneidade de workload fica para robustez/sucessor. O valor de `K_C` ainda não é
-escolhido; ele é parâmetro exclusivamente instrumental e poderá ser selecionado apenas pelo
-benchmark cego autorizado, nunca por `p`, `EH`, `eta_hat`, `D` coletivo ou qualquer outcome.
+heterogeneidade de workload fica para robustez/sucessor. O primeiro A1 precisa preservar a distinção entre **capacidade por oportunidade** e
+**disponibilidade de oportunidades**. Por isso `K_C=1` seria o caso trivial em que toda
+demanda cabe em uma única oportunidade. Entre os inteiros `K_C>1`, o menor caso que exerce
+processamento parcial sem acrescentar profundidade instrumental desnecessária é:
+
+\[
+\boxed{K_C=2.}
+\]
+
+A escolha é feita por **minimalidade estrutural antes de qualquer benchmark**, não por
+contraste observado de atenção e não por outcome científico. Valores `K_C>2` ficam para
+robustez/sucessor se houver razão prospectiva.
 
 ```text
 REQUIRED_WORK_UNIT = OBSERVER_CAPACITY_UNIT
 OBSERVER_CAPACITY_UNIT = 1
-REQUIRED_WORK_PARAMETER = K_C
-REQUIRED_WORK_NUMERIC_STATUS = UNFROZEN_BLIND_INSTRUMENT_CALIBRATION
+REQUIRED_WORK_PARAMETER = K_C = 2
+REQUIRED_WORK_NUMERIC_STATUS = FROZEN_MINIMAL_NONTRIVIAL
+K_C_SELECTION_BY_ABENCH0 = FORBIDDEN_NOT_NEEDED
 ```
 
 ## 5.1.3. Instrumento de atenção: oportunidades
@@ -713,7 +752,6 @@ A semântica e o regime de isolamento já estão congelados. Antes do run ainda 
 
 ```text
 observer_buffer_capacity_value
-required_opportunities_per_request_K_C
 observer_opportunity_arm_rules
 ABENCH0_opportunity_candidate_rules
 L_A
@@ -1539,7 +1577,6 @@ Se `L_A=1` não for tecnicamente adequado, um novo benchmark cego selecionará `
 Antes de executar ABENCH0, devem ser congelados:
 
 ```text
-L_grid
 observer_buffer_capacity_rule e valores/distribuição já congelados
 required_work_rule e faixa/distribuição já congelados
 regras candidatas de alocação de oportunidades exclusivamente instrumentais
@@ -2448,6 +2485,7 @@ admissível de cada grupo:
 ```text
 CANONICAL_FIXED
   D_i(W)=W
+  L_A=1 quando a arquitetura lógica suporta atualização completa no intervalo
   deadline inclusivo t_complete <= t+L_A
   uma demanda elegível por observador/ciclo
   massa global A1b igual por ciclo
@@ -2455,6 +2493,7 @@ CANONICAL_FIXED
 
 IMPLEMENTATION_NORMALIZATION
   observer_buffer_capacity B = 1 unidade por oportunidade
+  K_C=2 como menor workload inteiro não trivial (>1)
   WORK_QUANTUM = 1 observer_capacity_unit
 
 THEORY_CONSTRAINED_NOT_FITTED
@@ -2464,8 +2503,6 @@ THEORY_CONSTRAINED_NOT_FITTED
   alvo estacionário por episódio
 
 BLIND_INSTRUMENT_CALIBRATION_ABENCH0
-  K_C required opportunities per isolated request
-  L_grid e L_A
   regras/níveis de oportunidades
   q_H, q_L e proporção instrumental A1b
 ```
@@ -2528,6 +2565,8 @@ observer_basal_parameter_regime = HOMOGENEOUS
 observer_buffer_capacity_heterogeneity_regime = HOMOGENEOUS
 observer_buffer_capacity_value = NORMALIZED_B_EQUALS_1
 required_work_heterogeneity_regime = HOMOGENEOUS_FOR_FIRST_A1
+required_opportunities_per_request_K_C = 2
+L_A = 1
 logical_cycle_commit = SYNCHRONOUS_SNAPSHOT_BARRIER
 A1b_global_opportunity_mass = MATCHED_PER_LOGICAL_CYCLE
 first_A1_demand_generation = D_i(W)=W
@@ -2588,9 +2627,9 @@ A ordem prospectiva passa a ser:
 
 1. preservar a microdinâmica basal já congelada e `ANBC0=FAIL_DERIVATIONAL`;
 2. preservar o regime homogêneo e a barreira síncrona já congelados por isolamento;
-3. preservar `B=1` e workload homogêneo `C_j=K_C` como normalizações/isolamento, e congelar `K_C`, `eta_EH0`, `lambda_state`, `p_A`, `p_B`, `p_0` e os demais números
+3. preservar `B=1`, `K_C=2` e `L_A=1` já congelados, e congelar `eta_EH0`, `lambda_state`, `p_A`, `p_B`, `p_0` e os demais números
    por suas classes de proveniência prospectivamente autorizadas, sem inventar decomposição separada de `omega/iota_obs/kappa`;
-4. verificar que os valores congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
+4. verificar que os valores basais congelados satisfazem o critério analítico `0 < eta0 <= 1` em todo estado admissível, sem clamp pós-hoc;
 5. congelar os níveis numéricos A1b (`q_H`, `q_L`, proporção dos estratos e discretização por ciclo) sob a semântica de atribuição já congelada e com massa global de oportunidades igual em cada ciclo;
 6. repetir `ADIST0.DERIVATIONAL_CONTENT_AUDIT` com o regime completo congelado;
 7. aceitar a classificação obtida: se derivacional, A1b fica demonstração de mecanismo;
