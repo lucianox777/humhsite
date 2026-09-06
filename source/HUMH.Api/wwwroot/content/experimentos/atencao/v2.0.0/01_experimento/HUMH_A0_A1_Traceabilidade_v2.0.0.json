@@ -8,7 +8,7 @@
     "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
     "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
   },
-  "status": "V2_0_0_A1B_DERIVATIONAL_AUDIT_PREPUBLICATION",
+  "status": "V2_0_0_A1B_STRUCTURAL_AUDIT_CYCLE_SEMANTICS_FROZEN_PREPUBLICATION",
   "scientific_run_authorized": false,
   "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
   "canonical_variables": [
@@ -1050,7 +1050,9 @@
     ],
     "ADIST0": [
       "DERIVATIONAL_CONTENT_AUDIT",
-      "ATTENTION_TO_OBSERVER_ASSIGNMENT_INDEPENDENCE"
+      "ATTENTION_TO_OBSERVER_ASSIGNMENT_INDEPENDENCE",
+      "GLOBAL_OPPORTUNITY_MASS_MATCHED_PER_CYCLE",
+      "LOGICAL_CYCLE_SNAPSHOT_INVARIANCE"
     ]
   },
   "retired_as_root_gates": [
@@ -1117,42 +1119,37 @@
     "N",
     "W",
     "basal_eta0_bound_admissibility",
-    "observer_buffer_capacity_heterogeneity_regime",
-    "observer_buffer_capacity_rule",
-    "observer_buffer_capacity_values_or_distribution",
+    "omega_value",
+    "iota_obs_value",
+    "kappa_value",
+    "observer_buffer_capacity_value",
     "required_work_rule",
     "required_work_range_or_distribution",
+    "p_A",
+    "p_B",
+    "p_0_or_initialization_value",
+    "number_of_target_episodes",
+    "A_B_episode_balance_and_order",
+    "target_episode_length",
+    "target_stationarity_certification",
     "L_grid",
     "ABENCH0_opportunity_candidate_rules",
     "ABENCH0_technical_criteria",
     "L_A",
-    "A1a_opportunity_arm_rules",
-    "delta_drive",
-    "min_steps",
-    "min_sum_x2",
-    "ETA_state_strata",
-    "primary_contrast_list",
-    "Delta_sep",
-    "alpha_family",
-    "multiplicity_method",
-    "CI_procedure",
-    "ACOMP0_min_competence",
-    "sample_size_power",
-    "A1b_primary_collective_outcome",
+    "number_of_arms",
+    "instrumental_contrast_criteria",
+    "saturation_avoidance_criteria",
+    "attention_to_observer_assignment_rule_A1b",
+    "A1b_per_cycle_opportunity_levels",
+    "ADIST0_final_derivational_classification",
     "A1b_Abar_matching_margin",
     "A1b_min_DA_difference",
     "A1b_material_effect_margin",
-    "observer_basal_parameter_regime",
-    "omega_i_rule",
-    "omega_i_values_or_distribution",
-    "iota_obs_i_rule",
-    "iota_obs_i_values_or_distribution",
-    "kappa_value_or_rule",
-    "attention_to_observer_assignment_rule_A1b",
-    "ADIST0_final_derivational_classification"
+    "A1b_inference_rule",
+    "sample_size_power"
   ],
   "previous_v1_outcomes_policy": "EXPOSED_DIAGNOSTIC_ONLY; may inform software bug prevention but not scientific numeric choices.",
-  "next_version": "Keep v2.0.0 while unpublished. Microdynamic and ANBC0 are already frozen. D is frozen only as the A1b primary-outcome candidate for derivational audit. Next freeze the basal observer regime and exogenous attention-to-observer assignment rule, then complete the final ADIST0 derivational audit before any scientific trajectory. Do not switch outcomes to rescue discriminativity.",
+  "next_version": "Keep v2.0.0 while unpublished. First-A1 basal regime and synchronous logical-cycle commit are frozen. Next freeze basal numeric values and the A1b assignment schedule without outcome tuning, then complete ADIST0.",
   "canonical_artifact_registry": {
     "HUMH_ATTENTION_DEFINITION_1.0.0": {
       "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
@@ -1344,7 +1341,11 @@
       ],
       "current_authorization": "NOT_AUTHORIZED_PENDING_FINAL_DERIVATIONAL_AUDIT",
       "primary_outcome_candidate": "STATE_DIVERGENCE_D",
-      "pre_numeric_derivational_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED"
+      "pre_numeric_derivational_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED",
+      "candidate_status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_YET_AUTHORIZED",
+      "derivational_audit_structural": "CONDITIONAL_DISCRIMINATIVE",
+      "derivational_audit_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE",
+      "current_confirmatory_authorization": false
     },
     "A2": {
       "result": "NOT_AUTHORIZED / NOT_TESTED",
@@ -1377,7 +1378,7 @@
       }
     ],
     "current_A1a_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
-    "A1b_continuation_condition": "A1b may continue only after its collective outcome and distribution contrast are shown to have content not algebraically reducible to the local A1a identity, and all A1b gates/numerics are frozen."
+    "A1b_continuation_condition": "Freeze basal numerics and the exogenous A1b assignment rule with per-cycle global opportunity mass matched, then repeat ADIST0 derivational audit before any scientific trajectory."
   },
   "historical_entity_overlap_policy": {
     "allowed": true,
@@ -1866,6 +1867,17 @@
         "disabled confirmatory/refutational ASEP0 interpretation for current construction",
         "moved next conceptual blocker to independent-content audit of A1b"
       ]
+    },
+    {
+      "id": "V2_0_0_PREPUBLICATION_A1B_STRUCTURAL_AUDIT_R2",
+      "scientific_version_bump": false,
+      "changes": [
+        "corrected over-strong fixed-map derivation for A1b D candidate",
+        "froze homogeneous first-A1 basal and buffer regime for isolation",
+        "froze synchronous logical-cycle snapshot/barrier semantics so OS/WebWorker ordering is non-scientific",
+        "required per-cycle global opportunity mass matching between A1b arms",
+        "classified structural A1b audit as CONDITIONAL_DISCRIMINATIVE with final classification pending frozen numerics and assignment rule"
+      ]
     }
   ],
   "ANBC0_current_classification": {
@@ -1908,59 +1920,95 @@
     "id": "ADIST0_DERIVATIONAL_CONTENT_AUDIT",
     "kind": "GATE_SUBCHECK",
     "parent_gate": "ADIST0",
-    "scientific_role": "DERIVATIONAL_DIAGNOSTIC",
+    "status_structural": "CONDITIONAL_DISCRIMINATIVE",
+    "status_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_RULE",
     "primary_outcome_candidate": {
       "id": "STATE_DIVERGENCE_D",
-      "canonical_symbol": "D",
-      "formula": "(1/N) * sum_i |p_i - p_bar|",
-      "status": "FROZEN_FOR_DERIVATIONAL_AUDIT_NOT_YET_AUTHORIZED"
+      "formula": "D=(1/N)*sum_i |p_i-p_bar|",
+      "status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_YET_AUTHORIZED",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+          "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+          "section": "A4",
+          "clause_or_statement": "Defines interobserver divergence D=(1/N) sum_i |p_i-p_bar| and distinguishes it from EH."
+        },
+        {
+          "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+          "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+          "section": "A9",
+          "clause_or_statement": "N1b adversarially compares similar EH with different D."
+        }
+      ]
     },
-    "pre_numeric_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED",
-    "final_classification": "PENDING_BASAL_REGIME_AND_ASSIGNMENT_RULE",
-    "homogeneous_sufficient_pattern": {
-      "conditions": [
-        "common initial p_0",
-        "common p_target",
-        "common omega/iota_obs/kappa",
-        "D_i(W)=W",
-        "p_0 != p_target",
-        "0 < eta0(p) < 1 along the relevant path",
-        "D_A > 0 implies distinct U_i"
-      ],
-      "consequence": "uniform A_i -> equal final p_i; heterogeneous A_i -> distinct final p_i; therefore D changes by construction",
-      "classification": "DERIVATIONALLY_FORCED_EFFECT_IF_CONDITIONS_HOLD"
+    "corrected_derivation": {
+      "eta_n": "omega/(1+iota_obs+kappa*EH[n]) under homogeneous first-A1 regime",
+      "r_n": "1-eta_n",
+      "k_i_n": "number of valid demand completions for observer i in logical cycle n",
+      "distance_product": "|p_target-p_i[W]|=|p_target-p_0|*product_n r_n^(k_i[n])",
+      "attention_only_fixes_total_count": "U_i=sum_n k_i[n]; A_i=U_i/D_i",
+      "implication": "A_i and D_A do not determine which time-varying r_n factors are experienced",
+      "previous_fixed_map_claim_retracted": true
     },
-    "non_global_counterconditions": [
-      "eta0=1 may collapse different positive update counts to the same target state",
-      "p_i(0)=p_target removes drive",
-      "heterogeneous omega_i/iota_obs_i makes D depend also on the assignment of attention to observer properties"
-    ],
-    "assignment_independence_required_if_basal_heterogeneous": true,
-    "anti_rescue_rule": "Do not replace D with another primary outcome merely to obtain a discriminative classification. If final audit is forced or invariant, A1b in this construction is mechanism demonstration only.",
+    "forced_submodel": {
+      "condition": "r_n constant over the horizon, e.g. kappa=0 or effectively constant EH",
+      "consequence": "|p_target-p_i[W]|=|p_target-p_0|*r^(U_i)",
+      "classification_for_D": "DERIVATIONALLY_FORCED_FOR_D when 0<r<1"
+    },
+    "general_state_dependent_case": {
+      "condition": "r_n varies with collective EH[n]",
+      "classification": "NOT_ALGEBRAICALLY_FORCED_BY_D_A_ALONE"
+    },
+    "instrument_isolation": {
+      "per_cycle_global_opportunity_mass": "MATCHED_BETWEEN_A1B_ARMS",
+      "formula": "sum_i Pobs_i_uniform[n] = sum_i Pobs_i_heterogeneous[n] for every n",
+      "assignment": "EXOGENOUS_ARM_RULE_ONLY",
+      "reactive_reallocation": "FORBIDDEN",
+      "wall_clock_order_effect": "FORBIDDEN_BY_SYNCHRONOUS_BARRIER"
+    },
+    "confirmatory_authorized": false,
+    "final_audit_must_precede_first_scientific_trajectory": true,
+    "anti_rescue": "Parameters cannot be selected to obtain a desired derivational classification."
+  },
+  "first_A1_baseline_regime": {
+    "status": "FROZEN_HOMOGENEOUS_FOR_FIRST_A1",
+    "omega_i": "omega common to all observers; numeric value pending",
+    "iota_obs_i": "iota_obs common to all observers; numeric value pending",
+    "kappa": "common system parameter; numeric value pending",
+    "initial_state": "p_i(0)=p_0 common within paired episode; numeric value pending",
+    "observer_buffer_capacity": "B_i=B common to all observers; numeric value pending",
+    "scientific_role": "EXPERIMENTAL_ISOLATION_CHOICE",
+    "not_theory_claim_of_real_observer_homogeneity": true,
+    "outcome_based_selection_forbidden": true
+  },
+  "logical_cycle_commit_semantics": {
+    "status": "FROZEN_SYNCHRONOUS_SNAPSHOT_BARRIER",
+    "kind": "AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION",
+    "scientific_time": "logical_cycle",
+    "pre_state": "freeze full p_i[n] vector at cycle start",
+    "EH_snapshot": "compute EH[n] from pre-state only",
+    "service": "service queues/opportunities and count k_i[n] valid completions",
+    "local_updates": "per observer FIFO; all completions in cycle use same EH[n] and episode p_target",
+    "publish": "simultaneous p_i[n+1] barrier commit",
+    "cross_observer_OS_interleaving": "DIAGNOSTIC_ONLY",
     "canonical_refs": [
       {
-        "artifact_id": "HUMH_1.9A",
-        "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
-        "section": "A4",
-        "clause_or_statement": "D=(1/N) sum_i |p_i-p_bar| is interobserver divergence and is distinct from EH."
+        "artifact_id": "HUMH_THEORY_CANONICAL",
+        "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+        "section": "4.4.2",
+        "clause_or_statement": "Discrete computational formulation p[n+1]=p[n]+eta*(p*-p[n])."
       },
       {
         "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
         "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
-        "section": 67,
-        "clause_or_statement": "A1b asks whether changing D_A at fixed A_bar changes collective dynamics."
+        "section": 25,
+        "clause_or_statement": "Initial A1 uses logical control rather than non-portable OS/WebWorker priority."
       },
       {
         "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
         "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
-        "section": 69,
-        "clause_or_statement": "A1b is an additional collective question and requires its own specification and gates."
-      },
-      {
-        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
-        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
-        "section": 103,
-        "clause_or_statement": "First A1b forbids reactive reallocation; the allocation rule must be exogenous and frozen."
+        "section": 98,
+        "clause_or_statement": "CPU/event-loop/global load are diagnostic only."
       }
     ]
   }

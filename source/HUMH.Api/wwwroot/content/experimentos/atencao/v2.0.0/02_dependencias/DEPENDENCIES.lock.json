@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_R3",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_A1B_STRUCTURAL_AUDIT_R2",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "b27152f19c6aa2f9f9c98417c4ee970db33091a53b5bf842b3562e5e6fd40e34"
+      "sha256": "076bbc94fd48f81f891858bad000c364c48a2b6df930f3aa3e6cc3be640019ed"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "f2ddafaf62b9c4d5e2faef8096382a2262459508a7fbaba75328bb63e792542f"
+      "sha256": "addb7c9161f1137e5eacc9efbf45d8396ca4ba99841f8adbddbb1ba98ebef64d"
     }
   ],
   "active_canonical_dependencies": [
@@ -45,5 +45,7 @@
       "sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7",
       "bundled": false
     }
-  ]
+  ],
+  "A1b_confirmatory_authorized": false,
+  "A1b_structural_audit": "CONDITIONAL_DISCRIMINATIVE"
 }
