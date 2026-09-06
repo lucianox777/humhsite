@@ -10,4 +10,5 @@ HUMH_A0_A1_v2.0.0_Publicacao_Autocontida/
 │   └── DEPENDENCIES.lock.json
 └── 03_integridade/
     ├── SHA256SUMS.txt
+    ├── audit_schedules.py
     └── verify.py

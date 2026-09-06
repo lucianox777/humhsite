@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_MINIMAL_WORKLOAD_AND_DEADLINE_FREEZE`  
+**Status:** `PRE_CODE_SCHEDULE_FEASIBILITY_AND_DERIVATIONAL_AUDIT`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** A1a permanece `MECHANISM_DEMONSTRATION_ONLY [C1]` por `ANBC0=FAIL_DERIVATIONAL`; A1b permanece em auditoria estrutural. A classe de workload já reduzida a `K_C` é agora fechada no menor caso não trivial, `K_C=2`, que exige processamento em mais de uma oportunidade sem introduzir profundidade de fila desnecessária. Como a arquitetura lógica consegue conceder duas oportunidades e concluir a atualização no mesmo ciclo, aplica-se a preferência canônica do §16 e congela-se `L_A=1`. Assim `K_C` e `L_A` deixam de ser parâmetros de tuning.
+**Motivo:** O R7 permanece congelado. A auditoria R8 demonstra que a razão nominal oportunidades/trabalho não determina A_i, identifica bloqueio de fase do FIFO e apresenta um testemunho de matching A1b com massa nominal, trabalho efetivo e número de atualizações iguais por ciclo. O próprio testemunho força divergência D pela regra basal e, portanto, é demonstração de mecanismo, não confirmação independente. Os níveis científicos de A1b continuam pendentes; nenhum parâmetro é escolhido para resgatar a classificação.
 
 ---
 
@@ -200,6 +200,39 @@ DEMAND_GENERATION_ARM_BLIND = TRUE
 
 Esta regra operacionaliza diretamente os §§8–11 da definição canônica e elimina um grau de
 liberdade que não precisa ser escolhido numericamente.
+
+---
+
+## 4.1.2. Coorte de demanda e borda direita — ESCLARECIMENTO
+
+A janela primária W contém os ciclos de geração `0,...,W-1`. A regra `D_i(W)=W`
+conta as demandas geradas nesses ciclos, e não as conclusões ocorridas dentro do
+intervalo de geração. Para a mesma coorte:
+
+\[
+U_i(W)=\sum_{j:\,arrival_j\in[0,W-1]}
+\mathbf 1\{completion_j\le arrival_j+L_A\}.
+\]
+
+A demanda criada em `W-1` ainda pode concluir no ciclo `W` quando `L_A=1`.
+O processamento da coorte continua até o último deadline inclusivo; não se criam
+novas demandas elegíveis para o denominador durante essa cauda. Ao abrir o ciclo
+seguinte ao último deadline, as pendências vencidas são expiradas sem atualização.
+Apenas então a contabilidade é encerrada. A cauda não muda W, D_i ou A_i.
+
+```
+COHORT = ARRIVALS_IN_W
+LAST_VALID_COMPLETION_CYCLE = W-1+L_A
+EXPIRE_ONLY_IF = current_cycle > deadline_cycle
+NO_NEW_ELIGIBLE_DEMANDS_IN_COHORT_DRAIN = TRUE
+NO_LATE_BASAL_UPDATE = TRUE
+```
+
+A mesma regra vale para todos os braços e para o benchmark cego. O fechamento
+não pode transformar demanda pendente em sucesso, descartar demanda do denominador
+ou permitir que um braço receba prorrogação diferente. Este esclarecimento
+operacionaliza os §§8–16 e 21 da definição canônica e os subchecks já existentes
+`AMEAS0.RIGHT_EDGE_ACCOUNTING` e `AINT0.NO_RIGHT_CENSORING`.
 
 ---
 
@@ -748,13 +781,11 @@ Somente após os dois canais terminarem é permitido comparar `eta_hat` com `A_i
 
 ## 5.1.13. Parâmetros numéricos pendentes
 
-A semântica e o regime de isolamento já estão congelados. Antes do run ainda devem ser congelados:
+A semântica, B=1, K_C=2 e L_A=1 já estão congelados. Antes do run ainda devem ser congelados:
 
 ```text
-observer_buffer_capacity_value
 observer_opportunity_arm_rules
 ABENCH0_opportunity_candidate_rules
-L_A
 W
 number_of_arms
 instrumental_contrast_criteria
@@ -1572,7 +1603,7 @@ Não significa suporte à HUMH.
 
 # 9. ABENCH0 — benchmark cego de instrumentação
 
-Se `L_A=1` não for tecnicamente adequado, um novo benchmark cego selecionará `L_A`.
+O R7 congela `L_A=1` porque a arquitetura lógica suporta a cadeia completa dentro do intervalo canônico. ABENCH0 valida cegamente esse contrato e os níveis instrumentais ainda pendentes; não seleciona outro deadline nem altera K_C. Se a implementação não conseguir cumpri-lo, o Gate falha e o run permanece não autorizado. Uma alteração do contrato exige revisão prospectiva antes de qualquer trajetória científica.
 
 Antes de executar ABENCH0, devem ser congelados:
 
@@ -1609,11 +1640,12 @@ dispersão de crença
 qualquer outcome de A1a/A1b
 ```
 
-Se nenhum `L_A` satisfizer a regra congelada:
+Se o contrato congelado não for tecnicamente atendido:
 
 ```text
 ABENCH0 = FAIL
 SCIENTIFIC_RUN_NOT_AUTHORIZED
+NO_POST_HOC_DEADLINE_RESCUE = TRUE
 ```
 
 ---
@@ -2210,6 +2242,109 @@ A1B_ASSIGNMENT_RULE_SEMANTICS = FROZEN
 A1B_ASSIGNMENT_NUMERICS = UNFROZEN_REQUIRED_BEFORE_RUN
 ```
 
+## 17.3.1. Auditoria R8 de viabilidade e conteúdo derivacional — PRÉ-CÓDIGO
+
+Esta auditoria não congela os níveis científicos de A1b. Ela verifica, antes de
+qualquer trajetória científica, o que o mecanismo de fila permite e o que ele
+já determina matematicamente. Os testes executáveis ficam em
+`03_integridade/audit_schedules.py`, sem acesso a p, EH, eta ou outcomes.
+
+### A razão nominal não é atenção
+
+Com `B=1`, `K_C=2`, `L_A=1`, demanda unitária por ciclo e FIFO, um schedule
+constante de uma oportunidade/ciclo não produz A=1/2. A demanda 0 usa os
+ciclos 0 e 1 e conclui; a demanda 1 começa no seu deadline, ciclo 2, recebe
+somente uma oportunidade e expira no ciclo 3. O mesmo bloqueio de fase se
+repete. Para W>=2, a coorte produz U_i=1, e não aproximadamente W/2.
+Logo, nenhuma regra científica pode converter diretamente Pobs/K_C em A_i.
+
+### Testemunho auxiliar de matching
+
+Considere N e W pares, fila inicialmente vazia, estratos fixos de mesmo tamanho,
+e a seguinte regra exógena, em que n é o ciclo lógico:
+
+| Condição | n par | n ímpar |
+|---|---:|---:|
+| UNIFORM, todos os observadores | 0 | 2 |
+| HETEROGENEOUS, estrato HIGH | 0 | 4 |
+| HETEROGENEOUS, estrato LOW | 0 | 0 |
+
+Este é um testemunho analítico, não uma escolha de braços confirmatórios. A
+atribuição HIGH/LOW é fixa e independente dos estados. Para cada par de ciclos,
+o uniforme conclui a demanda do primeiro ciclo e deixa vencer a segunda;
+o HIGH conclui ambas e o LOW nenhuma. A contabilidade por coorte, inclusive
+a última demanda e seu deadline, dá exatamente:
+
+\[
+A_i^{uniform}=1/2,\qquad
+A_i^{heterogeneous}\in\{1,0\},
+\]
+
+\[
+\bar A_{uniform}=\bar A_{heterogeneous}=1/2,
+\quad D_{A,uniform}=0,\quad D_{A,heterogeneous}=1/2.
+\]
+
+Em cada ciclo par os dois braços recebem zero oportunidades. Em cada ciclo
+ímpar, o uniforme recebe `2N` e o heterogêneo recebe `4(N/2)=2N`.
+Nesses ciclos, ambos também executam exatamente `2N` unidades de trabalho
+e completam exatamente N atualizações. Portanto o testemunho iguala inclusive
+trabalho efetivo e número global de updates por ciclo, não apenas orçamento
+nominal. A igualdade decorre da fila, não de correção reativa do schedule.
+
+W par é condição matemática deste testemunho: com W ímpar, a coorte de último
+ciclo pode concluir na cauda e o matching exato acima não vale. Não se escolhe
+W científico, nível de atenção, proporção ou margem com base neste resultado.
+
+### O mesmo testemunho não confirma A1b
+
+No regime basal homogêneo, com p_i(0)=p_0, alvo comum fixo e
+`0<eta_n<=1`, a condição uniforme conserva todos os observadores no mesmo
+estado. Portanto `D_uniform(W)=0` é uma identidade da construção.
+
+No heterogêneo, o estrato LOW não atualiza e permanece em p_0. No HIGH,
+cada ciclo ímpar aplica duas vezes a regra basal com o mesmo EH[n] do snapshot.
+Definindo `r_n=1-eta_n`, segue exatamente:
+
+\[
+p_H(W)=p_{target}+(p_0-p_{target})\prod_{n\,impar}r_n^2,
+\qquad p_L(W)=p_0.
+\]
+
+Para dois estratos de mesmo tamanho:
+
+\[
+\boxed{
+D_{heterogeneous}(W)=\frac{|p_{target}-p_0|}{2}
+\left(1-\prod_{n\,impar}(1-\eta_n)^2\right).
+}
+\]
+
+Com p_0 distinto do alvo e taxa basal admissível positiva, esse D é
+estritamente positivo. A conclusão não depende de escolher lambda_state>0:
+vale também para lambda_state=0 e para qualquer sequência admissível de EH.
+
+Assim, a diferença de D deste testemunho é **derivacional**. A auditoria de
+instrumentação passa, mas ADIST0 não pode promover esse efeito a confirmação
+independente. Não se trata de refutação da HUMH ou de H-A1S.
+
+```
+A1B_R8_WITNESS = AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION
+A1B_R8_INSTRUMENT_FEASIBILITY = PASS_ANALYTIC
+A1B_R8_WITNESS_DERIVATIONAL_CONTENT = FAIL_DERIVATIONAL
+A1B_R8_WITNESS_SCIENTIFIC_ROLE = MECHANISM_DEMONSTRATION_ONLY
+A1B_SCIENTIFIC_ASSIGNMENT_LEVELS = UNFROZEN_REQUIRED_BEFORE_RUN
+ADIST0_CONFIRMATORY = NOT_AUTHORIZED
+SCIENTIFIC_RUN_NOT_AUTHORIZED
+```
+
+O testemunho não fixa os números do primeiro A1b e não autoriza busca de outra
+parametrização para obter um rótulo favorável. A ausência de uma identidade geral
+D_A->D não é condição suficiente de discriminação: cada desenho concreto deve
+passar por sua própria auditoria de consequência algébrica e competência.
+
+---
+
 ## 17.4. Classificação prospectiva atual de ADIST0
 
 O estado correto antes dos valores basais e da regra instrumental final é:
@@ -2224,11 +2359,8 @@ ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL =
 ADIST0_CONFIRMATORY = NOT_AUTHORIZED
 ```
 
-`CONDITIONAL_DISCRIMINATIVE` significa que a construção **não contém uma identidade geral**
-`D_A -> D`, mas possui subdomínios admissíveis em que um efeito em `D` é derivacional.
-A classificação final deve ser repetida depois de congelados `omega`, `iota_obs`, `kappa`,
-`B`, `p_0`, `L_A`, `W` e a regra exata de distribuição temporal de oportunidades, sempre
-antes da primeira trajetória científica.
+`CONDITIONAL_DISCRIMINATIVE` é apenas a classificação geral preliminar de ausência de uma identidade universal `D_A -> D`. Não é demonstração de competência discriminativa nem autorização confirmatória. O R8 mostra um subdomínio concreto no qual o contraste em D é derivacional mesmo com EH dependente do estado. A auditoria final de qualquer desenho científico deverá excluir conclusões já garantidas por sua própria construção, sem selecionar parâmetros para forçar aprovação.
+A classificação final deve ser repetida depois de congelados os compostos basais identificáveis, p_0, W e os níveis instrumentais ainda pendentes, sempre antes da primeira trajetória científica. B=1, K_C=2 e L_A=1 não são reabertos. A classificação do testemunho R8 já é derivacional e não pode ser revertida por tuning.
 
 ## 17.5. Regra anti-resgate
 

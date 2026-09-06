@@ -1,6 +1,6 @@
 {
   "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
-  "publication_state": "REGENERATED_PRE_PUBLICATION_MINIMAL_WORKLOAD_LA1_R7_CONSISTENT",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_SCHEDULE_AUDIT_R8",
   "scientific_run_authorized": false,
   "A1a_confirmatory_authorized": false,
   "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
@@ -8,11 +8,11 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "f7449dc82d60cee773b0731a552a8de97f2145a291e64000723e995db5410807"
+      "sha256": "58b91f15b583e1ce0dac726febe455e898d267bc6083509e2ce2959c4dace728"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
-      "sha256": "008ec6a21149114ffc3cd5a4b08abf908eeec49f33deb558a641f5e554889ae9"
+      "sha256": "6c72c36864ce5abcb6d61dd37b6fe03e48bcf49246b2fb80f4a280fdd2f3c074"
     }
   ],
   "active_canonical_dependencies": [
@@ -54,5 +54,9 @@
   "parameter_provenance_policy": "FROZEN_PRE_BENCHMARK",
   "work_unit_normalization": "FROZEN_B_EQUALS_1_OBSERVER_CAPACITY_UNIT",
   "workload_contract": "FROZEN_K_C_EQUALS_2_MINIMAL_NONTRIVIAL",
-  "deadline_contract": "FROZEN_L_A_EQUALS_1_CANONICAL_PREFERENCE"
+  "deadline_contract": "FROZEN_L_A_EQUALS_1_CANONICAL_PREFERENCE",
+  "A1b_structural_audit_scope": "GENERAL_NONIDENTITY_ONLY_NOT_CONFIRMATORY_AUTHORIZATION",
+  "A1b_R8_witness_disposition": "FAIL_DERIVATIONAL_MECHANISM_DEMONSTRATION_ONLY",
+  "A1b_R8_instrument_feasibility": "PASS_ANALYTIC",
+  "A1b_scientific_assignment_levels_frozen": false
 }

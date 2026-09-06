@@ -8,7 +8,7 @@
     "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
     "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
   },
-  "status": "V2_0_0_MINIMAL_WORKLOAD_AND_LA1_FROZEN_PREPUBLICATION",
+  "status": "V2_0_0_SCHEDULE_FEASIBILITY_AND_DERIVATIONAL_AUDIT_PREPUBLICATION",
   "scientific_run_authorized": false,
   "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
   "canonical_variables": [
@@ -1144,7 +1144,7 @@
     "sample_size_power"
   ],
   "previous_v1_outcomes_policy": "EXPOSED_DIAGNOSTIC_ONLY; may inform software bug prevention but not scientific numeric choices.",
-  "next_version": "Keep v2.0.0 while unpublished. Eta admissibility and A1b assignment semantics are frozen. Next freeze basal/service numerics and A1b levels, then complete the final ADIST0 derivational audit.",
+  "next_version": "Keep unpublished v2.0.0. R8 validates schedule feasibility and identifies a derivational A1b witness; scientific levels remain unfrozen. Do not tune to rescue independent confirmation. Finish prospectively justified design and integrity/power checks before any scientific run.",
   "canonical_artifact_registry": {
     "HUMH_ATTENTION_DEFINITION_1.0.0": {
       "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
@@ -1340,7 +1340,9 @@
       "candidate_status": "FROZEN_FOR_STRUCTURAL_AUDIT_NOT_YET_AUTHORIZED",
       "derivational_audit_structural": "CONDITIONAL_DISCRIMINATIVE",
       "derivational_audit_final": "PENDING_FROZEN_NUMERICS_AND_A1B_ASSIGNMENT_LEVELS",
-      "current_confirmatory_authorization": false
+      "current_confirmatory_authorization": false,
+      "R8_witness_disposition": "MECHANISM_DEMONSTRATION_ONLY",
+      "R8_witness_not_independent_confirmation": true
     },
     "A2": {
       "result": "NOT_AUTHORIZED / NOT_TESTED",
@@ -1982,7 +1984,12 @@
     },
     "confirmatory_authorized": false,
     "final_audit_must_precede_first_scientific_trajectory": true,
-    "anti_rescue": "Parameters cannot be selected to obtain a desired derivational classification."
+    "anti_rescue": "Parameters cannot be selected to obtain a desired derivational classification.",
+    "R8_witness_disposition": "FAIL_DERIVATIONAL",
+    "R8_witness_instrument_feasibility": "PASS_ANALYTIC",
+    "R8_witness_is_confirmatory": false,
+    "general_nonidentity_is_sufficient_for_confirmation": false,
+    "current_confirmatory_authorization": false
   },
   "first_A1_baseline_regime": {
     "status": "FROZEN_HOMOGENEOUS_FOR_FIRST_A1",
@@ -2291,5 +2298,157 @@
         "clause_or_statement": "For the first A1, prefer L_A=1 cycle if the architecture supports a complete update in that interval; otherwise determine it only in a separate blind technical pilot."
       }
     ]
+  },
+  "measurement_window_contract": {
+    "status": "FROZEN_ARRIVAL_COHORT_INCLUSIVE_DEADLINE",
+    "scientific_role": "AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION",
+    "demand_generation_cycles": "0 <= n < W",
+    "D_i": "W",
+    "U_i": "count eligible cohort demands completed at or before arrival_cycle+L_A",
+    "last_valid_completion_cycle": "W-1+L_A",
+    "expiry_rule": "current_cycle > deadline_cycle",
+    "drain_creates_new_cohort_demands": false,
+    "no_late_basal_update": true,
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 8,
+        "clause_or_statement": "D_i counts exogenous eligible demand in W."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 9,
+        "clause_or_statement": "Attention arms preserve demand identity and content."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 12,
+        "clause_or_statement": "U_i counts completion of the full chain within the valid deadline."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 14,
+        "clause_or_statement": "Completion at the common deadline is valid."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 21,
+        "clause_or_statement": "Attention is measured from completed eligible requests, not nominal priority."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 94,
+        "clause_or_statement": "Integrity includes reproducible measurement and deadline accounting."
+      }
+    ]
+  },
+  "a1b_schedule_audit_R8": {
+    "id": "ADIST0.DERIVATIONAL_CONTENT_AUDIT.R8_WITNESS",
+    "kind": "GATE_SUBCHECK",
+    "parent_gate": "ADIST0",
+    "scientific_role": "AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION",
+    "status": "PASS_INSTRUMENT_FEASIBILITY_FAIL_DERIVATIONAL_CONTENT_FOR_WITNESS",
+    "scientific_run_authorized": false,
+    "scientific_assignment_levels_frozen": false,
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 29,
+        "clause_or_statement": "A_bar is mean individual attention."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 30,
+        "clause_or_statement": "D_A is mean absolute attention deviation."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 31,
+        "clause_or_statement": "A1b compares attention distributions at matched mean."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 67,
+        "clause_or_statement": "A1b studies the distribution of attention."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 68,
+        "clause_or_statement": "ADIST0 requires an authorized frozen distribution comparison."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 69,
+        "clause_or_statement": "A1b inference must not treat an instrumentation artifact as scientific support."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 102,
+        "clause_or_statement": "The first A1b must establish its own scientific content."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 103,
+        "clause_or_statement": "A1b requires prospective decision conditions."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 116,
+        "clause_or_statement": "A1b result categories depend on valid measurement and discriminative inference."
+      }
+    ],
+    "queue_phase_trap": {
+      "schedule": "one opportunity per cycle",
+      "K_C": 2,
+      "L_A": 1,
+      "result": "U_i=1 for W>=2, not W/2",
+      "meaning": "nominal opportunity ratio is not measured attention"
+    },
+    "witness": {
+      "scope": "AUXILIARY_ONLY",
+      "required_conditions": [
+        "N even",
+        "W even",
+        "empty initial queues",
+        "homogeneous B=1 and K_C=2",
+        "L_A=1",
+        "fixed equal-size strata"
+      ],
+      "uniform_schedule": "Pobs_i(n)=0 for even n, 2 for odd n",
+      "heterogeneous_high_schedule": "Pobs_i(n)=0 for even n, 4 for odd n",
+      "heterogeneous_low_schedule": "Pobs_i(n)=0",
+      "U_uniform": "W/2 for every observer",
+      "U_high": "W",
+      "U_low": "0",
+      "Abar_uniform": 0.5,
+      "Abar_heterogeneous": 0.5,
+      "D_A_uniform": 0,
+      "D_A_heterogeneous": 0.5,
+      "per_cycle_nominal_mass_matched": true,
+      "per_cycle_executed_work_matched": true,
+      "per_cycle_update_count_matched": true,
+      "right_edge": "cohort drain through W-1+L_A; no new denominator demands",
+      "derivational_disposition": "FAIL_DERIVATIONAL",
+      "D_uniform": "0",
+      "D_heterogeneous": "abs(p_target-p0)*(1-product_odd_cycles((1-eta_n)^2))/2",
+      "strictly_positive_if": "p0 != p_target and eta_n in (0,1] with at least one update cycle",
+      "independent_confirmation": false
+    },
+    "anti_rescue": "No scientific parameter or schedule may be selected to turn the witness derivational classification into confirmatory support."
   }
 }
