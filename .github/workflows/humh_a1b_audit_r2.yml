@@ -5,7 +5,7 @@ on:
     branches: [ humh-a1b-audit-r2 ]
     paths:
       - '.github/workflows/humh_a1b_audit_r2.yml'
-      - 'scripts/humh_a1b_audit_r2.py'
+      - 'scripts/humh_a1b_audit_r2_patch.py'
 
 permissions:
   contents: write
@@ -18,8 +18,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: humh-a1b-audit-r2
-      - name: Apply A1b structural audit R2
-        run: python scripts/humh_a1b_audit_r2.py
+      - name: Apply A1b R2 consistency patch
+        run: python scripts/humh_a1b_audit_r2_patch.py
       - name: Verify materialized tree
         run: |
           cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
@@ -32,6 +32,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No changes to commit.'
           else
-            git commit -m 'refine A1b structural audit and freeze logical-cycle semantics'
+            git commit -m 'fix A1b R2 consistency after homogeneous freeze'
             git push origin humh-a1b-audit-r2
           fi
