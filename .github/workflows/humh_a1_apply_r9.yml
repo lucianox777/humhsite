@@ -1,0 +1,35 @@
+name: HUMH A1 R9 independent-content closure
+on:
+  push:
+    branches: [humh-a1-independent-content-r9]
+    paths:
+      - '.github/workflows/humh_a1_apply_r9.yml'
+      - 'scripts/humh_a1_apply_r9.py'
+permissions:
+  contents: write
+jobs:
+  close-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: humh-a1-independent-content-r9
+          fetch-depth: 0
+      - name: Check source and apply R9
+        run: |
+          test "$(git merge-base HEAD origin/main)" = "1eca4981671edac19fede8d1e18d9a73d434a72e"
+          python3 scripts/humh_a1_apply_r9.py
+          git diff --check
+      - name: Verify normative tree
+        run: |
+          cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
+          python3 03_integridade/verify.py
+          python3 03_integridade/audit_schedules.py
+      - name: Commit only experiment documentation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add source/HUMH.Api/wwwroot/content/experimentos/atencao
+          git diff --cached --quiet && exit 0
+          git commit -m 'Close A1b independent-content audit in unpublished v2.0.0'
+          git push origin HEAD:humh-a1-independent-content-r9
