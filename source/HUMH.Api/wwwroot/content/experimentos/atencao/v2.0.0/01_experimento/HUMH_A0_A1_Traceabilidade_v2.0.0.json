@@ -8,7 +8,7 @@
     "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
     "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
   },
-  "status": "V2_0_0_MICRODYNAMIC_FROZEN_ANBC0_FAIL_DERIVATIONAL_PREPUBLICATION",
+  "status": "V2_0_0_A1B_DERIVATIONAL_AUDIT_PREPUBLICATION",
   "scientific_run_authorized": false,
   "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
   "canonical_variables": [
@@ -1047,6 +1047,10 @@
       "CHECKPOINT_RESUME_EQUIVALENCE",
       "NO_RIGHT_CENSORING",
       "DEMAND_CHECKSUMS"
+    ],
+    "ADIST0": [
+      "DERIVATIONAL_CONTENT_AUDIT",
+      "ATTENTION_TO_OBSERVER_ASSIGNMENT_INDEPENDENCE"
     ]
   },
   "retired_as_root_gates": [
@@ -1137,10 +1141,18 @@
     "A1b_primary_collective_outcome",
     "A1b_Abar_matching_margin",
     "A1b_min_DA_difference",
-    "A1b_material_effect_margin"
+    "A1b_material_effect_margin",
+    "observer_basal_parameter_regime",
+    "omega_i_rule",
+    "omega_i_values_or_distribution",
+    "iota_obs_i_rule",
+    "iota_obs_i_values_or_distribution",
+    "kappa_value_or_rule",
+    "attention_to_observer_assignment_rule_A1b",
+    "ADIST0_final_derivational_classification"
   ],
   "previous_v1_outcomes_policy": "EXPOSED_DIAGNOSTIC_ONLY; may inform software bug prevention but not scientific numeric choices.",
-  "next_version": "Keep v2.0.0 while unpublished. The basal microdynamic is frozen and ANBC0=FAIL_DERIVATIONAL. Next audit A1b for independent collective content; then freeze the remaining numerical pre-run fields and execute the required technical/integrity gates. Confirmatory A1a is not authorized in this construction.",
+  "next_version": "Keep v2.0.0 while unpublished. Microdynamic and ANBC0 are already frozen. D is frozen only as the A1b primary-outcome candidate for derivational audit. Next freeze the basal observer regime and exogenous attention-to-observer assignment rule, then complete the final ADIST0 derivational audit before any scientific trajectory. Do not switch outcomes to rescue discriminativity.",
   "canonical_artifact_registry": {
     "HUMH_ATTENTION_DEFINITION_1.0.0": {
       "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
@@ -1303,7 +1315,9 @@
         "ATTENTION_MULTIPLICATIVE_SEPARABILITY_COMPATIBLE [C1]",
         "ATTENTION_MULTIPLICATIVE_SEPARABILITY_REFUTED [C1]"
       ],
-      "current_rule": "Because the frozen construction satisfies the derivational S*G pattern, A1a cannot be interpreted as an independent confirmatory/refutational test in v2.0.0."
+      "current_rule": "Because the frozen construction satisfies the derivational S*G pattern, A1a cannot be interpreted as an independent confirmatory/refutational test in v2.0.0.",
+      "current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
+      "confirmatory_authorized": false
     },
     "A1b": {
       "gate": "ADIST0",
@@ -1327,7 +1341,10 @@
           "section": 119,
           "clause_or_statement": "A1b follows A1a in the formal A0->A1a->A1b sequence."
         }
-      ]
+      ],
+      "current_authorization": "NOT_AUTHORIZED_PENDING_FINAL_DERIVATIONAL_AUDIT",
+      "primary_outcome_candidate": "STATE_DIVERGENCE_D",
+      "pre_numeric_derivational_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED"
     },
     "A2": {
       "result": "NOT_AUTHORIZED / NOT_TESTED",
@@ -1884,6 +1901,66 @@
         "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
         "section": 54,
         "clause_or_statement": "If separability is guaranteed by construction, A1a is mechanism demonstration only and confirmatory ASEP0 is not authorized."
+      }
+    ]
+  },
+  "a1b_derivational_audit": {
+    "id": "ADIST0_DERIVATIONAL_CONTENT_AUDIT",
+    "kind": "GATE_SUBCHECK",
+    "parent_gate": "ADIST0",
+    "scientific_role": "DERIVATIONAL_DIAGNOSTIC",
+    "primary_outcome_candidate": {
+      "id": "STATE_DIVERGENCE_D",
+      "canonical_symbol": "D",
+      "formula": "(1/N) * sum_i |p_i - p_bar|",
+      "status": "FROZEN_FOR_DERIVATIONAL_AUDIT_NOT_YET_AUTHORIZED"
+    },
+    "pre_numeric_classification": "CONDITIONAL_NOT_GLOBALLY_FORCED",
+    "final_classification": "PENDING_BASAL_REGIME_AND_ASSIGNMENT_RULE",
+    "homogeneous_sufficient_pattern": {
+      "conditions": [
+        "common initial p_0",
+        "common p_target",
+        "common omega/iota_obs/kappa",
+        "D_i(W)=W",
+        "p_0 != p_target",
+        "0 < eta0(p) < 1 along the relevant path",
+        "D_A > 0 implies distinct U_i"
+      ],
+      "consequence": "uniform A_i -> equal final p_i; heterogeneous A_i -> distinct final p_i; therefore D changes by construction",
+      "classification": "DERIVATIONALLY_FORCED_EFFECT_IF_CONDITIONS_HOLD"
+    },
+    "non_global_counterconditions": [
+      "eta0=1 may collapse different positive update counts to the same target state",
+      "p_i(0)=p_target removes drive",
+      "heterogeneous omega_i/iota_obs_i makes D depend also on the assignment of attention to observer properties"
+    ],
+    "assignment_independence_required_if_basal_heterogeneous": true,
+    "anti_rescue_rule": "Do not replace D with another primary outcome merely to obtain a discriminative classification. If final audit is forced or invariant, A1b in this construction is mechanism demonstration only.",
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_1.9A",
+        "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+        "section": "A4",
+        "clause_or_statement": "D=(1/N) sum_i |p_i-p_bar| is interobserver divergence and is distinct from EH."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 67,
+        "clause_or_statement": "A1b asks whether changing D_A at fixed A_bar changes collective dynamics."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 69,
+        "clause_or_statement": "A1b is an additional collective question and requires its own specification and gates."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 103,
+        "clause_or_statement": "First A1b forbids reactive reallocation; the allocation rule must be exogenous and frozen."
       }
     ]
   }

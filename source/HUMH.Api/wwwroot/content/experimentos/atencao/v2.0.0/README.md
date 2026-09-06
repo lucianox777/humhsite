@@ -33,9 +33,25 @@ Status:
 Isso não refuta H-A1S nem a HUMH; apenas impede usar esta simulação como confirmação
 independente da separabilidade.
 
-## Próximo bloqueio
+## Auditoria A1b em curso
 
-Auditar se A1b possui conteúdo coletivo próprio não redutível à identidade local de A1a.
-Depois, congelar os parâmetros numéricos restantes.
+A divergência interobservador canônica
+
+`D = (1/N) * sum_i |p_i - p_bar|`
+
+fica congelada **somente como candidato primário para auditoria derivacional**.
+A análise pré-numérica encontrou um padrão suficiente em que o efeito é forçado
+(homogeneidade basal, mesmo estado inicial/alvo e `0 < eta0 < 1`), mas esse padrão não é
+uma identidade global de todo o espaço ainda admissível.
+
+Status:
+
+`ADIST0.DERIVATIONAL_CONTENT_AUDIT_PRENUMERIC = CONDITIONAL_NOT_GLOBALLY_FORCED`
+
+`ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = PENDING_BASAL_REGIME_AND_ASSIGNMENT_RULE`
+
+Próximo bloqueio: congelar prospectivamente o regime basal do observador e a regra
+exógena de atribuição de atenção; depois repetir a auditoria final. É proibido trocar
+`D` por outro outcome apenas para obter uma classificação discriminativa.
 
 `scientific_run_authorized = false`

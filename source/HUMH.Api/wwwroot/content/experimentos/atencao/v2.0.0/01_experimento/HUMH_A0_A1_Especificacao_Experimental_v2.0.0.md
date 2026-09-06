@@ -9,9 +9,9 @@
 **Program SHA-256:** `a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226`  
 **KREF0 SHA-256:** `234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7`
 
-**Status:** `PRE_CODE_TRACEABILITY_FREEZE`  
+**Status:** `PRE_CODE_A1B_DERIVATIONAL_AUDIT`  
 **Run científico:** `SCIENTIFIC_RUN_NOT_AUTHORIZED`  
-**Motivo:** a microdinâmica basal foi agora congelada a partir da forma discreta canônica da teoria, com mapeamento experimental explícito de uma conclusão válida para uma atualização. A auditoria `ANBC0` classifica essa construção como `FAIL_DERIVATIONAL`: H-A1S torna-se demonstração do mecanismo nesta implementação e não pode receber interpretação confirmatória. Permanecem não congelados os parâmetros numéricos e o conteúdo próprio de A1b antes de qualquer run científico.
+**Motivo:** a microdinâmica basal permanece congelada e `ANBC0=FAIL_DERIVATIONAL`, portanto A1a é somente demonstração de mecanismo nesta implementação. A1b entra agora em auditoria derivacional prospectiva: a divergência interobservador canônica `D` é congelada apenas como candidato primário para essa auditoria, e a classificação final depende do regime basal do observador, da regra de atribuição de atenção e dos números ainda não congelados. Nenhum run científico está autorizado.
 
 ---
 
@@ -1659,7 +1659,7 @@ que a teoria exija variabilidade de `eta/A`.
 Status atual:
 
 ```text
-ATTENTION_INSTRUMENT = FROZEN_LOGICAL_WORK_BUDGET
+ATTENTION_INSTRUMENT = FROZEN_OPPORTUNITY_ALLOCATION
 A1A_OBSERVER_MICRODYNAMIC = FROZEN_CANONICAL_DISCRETE_WITH_AUXILIARY_COMPLETION_MAPPING
 ANBC0 = FAIL_DERIVATIONAL
 ```
@@ -1719,42 +1719,143 @@ Restrições:
 - regra de alocação exógena e congelada;
 - `A_bar` não pode ser “corrigido” depois olhando o outcome coletivo.
 
-A1b não é consequência automática de H-A1S e possui inferência própria em `ADIST0`.
+A1b não é consequência automática de H-A1S. Entretanto, qualquer outcome coletivo candidato deve primeiro passar por auditoria derivacional dentro de `ADIST0`, para excluir efeito que seja invariância ou consequência matemática automática da construção local.
 
 ---
 
-# 17. Outcome primário de A1b
+# 17. Outcome primário de A1b — candidato canônico e auditoria derivacional
 
-A definição canônica não congela nesta etapa qual métrica coletiva específica deve ser o outcome primário de A1b.
+A primeira métrica coletiva candidata é a divergência interobservador já definida no
+núcleo canônico 1.9-A:
 
-Portanto, a v2.0.0 **não inventa uma**.
+\[
+\boxed{
+D=\frac1N\sum_i|p_i-\bar p|
+}
+\]
 
-Antes de autorizar run, a versão run-ready deverá escolher uma métrica já definida na linhagem teórica, declarar sua seção/origem normativa e congelar:
+Ela é distinta de `D_i` (demanda observacional) e de `D_A` (heterogeneidade de atenção).
+A escolha decorre da linhagem pré-existente: o núcleo usa `D` para distinguir estados
+com o mesmo `EH` e diferentes estruturas interobservador, enquanto A1b pergunta se
+alterar `D_A` a `A_bar` aproximadamente fixo modifica a dinâmica coletiva.
 
-```text
-outcome coletivo primário
-margem de igualdade de A_bar
-diferença mínima de D_A
-margem de efeito/materialidade
-regra de decisão
-tamanho amostral
-```
-
-Sem essa escolha rastreável:
-
-```text
-ADIST0 = NOT_AUTHORIZED
-```
-
-A restrição temporal é explícita:
+Status prospectivo:
 
 ```text
-A1B_PRIMARY_OUTCOME_MUST_BE_FROZEN_BEFORE_FIRST_SCIENTIFIC_TRAJECTORY_IS_GENERATED
+A1B_PRIMARY_OUTCOME_CANDIDATE = STATE_DIVERGENCE_D
+CANDIDATE_STATUS = FROZEN_FOR_DERIVATIONAL_AUDIT_NOT_YET_AUTHORIZED
+ADIST0_CONFIRMATORY = NOT_AUTHORIZED
 ```
 
-A escolha específica deve ocorrer **antes do início da coleta científica**, nunca depois de observar A1a ou qualquer outro outcome do mesmo conjunto de trajetórias. O outcome de A1b deve ser uma métrica já pertencente à linhagem teórica e portar `canonical_refs` qualificados.
+Congelar o candidato para auditoria não equivale a autorizar sua utilização como
+outcome confirmatório.
 
-A1a pode ser preparado independentemente; A1b não pode ser improvisado durante ou após o run.
+## 17.1. Subcheck ADIST0.DERIVATIONAL_CONTENT_AUDIT
+
+Considere o caso basal homogêneo permitido pelo desenho:
+
+```text
+p_i(0) = p_0 comum
+p_target_i = p_target comum
+omega_i = omega comum
+iota_obs_i = iota_obs comum
+kappa comum
+D_i(W) = W para todos
+```
+
+Defina a transformação basal de uma atualização válida por:
+
+\[
+F(p)=p+\eta^{(0)}(p)(p_{target}-p).
+\]
+
+Depois de `U_i` conclusões válidas:
+
+\[
+p_i(W)=F^{U_i}(p_0),
+\qquad
+A_i=U_i/W.
+\]
+
+Se, adicionalmente, durante a trajetória:
+
+```text
+p_0 != p_target
+0 < eta0(p) < 1
+```
+
+então cada nova atualização move estritamente o estado em direção ao mesmo alvo. Logo:
+
+- no braço perfeitamente uniforme, `A_i` igual implica `U_i` igual e, portanto,
+  estados finais iguais (`D=0` quando os estados iniciais também são iguais);
+- num braço com `D_A>0`, existem `U_i` distintos; sob as condições acima isso produz
+  estados finais distintos e, portanto, `D>0`.
+
+Nesse subdomínio do desenho, um efeito em `D` é:
+
+```text
+DERIVATIONALLY_FORCED_EFFECT_IF_CONDITIONS_HOLD
+```
+
+e não poderia receber crédito confirmatório de A1b.
+
+## 17.2. Por que a classificação final ainda não é FAIL_DERIVATIONAL
+
+A v2.0.0 ainda não congelou os números basais nem a regra completa de heterogeneidade do
+observador. Existem configurações admissíveis nas quais a conclusão acima não é uma
+identidade global, por exemplo:
+
+- `eta0=1` pode levar observadores ao alvo em uma única atualização, tornando contagens
+  adicionais irrelevantes depois da primeira;
+- `p_i(0)=p_target` elimina o drive naquele episódio;
+- `omega_i`/`iota_obs_i` heterogêneos tornam `D` dependente também da associação entre
+  propriedades basais e a distribuição de `A_i`.
+
+Portanto, antes do congelamento numérico, a classificação correta é:
+
+```text
+ADIST0.DERIVATIONAL_CONTENT_AUDIT_PRENUMERIC =
+    CONDITIONAL_NOT_GLOBALLY_FORCED
+
+ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL =
+    PENDING_BASAL_REGIME_AND_ASSIGNMENT_RULE
+```
+
+A classificação final deve ser repetida **depois** de congelados o regime basal do
+observador, a inicialização, a regra de atribuição da distribuição de atenção e os
+parâmetros que garantem a admissibilidade de `eta0`, mas **antes** da primeira trajetória
+científica.
+
+## 17.3. Independência da atribuição em A1b
+
+Se os parâmetros basais variarem entre observadores, a atribuição de níveis de atenção
+não pode ser escolhida a partir de `omega_i`, `iota_obs_i`, estado, `EH`, sucesso, fila
+ou outcome. A regra deve ser exógena, prospectiva e balanceada/aleatorizada de modo a
+não transformar correlação `A_i`–propriedade basal em uma segunda intervenção oculta.
+
+Este requisito é subcheck de `ADIST0`; não cria novo Gate raiz.
+
+## 17.4. Regra anti-resgate
+
+É proibido substituir `D` por outro outcome primário apenas porque a auditoria final o
+classifique como `DERIVATIONALLY_FORCED_EFFECT` ou `DERIVATIONALLY_INVARIANT`.
+
+Se a classificação final mostrar que `D` não possui conteúdo discriminativo nesta
+construção:
+
+```text
+A1b = MECHANISM_DEMONSTRATION_ONLY [C1]
+ADIST0_CONFIRMATORY = NOT_AUTHORIZED
+```
+
+Uma hipótese sucessora poderá usar outro desenho, com nova justificativa prospectiva,
+mas não reclassificará esta auditoria.
+
+A restrição temporal permanece:
+
+```text
+A1B_DERIVATIONAL_AUDIT_FINAL_MUST_PRECEDE_FIRST_SCIENTIFIC_TRAJECTORY
+```
 
 ---
 
@@ -1812,6 +1913,10 @@ AISO0
   .PROPAGATION_INVARIANCE
   .TOPOLOGY_INVARIANCE
   .EXOGENOUS_DEMAND_INVARIANCE
+
+ADIST0
+  .DERIVATIONAL_CONTENT_AUDIT
+  .ATTENTION_TO_OBSERVER_ASSIGNMENT_INDEPENDENCE
 
 AINT0
   .CRN_IDENTITY
@@ -1975,46 +2080,53 @@ A escolha deve ser feita antes de nova coleta e documentada como operacionaliza�
 
 ---
 
-# 26. Itens numéricos ainda NÃO congelados
+# 26. Itens de desenho e números ainda NÃO congelados
 
-A v2.0.0 conscientemente deixa os seguintes campos como `UNFROZEN_REQUIRED_BEFORE_RUN`:
+A v2.0.0 conscientemente deixa como `UNFROZEN_REQUIRED_BEFORE_RUN`:
 
 ```text
 N
 W
+basal_eta0_bound_admissibility
+observer_basal_parameter_regime
+omega_i_rule
+omega_i_values_or_distribution
+iota_obs_i_rule
+iota_obs_i_values_or_distribution
+kappa_value_or_rule
+observer_buffer_capacity_heterogeneity_regime
+observer_buffer_capacity_rule
+observer_buffer_capacity_values_or_distribution
+required_work_rule
+required_work_range_or_distribution
 L_grid
-budgets instrumentais de ABENCH0
+regras instrumentais candidatas de ABENCH0
 critérios instrumentais de ABENCH0
 L_A
-número e níveis dos braços A1a
-delta_drive
-min_steps
-min_sum_x2
-estratos de estado do CANAL_ETA
-lista de contrastes primários
-Delta_sep
-alpha_family
-método de multiplicidade
-procedimento de CI
-competência mínima de ACOMP0
-tamanho amostral/poder
-outcome coletivo primário A1b
+number_of_arms
+instrumental_contrast_criteria
+saturation_avoidance_criteria
+attention_to_observer_assignment_rule_A1b
+ADIST0_final_derivational_classification
 margem de matching de A_bar
 diferença mínima de D_A
 margem de efeito A1b
+regra inferencial A1b
+tamanho amostral/poder
 ```
 
-Nenhum desses campos pode ser preenchido com base em outcomes científicos da série v1.0.x.
+Nenhum desses campos pode ser preenchido com base em outcomes científicos da série
+v1.0.x nem escolhido para obter uma classificação desejada em `ADIST0`.
 
-Além desses campos numéricos, existe um bloqueio não numérico:
+A microdinâmica basal **não é mais um bloqueio aberto**:
 
 ```text
-observer_microdynamic_contract
+A1A_OBSERVER_MICRODYNAMIC =
+  FROZEN_CANONICAL_DISCRETE_WITH_AUXILIARY_COMPLETION_MAPPING
+ANBC0 = FAIL_DERIVATIONAL
 ```
 
-Ele deve ser resolvido **antes** do congelamento run-ready e portar `canonical_refs` próprios.
-
-O contrato já congelado de `p_alvo` ainda exige prospectivamente:
+O contrato de `p_alvo` permanece semanticamente congelado, mas ainda exige:
 
 ```text
 p_A
@@ -2026,31 +2138,31 @@ initial_p_rule
 target_stationarity_certification
 ```
 
-
 ---
 
-# 27. Procedimento autorizado para congelar os números
+# 27. Procedimento autorizado daqui até run-ready
 
-A próxima versão run-ready só pode ser preparada nesta ordem:
+A ordem prospectiva passa a ser:
 
-1. identificar uma microdinâmica do observador com `canonical_refs` qualificadas;
-2. congelar seu contrato funcional sem usar outcomes v1.0.x;
-3. classificar `ANBC0` analiticamente como discriminativo, derivacional ou inconclusivo;
-4. não alterar a microdinâmica para obter uma classe desejada de `ANBC0`; depois congelar os parâmetros numéricos restantes;
-5. executar/validar o harness técnico `AETA0`, sem outcomes científicos;
-6. executar `ABENCH0` cego de instrumentação/deadline;
-7. congelar níveis instrumentais de atenção, estratos, contrastes e critérios de identificação;
-8. validar `ACOMP0`;
-9. definir tamanho amostral/poder por efeitos sintéticos prospectivos ou precisão-alvo, nunca por efeitos v1.0.x;
-10. usar literatura/critério teórico externo somente se explicitamente declarado e congelado antes da coleta.
+1. preservar a microdinâmica basal já congelada e aceitar `ANBC0=FAIL_DERIVATIONAL`;
+2. manter `D` como candidato primário congelado para a auditoria de A1b, sem trocar de
+   outcome para obter uma classificação desejada;
+3. congelar o regime basal do observador (`omega_i`, `iota_obs_i`, `kappa`), a regra de
+   inicialização e a regra exógena de atribuição de atenção por critério independente de
+   outcomes A1;
+4. certificar prospectivamente `0 < eta0 <= 1` no domínio admissível, sem clamp pós-hoc;
+5. repetir `ADIST0.DERIVATIONAL_CONTENT_AUDIT` com esses números/regras congelados;
+6. se `D` for derivacionalmente forçado ou invariante, registrar A1b como demonstração
+   de mecanismo nesta construção e **não** selecionar outro outcome como resgate;
+7. somente se `D` permanecer discriminativo, congelar as margens de `A_bar`, `D_A`,
+   materialidade, inferência e poder de A1b;
+8. executar os benchmarks técnicos/integridade aplicáveis (`AETA0`, `ABENCH0`, `AMAN0`,
+   `AISO0`, `AINT0`) sem usar outcomes científicos para tuning;
+9. manter esta mesma identidade `v2.0.0` enquanto o objeto continuar pré-publicação;
+   qualquer regeneração deve atualizar hashes e manifesto de integridade.
 
-Somente após a resolução da microdinâmica, elegibilidade de `ANBC0` e congelamento restante, gerar:
-
-```text
-HUMH_A0_A1_SPEC_2.0.1_RUN_READY
-```
-
-com SHA-256 próprio.
+Não existe mais nesta versão a etapa "resolver a microdinâmica do observador" nem a
+instrução automática de gerar `2.0.1_RUN_READY`.
 
 ---
 
@@ -2140,24 +2252,30 @@ Sem status de suporte teórico.
 
 ## A1a
 
-Com todos os pré-requisitos adequados:
+Na construção corrente da v2.0.0:
 
 ```text
-ATTENTION_MULTIPLICATIVE_SEPARABILITY_COMPATIBLE [C1]
-ATTENTION_MULTIPLICATIVE_SEPARABILITY_REFUTED [C1]
-INCONCLUSIVE_*
+ANBC0 = FAIL_DERIVATIONAL
+A1a = MECHANISM_DEMONSTRATION_ONLY [C1]
+ASEP0_CONFIRMATORY = NOT_AUTHORIZED
 ```
+
+As categorias `...COMPATIBLE [C1]` e `...REFUTED [C1]` pertencem ao contrato geral de
+H-A1S, mas não podem ser emitidas por esta implementação.
 
 ## A1b
 
-Somente depois de ADIST0 ser totalmente congelado:
+Estado corrente:
 
 ```text
-ATTENTION_DISTRIBUTION_EFFECT_ESTABLISHED/COMPATIBLE [C1]
-ATTENTION_DISTRIBUTION_EFFECT_NOT_ESTABLISHED
-ATTENTION_DISTRIBUTION_EFFECT_REFUTED
-INCONCLUSIVE_*
+PRIMARY_OUTCOME_CANDIDATE = STATE_DIVERGENCE_D
+ADIST0.DERIVATIONAL_CONTENT_AUDIT_PRENUMERIC = CONDITIONAL_NOT_GLOBALLY_FORCED
+ADIST0.DERIVATIONAL_CONTENT_AUDIT_FINAL = PENDING_BASAL_REGIME_AND_ASSIGNMENT_RULE
+ADIST0_CONFIRMATORY = NOT_AUTHORIZED
 ```
+
+Somente se a auditoria final classificar o candidato como discriminativo e os demais
+critérios forem congelados poderão ser usadas as categorias gerais de resultado de A1b.
 
 ## A2
 
@@ -2205,5 +2323,5 @@ e proíbe a direção inversa:
 TRACEABILITY_RESET = FROZEN
 SCIENTIFIC_MODEL = CANONICAL_A0_A1_ONLY
 SCIENTIFIC_RUN_NOT_AUTHORIZED
-NEXT = AUDIT_A1B_INDEPENDENT_CONTENT_THEN_FREEZE_REMAINING_NUMERICAL_DESIGN
+NEXT = FREEZE_BASAL_OBSERVER_REGIME_AND_COMPLETE_ADIST0_DERIVATIONAL_AUDIT
 ```
