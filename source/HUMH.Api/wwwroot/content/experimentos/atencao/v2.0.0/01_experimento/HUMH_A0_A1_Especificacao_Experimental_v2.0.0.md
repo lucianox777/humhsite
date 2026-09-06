@@ -565,13 +565,11 @@ Somente após os dois canais terminarem é permitido comparar `eta_hat` com `A_i
 
 ## 5.1.13. Parâmetros numéricos pendentes
 
-Antes do run devem ser congelados:
+A semântica e o regime de isolamento já estão congelados. Antes do run ainda devem ser congelados:
 
 ```text
 basal_eta0_bound_admissibility
-observer_buffer_capacity_heterogeneity_regime
-observer_buffer_capacity_rule
-observer_buffer_capacity_values_or_distribution
+observer_buffer_capacity_value
 required_work_rule
 required_work_range_or_distribution
 observer_opportunity_arm_rules
@@ -588,6 +586,7 @@ Status:
 ```text
 ATTENTION_INSTRUMENT_SEMANTICS = FROZEN
 OBSERVER_PROCESSING_CAPACITY_SEMANTICS = FROZEN_AUXILIARY
+OBSERVER_BUFFER_HETEROGENEITY_REGIME = HOMOGENEOUS_FROZEN_FOR_FIRST_A1
 ATTENTION_INSTRUMENT_ALGORITHM = FROZEN_OPPORTUNITY_ALLOCATION
 ATTENTION_INSTRUMENT_NUMERICS = UNFROZEN_REQUIRED_BEFORE_RUN
 ```

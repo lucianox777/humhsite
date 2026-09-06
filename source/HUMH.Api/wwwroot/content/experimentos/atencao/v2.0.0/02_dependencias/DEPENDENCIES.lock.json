@@ -8,7 +8,7 @@
   "normative_artifacts": [
     {
       "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
-      "sha256": "076bbc94fd48f81f891858bad000c364c48a2b6df930f3aa3e6cc3be640019ed"
+      "sha256": "657b365a6c78994e629af310571f38f17c8c49b1bb64b12b944a4c2db3b8ea85"
     },
     {
       "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
