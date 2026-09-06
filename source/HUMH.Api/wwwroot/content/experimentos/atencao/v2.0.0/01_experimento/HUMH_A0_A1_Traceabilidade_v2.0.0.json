@@ -1,0 +1,1890 @@
+{
+  "spec_id": "HUMH_A0_A1_SPEC_2.0.0_TRACEABILITY_RESET",
+  "definition": {
+    "id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+    "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+    "theory_sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+    "nucleus_sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+    "program_sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
+    "kref0_sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7"
+  },
+  "status": "V2_0_0_MICRODYNAMIC_FROZEN_ANBC0_FAIL_DERIVATIONAL_PREPUBLICATION",
+  "scientific_run_authorized": false,
+  "root_rule": "No scientific variable, gate, hypothesis, contrast, margin or decision condition without non-empty canonical_refs qualified by artifact_id, sha256, section and clause_or_statement.",
+  "canonical_variables": [
+    {
+      "id": "D_i",
+      "kind": "THEORY_VARIABLE",
+      "role": "exogenous observational demand",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 8,
+          "clause_or_statement": "D_i: exogenous observational demand"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 9,
+          "clause_or_statement": "D_i: exogenous observational demand"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 10,
+          "clause_or_statement": "D_i: exogenous observational demand"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 11,
+          "clause_or_statement": "D_i: exogenous observational demand"
+        }
+      ]
+    },
+    {
+      "id": "U_i",
+      "kind": "THEORY_VARIABLE",
+      "role": "demand served within deadline",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 12,
+          "clause_or_statement": "U_i: demand served within deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 14,
+          "clause_or_statement": "U_i: demand served within deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 21,
+          "clause_or_statement": "U_i: demand served within deadline"
+        }
+      ]
+    },
+    {
+      "id": "A_i",
+      "kind": "THEORY_VARIABLE",
+      "role": "effective observational attention",
+      "formula": "U_i/D_i",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 7,
+          "clause_or_statement": "A_i: effective observational attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 22,
+          "clause_or_statement": "A_i: effective observational attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 117,
+          "clause_or_statement": "A_i: effective observational attention"
+        }
+      ]
+    },
+    {
+      "id": "A_bar",
+      "kind": "THEORY_VARIABLE",
+      "role": "collective mean attention",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 29,
+          "clause_or_statement": "A_bar: collective mean attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 31,
+          "clause_or_statement": "A_bar: collective mean attention"
+        }
+      ]
+    },
+    {
+      "id": "D_A",
+      "kind": "THEORY_VARIABLE",
+      "role": "attention heterogeneity",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 30,
+          "clause_or_statement": "D_A: attention heterogeneity"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 31,
+          "clause_or_statement": "D_A: attention heterogeneity"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 67,
+          "clause_or_statement": "D_A: attention heterogeneity"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 68,
+          "clause_or_statement": "D_A: attention heterogeneity"
+        }
+      ]
+    },
+    {
+      "id": "P_i_obs",
+      "kind": "MANIPULATION_INSTRUMENT",
+      "role": "local observer execution opportunity",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 24,
+          "clause_or_statement": "P_i_obs: local observer execution opportunity"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 25,
+          "clause_or_statement": "P_i_obs: local observer execution opportunity"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 45,
+          "clause_or_statement": "P_i_obs: local observer execution opportunity"
+        }
+      ]
+    },
+    {
+      "id": "p_i(t)",
+      "kind": "DYNAMIC_VARIABLE",
+      "role": "state trajectory for ETA channel",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 38,
+          "clause_or_statement": "p_i(t): state trajectory for ETA channel"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 39,
+          "clause_or_statement": "p_i(t): state trajectory for ETA channel"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 40,
+          "clause_or_statement": "p_i(t): state trajectory for ETA channel"
+        }
+      ]
+    },
+    {
+      "id": "p_target_i(t)",
+      "kind": "DYNAMIC_VARIABLE",
+      "role": "basal target recorded before update",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 39,
+          "clause_or_statement": "p_target_i(t): basal target recorded before update"
+        },
+        {
+          "artifact_id": "HUMH_THEORY_CANONICAL",
+          "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+          "section": "4.3.5",
+          "clause_or_statement": "Active attractor p_A/p_B defines the basal target in stable unsaturated regimes."
+        }
+      ],
+      "operational_status": "FROZEN_STATIONARY_ACTIVE_ATTRACTOR",
+      "formula": "p_target_i(t)=p_{Z_e}"
+    },
+    {
+      "id": "x_it",
+      "kind": "ETA_ESTIMATOR_COMPONENT",
+      "role": "dynamic drive",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 39,
+          "clause_or_statement": "x_it: dynamic drive"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 40,
+          "clause_or_statement": "x_it: dynamic drive"
+        }
+      ]
+    },
+    {
+      "id": "y_it",
+      "kind": "ETA_ESTIMATOR_COMPONENT",
+      "role": "state change",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 39,
+          "clause_or_statement": "y_it: state change"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 40,
+          "clause_or_statement": "y_it: state change"
+        }
+      ]
+    },
+    {
+      "id": "eta_hat",
+      "kind": "ESTIMATOR",
+      "role": "trajectory-only estimate of eta",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 38,
+          "clause_or_statement": "eta_hat: trajectory-only estimate of eta"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 40,
+          "clause_or_statement": "eta_hat: trajectory-only estimate of eta"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 41,
+          "clause_or_statement": "eta_hat: trajectory-only estimate of eta"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 42,
+          "clause_or_statement": "eta_hat: trajectory-only estimate of eta"
+        }
+      ]
+    },
+    {
+      "id": "EH",
+      "kind": "THEORY_STATE_VARIABLE",
+      "role": "hypothesis entropy/state term, not attention",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 37,
+          "clause_or_statement": "EH: hypothesis entropy/state term, not attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 47,
+          "clause_or_statement": "EH: hypothesis entropy/state term, not attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 56,
+          "clause_or_statement": "EH: hypothesis entropy/state term, not attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 57,
+          "clause_or_statement": "EH: hypothesis entropy/state term, not attention"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 76,
+          "clause_or_statement": "EH: hypothesis entropy/state term, not attention"
+        }
+      ]
+    },
+    {
+      "id": "W",
+      "kind": "DESIGN_PARAMETER",
+      "role": "logical measurement window",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 13,
+          "clause_or_statement": "W: logical measurement window"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 64,
+          "clause_or_statement": "W: logical measurement window"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 120,
+          "clause_or_statement": "W: logical measurement window"
+        }
+      ]
+    },
+    {
+      "id": "L_A",
+      "kind": "DESIGN_PARAMETER",
+      "role": "common exogenous deadline",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 14,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 15,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 16,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 17,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 20,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 64,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 120,
+          "clause_or_statement": "L_A: common exogenous deadline"
+        }
+      ]
+    }
+  ],
+  "forbidden_scientific_entities": [
+    {
+      "id": "A_global",
+      "reason": "not present in canonical definition"
+    },
+    {
+      "id": "A_by_stratum",
+      "reason": "not present in canonical definition"
+    },
+    {
+      "id": "A_stratum",
+      "reason": "not present in canonical definition"
+    },
+    {
+      "id": "AEXP0",
+      "reason": "not in canonical gate list; imposes non-canonical attention/EH condition"
+    },
+    {
+      "id": "ACSUP0",
+      "reason": "not in canonical gate list; ETA identification belongs under AETA0"
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H-A1S",
+      "kind": "SCIENTIFIC_HYPOTHESIS",
+      "statement": "eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state.",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 47,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 48,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 49,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 50,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 51,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 56,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 57,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 108,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 118,
+          "clause_or_statement": "H-A1S: eta_i(A,p)=A_i*eta_i^(0)(p); eta/A invariant between attention arms within state."
+        }
+      ]
+    },
+    {
+      "id": "A1b_ATTENTION_DISTRIBUTION_EFFECT",
+      "kind": "SCIENTIFIC_HYPOTHESIS",
+      "statement": "At approximately fixed A_bar, changing D_A may change collective dynamics.",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 67,
+          "clause_or_statement": "A1b_ATTENTION_DISTRIBUTION_EFFECT: At approximately fixed A_bar, changing D_A may change collective dynamics."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 68,
+          "clause_or_statement": "A1b_ATTENTION_DISTRIBUTION_EFFECT: At approximately fixed A_bar, changing D_A may change collective dynamics."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 69,
+          "clause_or_statement": "A1b_ATTENTION_DISTRIBUTION_EFFECT: At approximately fixed A_bar, changing D_A may change collective dynamics."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 101,
+          "clause_or_statement": "A1b_ATTENTION_DISTRIBUTION_EFFECT: At approximately fixed A_bar, changing D_A may change collective dynamics."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 102,
+          "clause_or_statement": "A1b_ATTENTION_DISTRIBUTION_EFFECT: At approximately fixed A_bar, changing D_A may change collective dynamics."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 103,
+          "clause_or_statement": "A1b_ATTENTION_DISTRIBUTION_EFFECT: At approximately fixed A_bar, changing D_A may change collective dynamics."
+        }
+      ]
+    },
+    {
+      "id": "M_alt",
+      "kind": "RIVAL_HYPOTHESIS",
+      "scientific_role": "RIVAL_TO_H_A1S",
+      "statement": "Attention departs from multiplicative separability, including additive resistance, interaction with iota_obs/EH, or another materially non-separable form.",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 51,
+          "clause_or_statement": "Canonical falsifying alternatives to H-A1S include additive resistance, variation of eta/A, or additional interaction."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 108,
+          "clause_or_statement": "A1a prospectively distinguishes M_sep from M_alt."
+        }
+      ]
+    }
+  ],
+  "root_gates": [
+    {
+      "id": "AGOV0",
+      "role": "governance, referents, traceability, no-attention rule audit",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 3,
+          "clause_or_statement": "AGOV0: governance, referents, traceability, no-attention rule audit"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 46,
+          "clause_or_statement": "AGOV0: governance, referents, traceability, no-attention rule audit"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "AGOV0: governance, referents, traceability, no-attention rule audit"
+        }
+      ]
+    },
+    {
+      "id": "AMEAS0",
+      "role": "attention measurement contract",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 7,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 8,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 12,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 13,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 14,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 21,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 22,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 63,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 64,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 65,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "AMEAS0: attention measurement contract"
+        }
+      ]
+    },
+    {
+      "id": "ABENCH0",
+      "role": "blind technical deadline/instrument benchmark",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 17,
+          "clause_or_statement": "ABENCH0: blind technical deadline/instrument benchmark"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 18,
+          "clause_or_statement": "ABENCH0: blind technical deadline/instrument benchmark"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 19,
+          "clause_or_statement": "ABENCH0: blind technical deadline/instrument benchmark"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 20,
+          "clause_or_statement": "ABENCH0: blind technical deadline/instrument benchmark"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "ABENCH0: blind technical deadline/instrument benchmark"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 120,
+          "clause_or_statement": "ABENCH0: blind technical deadline/instrument benchmark"
+        }
+      ]
+    },
+    {
+      "id": "AMAN0",
+      "role": "attention manipulation adequacy",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 59,
+          "clause_or_statement": "AMAN0: attention manipulation adequacy"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 60,
+          "clause_or_statement": "AMAN0: attention manipulation adequacy"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 110,
+          "clause_or_statement": "AMAN0: attention manipulation adequacy"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "AMAN0: attention manipulation adequacy"
+        }
+      ]
+    },
+    {
+      "id": "AISO0",
+      "role": "structural isolation",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 27,
+          "clause_or_statement": "AISO0: structural isolation"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 28,
+          "clause_or_statement": "AISO0: structural isolation"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 61,
+          "clause_or_statement": "AISO0: structural isolation"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 62,
+          "clause_or_statement": "AISO0: structural isolation"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 111,
+          "clause_or_statement": "AISO0: structural isolation"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "AISO0: structural isolation"
+        }
+      ]
+    },
+    {
+      "id": "AETA0",
+      "role": "independent ETA identification",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 38,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 39,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 40,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 41,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 42,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 43,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "AETA0: independent ETA identification"
+        }
+      ],
+      "pre_run_status": "HARNESS_SPECIFIED_NOT_EXECUTED"
+    },
+    {
+      "id": "ANBC0",
+      "role": "classify whether H-A1S is discriminative or derivational in the frozen construction",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 52,
+          "clause_or_statement": "ANBC0: separability not guaranteed by construction"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 53,
+          "clause_or_statement": "ANBC0: separability not guaranteed by construction"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 54,
+          "clause_or_statement": "ANBC0: separability not guaranteed by construction"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "ANBC0: separability not guaranteed by construction"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 120,
+          "clause_or_statement": "ANBC0: separability not guaranteed by construction"
+        }
+      ],
+      "pre_run_status": "NOT_READY_FOR_CLASSIFICATION"
+    },
+    {
+      "id": "ACOMP0",
+      "role": "adversarial pipeline competence",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 55,
+          "clause_or_statement": "ACOMP0: adversarial pipeline competence"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 109,
+          "clause_or_statement": "ACOMP0: adversarial pipeline competence"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "ACOMP0: adversarial pipeline competence"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 120,
+          "clause_or_statement": "ACOMP0: adversarial pipeline competence"
+        }
+      ]
+    },
+    {
+      "id": "ASEP0",
+      "role": "primary H-A1S inference",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 47,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 48,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 49,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 50,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 51,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 108,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 113,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 114,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 115,
+          "clause_or_statement": "ASEP0: primary H-A1S inference"
+        }
+      ]
+    },
+    {
+      "id": "ADIST0",
+      "role": "A1b inference when fully frozen",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 67,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 68,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 69,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 102,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 103,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 116,
+          "clause_or_statement": "ADIST0: A1b inference when fully frozen"
+        }
+      ]
+    },
+    {
+      "id": "AINT0",
+      "role": "integrity/RNG/checkpoint/reproducibility",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 61,
+          "clause_or_statement": "AINT0: integrity/RNG/checkpoint/reproducibility"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 94,
+          "clause_or_statement": "AINT0: integrity/RNG/checkpoint/reproducibility"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "AINT0: integrity/RNG/checkpoint/reproducibility"
+        }
+      ]
+    }
+  ],
+  "subchecks_only": {
+    "AGOV0": [
+      "REFERENT_HASHES",
+      "NO_ATTENTION_IN_OBSERVER_RULE",
+      "TRACEABILITY_MANIFEST_COMPLETE"
+    ],
+    "AMEAS0": [
+      "NO_DOUBLE_COUNTING",
+      "D_IDENTITY_PAIRED_ARMS",
+      "DEADLINE_ACCOUNTING",
+      "RIGHT_EDGE_ACCOUNTING"
+    ],
+    "AETA0": [
+      "ETA_FINITE_AND_IDENTIFIABLE",
+      "TRAJECTORY_ONLY_DEPENDENCY_AUDIT",
+      "PERMUTATION_INVARIANCE_TO_A_COUNTERS",
+      "SYNTHETIC_SLOPE_RECOVERY",
+      "QUEUE_END_TO_END_RECOVERY",
+      "TRAJECTORY_SENSITIVITY"
+    ],
+    "ANBC0": [
+      "ANALYTIC_NONCONSTRUCTION",
+      "STATIONARY_WITNESS",
+      "NC1_DERIVATIONAL_PATTERN"
+    ],
+    "AISO0": [
+      "SERVICE_INVARIANCE",
+      "PROPAGATION_INVARIANCE",
+      "TOPOLOGY_INVARIANCE",
+      "EXOGENOUS_DEMAND_INVARIANCE"
+    ],
+    "AINT0": [
+      "CRN_IDENTITY",
+      "RNG_LABEL_AUDIT",
+      "CHECKPOINT_RESUME_EQUIVALENCE",
+      "NO_RIGHT_CENSORING",
+      "DEMAND_CHECKSUMS"
+    ]
+  },
+  "retired_as_root_gates": [
+    "AEXP0",
+    "ACSUP0",
+    "ASTRAT0",
+    "AETA1",
+    "AETA2",
+    "ANBC1",
+    "ACRN0",
+    "ACRNB0",
+    "ACKPT0",
+    "ARULE0"
+  ],
+  "statistical_operationalizations": [
+    {
+      "id": "q_i_s_a",
+      "kind": "DERIVED_STATISTICAL_QUANTITY",
+      "formula": "eta_hat_i_s_a / A_i_a",
+      "note": "not a new theoretical variable",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 50,
+          "clause_or_statement": "q_i_s_a: not a new theoretical variable"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 108,
+          "clause_or_statement": "q_i_s_a: not a new theoretical variable"
+        }
+      ]
+    },
+    {
+      "id": "C_i_s_ab",
+      "kind": "DERIVED_STATISTICAL_CONTRAST",
+      "formula": "log(q_i_s_a)-log(q_i_s_b)",
+      "note": "statistical operationalization of normalized/ratio prediction",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 49,
+          "clause_or_statement": "C_i_s_ab: statistical operationalization of normalized/ratio prediction"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 50,
+          "clause_or_statement": "C_i_s_ab: statistical operationalization of normalized/ratio prediction"
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 108,
+          "clause_or_statement": "C_i_s_ab: statistical operationalization of normalized/ratio prediction"
+        }
+      ]
+    }
+  ],
+  "unfrozen_required_before_run": [
+    "N",
+    "W",
+    "basal_eta0_bound_admissibility",
+    "observer_buffer_capacity_heterogeneity_regime",
+    "observer_buffer_capacity_rule",
+    "observer_buffer_capacity_values_or_distribution",
+    "required_work_rule",
+    "required_work_range_or_distribution",
+    "L_grid",
+    "ABENCH0_opportunity_candidate_rules",
+    "ABENCH0_technical_criteria",
+    "L_A",
+    "A1a_opportunity_arm_rules",
+    "delta_drive",
+    "min_steps",
+    "min_sum_x2",
+    "ETA_state_strata",
+    "primary_contrast_list",
+    "Delta_sep",
+    "alpha_family",
+    "multiplicity_method",
+    "CI_procedure",
+    "ACOMP0_min_competence",
+    "sample_size_power",
+    "A1b_primary_collective_outcome",
+    "A1b_Abar_matching_margin",
+    "A1b_min_DA_difference",
+    "A1b_material_effect_margin"
+  ],
+  "previous_v1_outcomes_policy": "EXPOSED_DIAGNOSTIC_ONLY; may inform software bug prevention but not scientific numeric choices.",
+  "next_version": "Keep v2.0.0 while unpublished. The basal microdynamic is frozen and ANBC0=FAIL_DERIVATIONAL. Next audit A1b for independent collective content; then freeze the remaining numerical pre-run fields and execute the required technical/integrity gates. Confirmatory A1a is not authorized in this construction.",
+  "canonical_artifact_registry": {
+    "HUMH_ATTENTION_DEFINITION_1.0.0": {
+      "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+      "role": "primary normative referent for A0/A1"
+    },
+    "HUMH_THEORY_CANONICAL": {
+      "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+      "role": "canonical theory lineage used only through qualified references"
+    }
+  },
+  "build_run_traceability_requirements": {
+    "scientific_entities_require_nonempty_canonical_refs": true,
+    "canonical_ref_required_fields": [
+      "artifact_id",
+      "sha256",
+      "section",
+      "clause_or_statement"
+    ],
+    "canonical_ref_hash_must_match_registry": true,
+    "unknown_root_gate_fails_build": true,
+    "implementation_only_entities_may_have_empty_refs": true,
+    "historical_overlap_between_retired_and_forbidden_is_allowed": true
+  },
+  "A1a_model_family": {
+    "M_sep_hypothesis_id": "H-A1S",
+    "M_alt_hypothesis_id": "M_alt",
+    "M_alt_examples": [
+      {
+        "id": "ATTENTION_AS_ADDITIVE_RESISTANCE",
+        "example_formula": "omega_i/(1+iota_obs_i+h(A_i)+kappa*EH)",
+        "hypothesis_id": "M_alt"
+      },
+      {
+        "id": "ATTENTION_X_INERTIA_INTERACTION",
+        "example_formula": "A_i*omega_i/(1+iota_obs_i+phi(A_i,iota_obs_i)+kappa*EH)",
+        "hypothesis_id": "M_alt"
+      },
+      {
+        "id": "OTHER_NONSEPARABLE_FORM",
+        "example_formula": "F(A_i,p,omega_i,iota_obs_i,EH)",
+        "hypothesis_id": "M_alt"
+      }
+    ]
+  },
+  "ANBC0_NC1_DERIVATIONAL_PATTERN": {
+    "id": "ANBC0.NC1_DERIVATIONAL_PATTERN",
+    "kind": "GATE_SUBCHECK",
+    "parent_gate": "ANBC0",
+    "scientific_role": "DERIVATIONAL_DIAGNOSTIC",
+    "statement": "If the frozen construction reduces to y=S*G with E[S|state,A]=A, conditional independence of S and G, and E[G|p,x]=f(p)*x, then E[y|p,x,A]=A*f(p)*x is derivational for that construction.",
+    "disposition_if_present": "FAIL_DERIVATIONAL",
+    "theory_refutation": false,
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 52,
+        "clause_or_statement": "Separability must not be an algebraic consequence of the scheduler/construction."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 53,
+        "clause_or_statement": "ANBC0 assesses whether serving/thinning necessarily implies E[Delta p|p,A]=A f(p)."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 54,
+        "clause_or_statement": "If separability is guaranteed by construction, A1a is a mechanism demonstration rather than an independent confirmatory test."
+      }
+    ],
+    "present_in_current_construction": true,
+    "current_mapping": {
+      "S": "valid completion indicator per demand",
+      "G": "eta0_i(p_pre)*(p_target-p_pre)",
+      "y": "S*G"
+    },
+    "current_disposition": "FAIL_DERIVATIONAL"
+  },
+  "result_logic": {
+    "A0": {
+      "allowed_results": [
+        "ATTENTION_MEASUREMENT_CONTRACT_VALID",
+        "ATTENTION_MEASUREMENT_CONTRACT_INVALID"
+      ],
+      "rules": [
+        {
+          "when": "all required A0 measurement and integrity prerequisites pass",
+          "result": "ATTENTION_MEASUREMENT_CONTRACT_VALID"
+        },
+        {
+          "when": "any required A0 measurement-contract prerequisite fails",
+          "result": "ATTENTION_MEASUREMENT_CONTRACT_INVALID"
+        }
+      ],
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 112,
+          "clause_or_statement": "A0 uses the minimum frozen gate structure for measurement/integrity."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 119,
+          "clause_or_statement": "Formal scientific sequence starts with A0."
+        }
+      ]
+    },
+    "A1a": {
+      "gate": "ASEP0",
+      "allowed_results": [
+        "ATTENTION_MULTIPLICATIVE_SEPARABILITY_COMPATIBLE [C1]",
+        "ATTENTION_MULTIPLICATIVE_SEPARABILITY_REFUTED [C1]",
+        "INCONCLUSIVE_*"
+      ],
+      "rules": [
+        {
+          "when": "all required prerequisites pass and all primary contrasts satisfy the prospectively frozen equivalence criterion",
+          "result": "ATTENTION_MULTIPLICATIVE_SEPARABILITY_COMPATIBLE [C1]"
+        },
+        {
+          "when": "all required prerequisites pass and at least one primary contrast shows a prospectively defined material violation",
+          "result": "ATTENTION_MULTIPLICATIVE_SEPARABILITY_REFUTED [C1]"
+        },
+        {
+          "when": "benchmark, manipulation, isolation, eta identification, ANBC0 status, pipeline competence, integrity, multiplicity or power is insufficient",
+          "result": "INCONCLUSIVE_*"
+        }
+      ],
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 113,
+          "clause_or_statement": "Compatible conclusion for H-A1S."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 114,
+          "clause_or_statement": "Refuted conclusion for H-A1S."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 115,
+          "clause_or_statement": "Inconclusive categories and prohibition on turning insufficiency into refutation."
+        }
+      ],
+      "current_implementation_status": "ANBC0_FAIL_DERIVATIONAL",
+      "current_confirmatory_authorization": false,
+      "current_allowed_results": [
+        "MECHANISM_DEMONSTRATION_ONLY [C1]",
+        "INCONCLUSIVE_TECHNICAL_OR_IMPLEMENTATION"
+      ],
+      "current_forbidden_results": [
+        "ATTENTION_MULTIPLICATIVE_SEPARABILITY_COMPATIBLE [C1]",
+        "ATTENTION_MULTIPLICATIVE_SEPARABILITY_REFUTED [C1]"
+      ],
+      "current_rule": "Because the frozen construction satisfies the derivational S*G pattern, A1a cannot be interpreted as an independent confirmatory/refutational test in v2.0.0."
+    },
+    "A1b": {
+      "gate": "ADIST0",
+      "allowed_results": [
+        "ATTENTION_DISTRIBUTION_EFFECT_ESTABLISHED/COMPATIBLE [C1]",
+        "ATTENTION_DISTRIBUTION_EFFECT_NOT_ESTABLISHED",
+        "ATTENTION_DISTRIBUTION_EFFECT_REFUTED",
+        "INCONCLUSIVE_*"
+      ],
+      "authorization_condition": "Primary collective outcome, A_bar matching margin, D_A contrast, materiality rule and inferential procedure must be frozen before the first scientific trajectory.",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 116,
+          "clause_or_statement": "A1b conclusion logic."
+        },
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 119,
+          "clause_or_statement": "A1b follows A1a in the formal A0->A1a->A1b sequence."
+        }
+      ]
+    },
+    "A2": {
+      "result": "NOT_AUTHORIZED / NOT_TESTED",
+      "canonical_refs": [
+        {
+          "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+          "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+          "section": 119,
+          "clause_or_statement": "A2 is outside the authorized A0/A1 sequence."
+        }
+      ]
+    }
+  },
+  "scientific_sequence": {
+    "id": "A0_A1_FORMAL_SEQUENCE",
+    "kind": "GOVERNANCE_SEQUENCE",
+    "sequence": [
+      "A0",
+      "A1a",
+      "A1b"
+    ],
+    "A2_authorized": false,
+    "rule": "A0 measurement contract precedes A1a; A1a precedes A1b interpretation; A2 is not authorized in this specification.",
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 119,
+        "clause_or_statement": "Formal sequence A0 -> A1a -> A1b, with A2 not authorized."
+      }
+    ],
+    "current_A1a_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
+    "A1b_continuation_condition": "A1b may continue only after its collective outcome and distribution contrast are shown to have content not algebraically reducible to the local A1a identity, and all A1b gates/numerics are frozen."
+  },
+  "historical_entity_overlap_policy": {
+    "allowed": true,
+    "observed_overlap": [
+      "ACSUP0",
+      "AEXP0"
+    ],
+    "rule": "A historical identifier may be both a retired root gate and a forbidden scientific entity. This is intentional and must not fail validation."
+  },
+  "p_target_contract": {
+    "status": "FROZEN_STATIONARY_ACTIVE_ATTRACTOR",
+    "scientific_role": "BASAL_DYNAMIC_TARGET_CONTRACT",
+    "formula": "p_target_i(t)=p_{Z_e}, with Z_e in {A,B} fixed within a stationary basal episode",
+    "same_target_all_observers_within_episode": true,
+    "paired_arm_identity_required": true,
+    "saturation_transition_inside_primary_eta_episode": false,
+    "excluded_operationalizations": [
+      "neighbor_mean",
+      "neighbor_majority",
+      "same_cycle_consensus",
+      "attention_counter_reconstruction",
+      "arm_or_budget_dependent_target"
+    ],
+    "numerics_pending": [
+      "p_A",
+      "p_B",
+      "number_of_target_episodes",
+      "A_B_episode_balance_and_order",
+      "target_episode_length",
+      "initial_p_rule",
+      "target_stationarity_certification"
+    ],
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 38,
+        "clause_or_statement": "CANAL_ETA uses p_i(t) and p_target_i(t) independently of attention counters."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 39,
+        "clause_or_statement": "p_target_i(t) is the basal target recorded before p_i(t+1), not reconstructed from attention counters."
+      },
+      {
+        "artifact_id": "HUMH_THEORY_CANONICAL",
+        "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+        "section": "4.3.5",
+        "clause_or_statement": "Basal dynamics uses an active attractor p_target(s); unsaturated A/B regimes use p_A/p_B."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 49,
+        "clause_or_statement": "H-A1S comparison is for the same observer/basal state."
+      }
+    ]
+  },
+  "attention_instrument": {
+    "status": "FROZEN_OPPORTUNITY_ALLOCATION_WITH_FIXED_OBSERVER_CAPACITY_NUMERICS_PENDING",
+    "theoretical_attention": "A_i(W)=U_i(W)/D_i(W)",
+    "instrument_name": "observer_opportunity_schedule",
+    "instrument_role": "P_i_obs",
+    "instrument_is_attention": false,
+    "observer_processing_capacity": {
+      "symbol": "B_i",
+      "implementation_name": "observer_buffer_capacity",
+      "role": "AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION",
+      "definition": "maximum logical observational work processed by observer i in one granted opportunity",
+      "fixed_within_observer": true,
+      "identical_across_paired_attention_arms": true,
+      "may_vary_between_observers": true,
+      "is_attention": false,
+      "is_arm_manipulation": false,
+      "is_maximum_task_size": false,
+      "scientific_outcome_or_rescue_variable": false,
+      "heterogeneity_regime": {
+        "status": "UNFROZEN_REQUIRED_BEFORE_RUN",
+        "allowed_regimes": [
+          "HOMOGENEOUS",
+          "PROSPECTIVELY_FROZEN_HETEROGENEOUS"
+        ],
+        "paired_arm_requirement": "same observer_id must retain identical B_i across all paired arms",
+        "causal_comparability_rule": "Primary causal comparison preserves within-observer pairing. If heterogeneous, aggregate summaries must not assume equal B_i across observers."
+      }
+    },
+    "task_work": {
+      "symbol": "C_j",
+      "implementation_name": "required_work",
+      "arm_blind": true,
+      "identical_by_demand_id_across_paired_arms": true,
+      "task_may_exceed_observer_capacity": true,
+      "isolated_task_required_opportunities": "ceil(C_j/B_i)"
+    },
+    "opportunity_allocation": {
+      "implementation_name": "observer_opportunity_schedule",
+      "arm_dependent": true,
+      "exogenous": true,
+      "state_reactive_allocation_forbidden": true,
+      "forbidden_inputs": [
+        "p_i",
+        "EH",
+        "success_failure",
+        "observed_deadline_miss",
+        "eta_hat",
+        "consensus",
+        "scientific_outcome",
+        "future_queue_state",
+        "future_state"
+      ]
+    },
+    "time_axis": {
+      "scientific": "logical_cycle",
+      "wall_clock": "DIAGNOSTIC_ONLY",
+      "cpu_time": "DIAGNOSTIC_ONLY"
+    },
+    "queue": "FIFO_DETERMINISTIC",
+    "work_unit": "WORK_QUANTUM",
+    "deadline_disposition": "EXPIRE_AFTER_DEADLINE_NO_LATE_UPDATE",
+    "paired_arm_invariants": [
+      "observer_id",
+      "initial_state",
+      "basal_observer_parameters",
+      "observer_buffer_capacity",
+      "demand_sequence",
+      "demand_ids",
+      "payload_sequence",
+      "required_work_sequence",
+      "basal_processing_rule",
+      "basal_update_rule",
+      "deadline_L_A",
+      "exogenous_rng",
+      "topology",
+      "arrivals",
+      "service",
+      "propagation"
+    ],
+    "only_planned_arm_difference": "observer_opportunity_schedule",
+    "job_schema": [
+      "demand_id",
+      "observer_id",
+      "arrival_cycle",
+      "payload_id",
+      "payload",
+      "required_work",
+      "remaining_work",
+      "deadline_cycle",
+      "completion_cycle"
+    ],
+    "service_algorithm": {
+      "expire_crossed_deadlines_before_new_opportunities": true,
+      "granted_opportunities_source": "observer_opportunity_schedule(observer_id, arm, current_cycle)",
+      "work_per_opportunity": "min(observer_buffer_capacity, front_job.remaining_work)",
+      "one_front_job_per_opportunity": true,
+      "unused_capacity_spills_to_next_job_same_opportunity": false,
+      "completed_before_or_at_deadline_counts_in_U": true,
+      "expired_job_remains_in_D": true,
+      "expired_job_counts_in_U": false,
+      "expired_job_generates_late_update": false,
+      "basal_update_executed_exactly_once_on_full_processing": true,
+      "expiration_condition": "current_cycle > job.deadline_cycle",
+      "deadline_cycle_itself_is_eligible": true
+    },
+    "conceptual_completion_rule": "U_ij=1 iff demand j receives enough processing opportunities, given C_j and B_i, to complete by L_A; A_i remains U_i/D_i.",
+    "forbidden_attention_aliases": [
+      "observer_buffer_capacity",
+      "observer_opportunity_schedule",
+      "opportunities_granted",
+      "1/processing_latency",
+      "cpu_percent",
+      "thread_priority",
+      "wall_clock_speed"
+    ],
+    "manipulation_success_requires_measured_A_contrast": true,
+    "eta_channel_forbidden_inputs": [
+      "observer_buffer_capacity",
+      "observer_opportunity_schedule",
+      "opportunities_granted",
+      "D_i",
+      "U_i",
+      "A_i",
+      "deadline_misses",
+      "remaining_work",
+      "queue_length"
+    ],
+    "basal_observer_update_forbidden_inputs": [
+      "observer_buffer_capacity",
+      "observer_opportunity_schedule",
+      "opportunities_granted",
+      "D_i",
+      "U_i",
+      "A_i",
+      "attention_arm",
+      "served_fraction",
+      "deadline_misses",
+      "remaining_work",
+      "queue_length"
+    ],
+    "numerics_pending": [
+      "observer_buffer_capacity_heterogeneity_regime",
+      "observer_buffer_capacity_rule",
+      "observer_buffer_capacity_values_or_distribution",
+      "required_work_rule",
+      "required_work_range_or_distribution",
+      "observer_opportunity_arm_rules",
+      "ABENCH0_opportunity_candidate_rules",
+      "L_A",
+      "W",
+      "number_of_arms",
+      "instrumental_contrast_criteria",
+      "saturation_avoidance_criteria"
+    ],
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 6,
+        "clause_or_statement": "Attention is not global CPU speed or observed belief-change rate."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 7,
+        "clause_or_statement": "A_i(W)=U_i(W)/D_i(W)."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 9,
+        "clause_or_statement": "Demand identity/content must not depend on attention manipulation."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 12,
+        "clause_or_statement": "U_i counts observe-process-update chains completed in valid time."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 13,
+        "clause_or_statement": "W is measured in logical cycles, not wall-clock milliseconds."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 22,
+        "clause_or_statement": "Nominal budget is an instrument, not attention itself."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 24,
+        "clause_or_statement": "P_i_obs is local resource/opportunity and experimentally causes A_i."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 25,
+        "clause_or_statement": "Browser implementation should prefer explicit logical control."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 32,
+        "clause_or_statement": "Attention is effective capacity made available to process observational demand within valid time."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 42,
+        "clause_or_statement": "eta_hat cannot use attention counters, budget or served fraction."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 45,
+        "clause_or_statement": "Scheduler controls opportunity; observer update receives no attention value or arm."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 105,
+        "clause_or_statement": "Priority/quantum is an operational analogy, not ontological identity."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 107,
+        "clause_or_statement": "Throttle->fewer operations alone receives no scientific credit."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 108,
+        "clause_or_statement": "A1a must prospectively discriminate H-A1S from alternatives."
+      }
+    ]
+  },
+  "AETA0_harness": {
+    "status": "SPECIFIED_NOT_EXECUTED",
+    "scientific_role": "INTEGRITY_ONLY",
+    "tests": [
+      {
+        "id": "SYNTHETIC_SLOPE_RECOVERY",
+        "rule": "Use y_t=beta*x_t+epsilon_t with beta known only to the harness; recover the expected slope within pre-frozen numerical tolerance.",
+        "synthetic_parameters": "IMPLEMENTATION_ONLY_NOT_USABLE_FOR_MARGIN_POWER_ARMS"
+      },
+      {
+        "id": "PERMUTATION_INVARIANCE_TO_A_COUNTERS",
+        "rule": "With p(t) and p_target(t) bitwise fixed, changing U,D,A,arm,budget must not change eta_hat."
+      },
+      {
+        "id": "TRAJECTORY_SENSITIVITY",
+        "rule": "With attention counters fixed, changing only the synthetic trajectory to a different known slope must change eta_hat accordingly."
+      }
+    ],
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 38,
+        "clause_or_statement": "CANAL_A and CANAL_ETA are operationally separate."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 39,
+        "clause_or_statement": "x and y are derived from p and pre-recorded p_target."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 40,
+        "clause_or_statement": "Primary eta estimator is sum(xy)/sum(x^2), no intercept."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 41,
+        "clause_or_statement": "Eligibility/information thresholds must be prospectively frozen."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 42,
+        "clause_or_statement": "eta_hat cannot use attention counters, arm, budget or service fraction."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 43,
+        "clause_or_statement": "AETA0 requires identification, dependency audit, permutation and synthetic recovery."
+      }
+    ]
+  },
+  "ANBC0_interpretation": {
+    "status": "NOT_READY_FOR_CLASSIFICATION",
+    "classes": [
+      "PASS_DISCRIMINATIVE",
+      "FAIL_DERIVATIONAL",
+      "INCONCLUSIVE_ANALYTIC"
+    ],
+    "eta_over_A_variability_required": false,
+    "FAIL_DERIVATIONAL_is_theory_refutation": false,
+    "does_not_forbid_M_alt": true,
+    "microdynamic_must_not_be_selected_to_force_PASS": true,
+    "rule": "ANBC0 only classifies whether H-A1S is mathematically inevitable in the frozen instrument+microdynamic construction. It does not require eta/A variability and does not eliminate additive-resistance or interaction alternatives.",
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 52,
+        "clause_or_statement": "Separability must not be an algebraic consequence of the scheduler/construction."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 53,
+        "clause_or_statement": "ANBC0 assesses whether serving/thinning necessarily implies E[Delta p|p,A]=A f(p)."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 54,
+        "clause_or_statement": "Construction-guaranteed separability blocks independent confirmatory interpretation."
+      }
+    ]
+  },
+  "normative_artifacts": {
+    "only": [
+      "HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
+      "HUMH_A0_A1_Traceabilidade_v2.0.0.json"
+    ],
+    "rule": "Auxiliary working files from drafting history have no normative authority. All scientific, experimental and governance rules needed by v2.0.0 are embedded in the specification and traceability manifest."
+  },
+  "observer_microdynamic_status": {
+    "status": "FROZEN_CANONICAL_DISCRETE_WITH_AUXILIARY_COMPLETION_MAPPING",
+    "processing_layer_resolved": true,
+    "processing_layer_contract": "C_j + B_i + exogenous opportunity schedule + L_A -> completion/U",
+    "basal_state_update_rule_resolved": true,
+    "canonical_functional_form": {
+      "eta0": "omega_i / (1 + iota_obs_i + kappa*EH(p_pre))",
+      "delta_p": "eta0 * (p_target - p_pre)",
+      "p_post": "p_pre + delta_p"
+    },
+    "event_mapping": {
+      "role": "AUXILIARY_EXPERIMENTAL_OPERATIONALIZATION",
+      "valid_completed_demand": "exactly one basal update",
+      "uncompleted_or_expired_demand": "zero basal update",
+      "multiple_completions_same_logical_cycle": "sequential FIFO updates"
+    },
+    "forbidden_inputs": [
+      "A_i",
+      "D_i",
+      "U_i",
+      "observer_buffer_capacity",
+      "required_work",
+      "observer_opportunity_schedule",
+      "opportunities_granted",
+      "attention_arm",
+      "served_fraction",
+      "deadline_misses",
+      "queue_length"
+    ],
+    "domain_preservation": {
+      "required_condition": "0 < eta0_i(p) <= 1 for every admissible planned state",
+      "post_hoc_clamping_forbidden": true,
+      "status": "NUMERICAL_ADMISSIBILITY_UNFROZEN_REQUIRED_BEFORE_RUN"
+    },
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_THEORY_CANONICAL",
+        "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+        "section": "4.2.5",
+        "clause_or_statement": "Basal dynamics: dp/dt = eta(p)[p_target-p], eta(p)=omega/(1+iota_obs+iota_ord(p)), with iota_ord=kappa*EH(p)."
+      },
+      {
+        "artifact_id": "HUMH_THEORY_CANONICAL",
+        "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+        "section": "4.4.2",
+        "clause_or_statement": "Discrete computational form: p[n+1]=p[n]+eta*(p*-p[n]); one cycle corresponds to one update."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 37,
+        "clause_or_statement": "Basal observer rate eta_i^(0)(p)=omega_i/(1+iota_obs_i+kappa EH(p))."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 44,
+        "clause_or_statement": "Attention or arm metadata cannot be inserted into the observer update rule."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 45,
+        "clause_or_statement": "Scheduler controls opportunity; observer routine receives only allowed observational/dynamic inputs."
+      }
+    ],
+    "must_not_be_changed_to_force_ANBC0_PASS": true
+  },
+  "prepublication_amendments": [
+    {
+      "id": "V2_0_0_PREPUBLICATION_DEADLINE_AND_B_HETEROGENEITY_CLARIFICATION",
+      "scientific_version_bump": false,
+      "changes": [
+        "deadline expiration boundary fixed explicitly as current_cycle > deadline_cycle",
+        "current_cycle == deadline_cycle remains eligible for service/completion",
+        "observer_buffer_capacity heterogeneity regime made explicit as UNFROZEN_REQUIRED_BEFORE_RUN",
+        "heterogeneous B_i, if chosen, must be identical for the same observer across paired arms"
+      ]
+    },
+    {
+      "id": "V2_0_0_PREPUBLICATION_BASAL_MICRODYNAMIC_AND_ANBC0",
+      "scientific_version_bump": false,
+      "changes": [
+        "froze basal discrete observer update from theory 4.2.5 + 4.4.2 and attention definition section 37",
+        "froze one valid completed demand -> exactly one basal update as auxiliary event mapping",
+        "forbade post-hoc p clamping and required 0<eta0<=1 numerical admissibility",
+        "classified ANBC0 as FAIL_DERIVATIONAL through NC1 S*G pattern",
+        "set A1a to MECHANISM_DEMONSTRATION_ONLY [C1]",
+        "disabled confirmatory/refutational ASEP0 interpretation for current construction",
+        "moved next conceptual blocker to independent-content audit of A1b"
+      ]
+    }
+  ],
+  "ANBC0_current_classification": {
+    "gate": "ANBC0",
+    "status": "FAIL_DERIVATIONAL",
+    "subcheck_triggered": "ANBC0.NC1_DERIVATIONAL_PATTERN",
+    "derivation": {
+      "S_ij": "1 iff eligible demand j completes observation-processing-update within deadline; otherwise 0",
+      "G_ij": "eta0_i(p_pre_ij) * (p_target_ij - p_pre_ij)",
+      "constructed_update": "Delta_p_ij = S_ij * G_ij",
+      "attention_definition": "A_i = mean_j(S_ij) over D_i eligible demands",
+      "consequence": "E[Delta_p | p,x,A_i] = A_i * eta0_i(p) * x for comparable repeated basal states"
+    },
+    "scientific_interpretation": "MECHANISM_DEMONSTRATION_ONLY [C1]",
+    "ASEP0_confirmatory_authorized": false,
+    "theory_refutation": false,
+    "microdynamic_change_to_obtain_pass_forbidden": true,
+    "canonical_refs": [
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 52,
+        "clause_or_statement": "Separability must not be an algebraic consequence of scheduler/construction."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 53,
+        "clause_or_statement": "ANBC0 determines whether serving/thinning necessarily implies E[Delta p|p,A]=A f(p)."
+      },
+      {
+        "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+        "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+        "section": 54,
+        "clause_or_statement": "If separability is guaranteed by construction, A1a is mechanism demonstration only and confirmatory ASEP0 is not authorized."
+      }
+    ]
+  }
+}

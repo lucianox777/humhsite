@@ -1,0 +1,49 @@
+{
+  "package_id": "HUMH_A0_A1_PUBLICATION_SELF_CONTAINED_2.0.0",
+  "publication_state": "REGENERATED_PRE_PUBLICATION_R3",
+  "scientific_run_authorized": false,
+  "A1a_confirmatory_authorized": false,
+  "A1a_current_disposition": "MECHANISM_DEMONSTRATION_ONLY [C1]",
+  "ANBC0_current_status": "FAIL_DERIVATIONAL",
+  "normative_artifacts": [
+    {
+      "path": "01_experimento/HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md",
+      "sha256": "b27152f19c6aa2f9f9c98417c4ee970db33091a53b5bf842b3562e5e6fd40e34"
+    },
+    {
+      "path": "01_experimento/HUMH_A0_A1_Traceabilidade_v2.0.0.json",
+      "sha256": "f2ddafaf62b9c4d5e2faef8096382a2262459508a7fbaba75328bb63e792542f"
+    }
+  ],
+  "active_canonical_dependencies": [
+    {
+      "artifact_id": "HUMH_ATTENTION_DEFINITION_1.0.0",
+      "path": "02_dependencias/HUMH_Definicao_Atencao_Observacional_Efetiva_v1.0.0.md",
+      "sha256": "3f89058c0931515abe94f56393733cdebed8f49a35003ae1b17949686540bb7a",
+      "bundled": true
+    },
+    {
+      "artifact_id": "HUMH_THEORY_CANONICAL",
+      "path": "02_dependencias/teoria.md",
+      "sha256": "3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b",
+      "bundled": true
+    }
+  ],
+  "lineage_only_referents": [
+    {
+      "artifact_id": "HUMH_NUCLEUS_CANONICAL",
+      "sha256": "baeba8eae26a939b849b1dc0763c69062e2fa61728ddbec31109e72985c8015b",
+      "bundled": false
+    },
+    {
+      "artifact_id": "HUMH_PROGRAM_CANONICAL",
+      "sha256": "a9bfd724b7af7849711570798eb8134282fa93fe39093fbd7f4b637041f5a226",
+      "bundled": false
+    },
+    {
+      "artifact_id": "HUMH_KREF0",
+      "sha256": "234c752534589f84d53836cdc18d3964ba30c17783292f977fbf6fcfdeeef6f7",
+      "bundled": false
+    }
+  ]
+}

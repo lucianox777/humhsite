@@ -1,0 +1,13 @@
+HUMH_A0_A1_v2.0.0_Publicacao_Autocontida/
+├── README.md
+├── TREE.txt
+├── 01_experimento/
+│   ├── HUMH_A0_A1_Especificacao_Experimental_v2.0.0.md
+│   └── HUMH_A0_A1_Traceabilidade_v2.0.0.json
+├── 02_dependencias/
+│   ├── HUMH_Definicao_Atencao_Observacional_Efetiva_v1.0.0.md
+│   ├── teoria.md
+│   └── DEPENDENCIES.lock.json
+└── 03_integridade/
+    ├── SHA256SUMS.txt
+    └── verify.py
