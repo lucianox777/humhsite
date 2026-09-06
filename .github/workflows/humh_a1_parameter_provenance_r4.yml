@@ -1,0 +1,37 @@
+name: HUMH A1 parameter provenance R4
+
+on:
+  push:
+    branches: [ humh-a1-parameter-provenance-r4 ]
+    paths:
+      - '.github/workflows/humh_a1_parameter_provenance_r4.yml'
+      - 'scripts/humh_a1_parameter_provenance_r4.py'
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: humh-a1-parameter-provenance-r4
+      - name: Apply parameter provenance R4
+        run: python scripts/humh_a1_parameter_provenance_r4.py
+      - name: Verify materialized tree
+        run: |
+          cd source/HUMH.Api/wwwroot/content/experimentos/atencao/v2.0.0
+          python 03_integridade/verify.py
+      - name: Commit frozen state
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add source/HUMH.Api/wwwroot/content/experimentos/atencao
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'freeze A1 demand, basal identifiability and parameter provenance'
+            git push origin humh-a1-parameter-provenance-r4
+          fi
