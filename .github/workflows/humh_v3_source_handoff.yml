@@ -1,0 +1,25 @@
+name: HUMH V3 source handoff
+on:
+  push:
+    branches: [humh-v3-extension-work]
+    paths:
+      - '.github/workflows/humh_v3_source_handoff.yml'
+      - 'scripts/humh_v3_source_handoff.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Package allowlisted scientific sources
+        run: python scripts/humh_v3_source_handoff.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: humh-v3-source-handoff
+          path: /tmp/humh-v3-source-handoff.zip
+          if-no-files-found: error
+          retention-days: 1
