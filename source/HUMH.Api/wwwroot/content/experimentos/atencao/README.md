@@ -39,3 +39,51 @@ A hipótese individual H-A1S precisa enfrentar um competidor que considere o mec
 ### Próxima decisão técnica
 
 Obter e fixar o código original por SHA integral e hash dos arquivos; verificar licença e erratum; reproduzir a implementação publicada em ambiente isolado; mapear as interfaces de observação, interação e atualização sem alterar a regra nativa; e produzir auditoria de viabilidade de A0, ANBC0 e ADIST0 antes de qualquer trajetória científica HUMH. Caso o mapeamento altere a dinâmica ou torne as previsões tautológicas, registrar a incompatibilidade e não ajustar parâmetros para obter aprovação. Só então integrar um desenho sucessor aos dois documentos normativos existentes, mantendo o experimento único e a identidade v2.0.0 enquanto pré-publicação. Não há coleta, seleção de braços, margens, poder ou resultado científico novo nesta pesquisa.
+
+## R11 — Auditoria da V3 e do conteúdo meta-teórico no modelo externo
+
+**Status:** `PRE_CODE_ANALYTIC_RESEARCH_ONLY`. Esta seção complementa e limita a rota R10. Não altera Spec, Trace, teoria, núcleo, parâmetros, Gates ou resultado científico. Nenhuma trajetória HUMH foi executada e nenhum substrato foi selecionado.
+
+### 1. Exposição anterior e independência
+
+A V3 existente em `source/HUMH.Api/wwwroot/V3_social.html` compara HUMH, Deffuant e Hegselmann–Krause. A inspeção do código mostra que `updateOpinion_Deffuant` escolhe um vizinho dentre os receptivos e altera somente a opinião do agente focal. Com heterogeneidade, usa `effectiveMu = mu * randomNeighbor.influence * (1 - this.resistance)`; sem heterogeneidade, usa `mu`. A V3 também possui regimes de heterogeneidade e parâmetros próprios. Portanto, sua implementação não é a regra diádica simétrica original de Li–Porter. Essa constatação é sobre código, não reavalia os resultados históricos da V3.
+
+O usuário declarou conhecer Deffuant por sua V3, mas não conhecer o estudo de Li–Porter de 2023. Essa exposição deve ser registrada sem transformá-la em desqualificação automática. Uma implementação externa anterior pode continuar sendo C2; a escolha do substrato, das previsões e das células retidas não pode, contudo, explorar resultados já conhecidos para simular independência prospectiva. A HUMH, como meta-teoria funcional, não precisa descobrir um fenômeno social inédito; precisa formular relações que acrescentem conteúdo testável, possam falhar e não sejam apenas nomes novos para mecanismos do substrato.
+
+### 2. Conservação exata do Deffuant simétrico fechado
+
+O artigo de 2023, seção II, equação (1), define, para um par receptivo, `x_i' = x_i + m(x_j-x_i)` e `x_j' = x_j + m(x_i-x_j)`, com `0<m<=1/2`; um par não receptivo não muda. Os pesos de atividade modificam a seleção dos pares, não essa regra de compromisso. Assim, em cada evento, `x_i'+x_j'=x_i+x_j`, e a soma global e a média `pbar=(1/N)sum_i x_i` são invariantes em toda trajetória fechada, independentemente dos pesos, da topologia e da sequência de pares.
+
+Se o mapeamento canônico for `p=pbar`, então `EH=1-|2pbar-1|` também é constante. Isso não impede convergência das opiniões: a dispersão pode diminuir enquanto EH permanece fixa. Em particular, não se deve substituir silenciosamente EH por variância, entropia de clusters ou outro índice para obter uma curva decrescente. A V3 calcula EH a partir da fração de agentes com opinião acima de 0,5; essa operacionalização não é idêntica à EH construída sobre a média contínua das opiniões e não pode ser transplantada sem justificativa normativa.
+
+Consequência de desenho: o Deffuant simétrico fechado não oferece, com esse mapeamento, variação temporal de EH para identificar uma contribuição dinâmica de EH em N1a ou o efeito de atenção sobre EH. Variar a média inicial entre condições não resolve, por si só, o problema de identificação causal. Acrescentar ruído, evidência externa, atualização unilateral ou um atrator para produzir variação de EH seria uma modificação de substrato que exigiria justificativa própria; não é uma correção instrumental neutra.
+
+### 3. Testemunho analítico de insuficiência de EH — não é run científico
+
+A mesma regra nativa permite demonstrar que EH não determina sozinha a dinâmica de dispersão. Para uma atualização receptiva simétrica, com `d=x_j-x_i`, a variância populacional `V=(1/N)sum_i(x_i-pbar)^2` satisfaz:
+
+`Delta V = -(2/N)*m*(1-m)*d^2`.
+
+Logo, condicionada ao estado e à distribuição de seleção de pares `P_ij`, a variação esperada é:
+
+`E[Delta V | x,G,w] = -(2*m*(1-m)/N) * sum_{ij} P_ij * 1{|x_i-x_j|<c} * (x_i-x_j)^2`.
+
+V é somente um diagnóstico matemático auxiliar, não uma nova variável teórica HUMH nem outcome primário escolhido. A expressão mostra dependência da geometria de opiniões, da receptividade e da seleção de pares que não são determinadas pela média ou por EH. Os mecanismos nativos já fornecem, portanto, um competidor explicativo obrigatório.
+
+Como testemunho exato, em uma rede completa de três agentes, escolha apenas para a prova `c=1/4` e `m=1/4`. Os estados `(2/5,1/2,3/5)` e `(1/10,1/2,9/10)` têm ambos `pbar=1/2` e `EH=1`, mas o primeiro possui `D=1/15` e o segundo `D=4/15`. No primeiro, todos os pares são receptivos; no segundo, nenhum é. Sob seleção uniforme das três díades, a variação esperada de V é respectivamente `-1/400` e `0`. A aritmética foi conferida com frações exatas, sem simulação científica. Esses números não são braços, parâmetros ou margens propostos.
+
+Esse testemunho é coerente com a pergunta adversarial de N1b do núcleo 1.9-A, mas NÃO constitui refutação formal de N1b: o núcleo exige operacionalização de resistência estrutural, comparação preditiva com modelo adicional, margem, condições retidas e Gates. Também não comprova automaticamente A1b. Ele demonstra somente que o substrato contém informação dinâmica além de EH e que qualquer teste de suficiência precisa enfrentar essa informação.
+
+### 4. Consequência para a seleção do experimento único
+
+Li–Porter permanece candidato externo legítimo, especialmente para uma auditoria adversarial de suficiência estrutural e para estudar o alcance de uma descrição meta-teórica. Não será promovido a substrato primário integrado apenas porque produz fragmentação conhecida. Seus pesos `w_i` não são `A_i=U_i/D_i`; uma oportunidade nominal, uma interação selecionada, uma demanda atendida, uma rejeição por confiança e uma mudança de opinião são eventos distintos.
+
+O próximo candidato prioritário deve permitir aprendizado/atualização a partir de evidência exógena ou outra dinâmica coletiva independente que faça variar o estado coletivo sem inserir EH ou H-A1S diretamente na regra. Modelos preexistentes de aprendizagem bayesiana distribuída ou acumulação de evidência são uma família a investigar, não uma seleção já feita. C2C continua como linhagem teórica, mas pooling que força convergência não será aceito como evidência independente. Antes de escolher implementação ou números, será necessário verificar o mapeamento de `p`, `p_alvo`, EH, demanda elegível, deadline e estimador de taxa, além de um competidor nativo e condições de falha material. Se nenhuma operacionalização preservar simultaneamente a definição de atenção e a dinâmica independente, registrar a incompatibilidade em vez de ajustar a teoria ao código.
+
+O objetivo continua sendo um único protocolo computacional com controles e condições internas, não uma coleção de validações escolhidas após resultados. A0/A1 da construção R9 permanece preservado como demonstração/contrato de medição; qualquer sucessor confirmatório exigirá uma decisão normativa explícita, sem reclassificar resultados históricos. A2 segue não autorizado.
+
+### 5. Estado da obtenção do código externo e fontes
+
+A equação e os resultados publicados foram conferidos no texto do artigo. A página pública do GitLab foi localizada, mas as tentativas de obter `DW.py` por raw/API e o acesso de rede do ambiente de execução não forneceram os bytes. O SHA integral, a licença do repositório e uma reprodução executável continuam pendentes. Não se afirma que a implementação externa foi auditada, clonada ou reproduzida. O erratum de 2024 permanece obrigatório para qualquer reprodução.
+
+Fontes externas: https://arxiv.org/html/2206.09490v2 ; https://doi.org/10.1103/PhysRevResearch.5.023179 ; https://doi.org/10.1103/PhysRevResearch.6.029002 ; https://gitlab.com/graceli1/NodeWeightDW . Fontes internas: `V3_social.html`, núcleo 1.9-A A4–A9, teoria canônica §2.4.2 e definição de atenção §§8–16, 37–54 e 108–120. A fonte externa sustenta a dinâmica e os resultados do modelo; as consequências para a HUMH e a seleção experimental são inferências desta auditoria, não afirmações dos autores de 2023.
