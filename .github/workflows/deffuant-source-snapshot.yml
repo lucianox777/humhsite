@@ -1,0 +1,35 @@
+name: Deffuant source snapshot
+on:
+  push:
+    branches: [research/deffuant-instrumentacao-20260907]
+    paths: ['.github/workflows/deffuant-source-snapshot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify original source and export
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p snapshot
+          cp source/HUMH.Api/wwwroot/V3_social.html snapshot/V3_social_original.html
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          p=pathlib.Path('snapshot/V3_social_original.html')
+          b=p.read_bytes()
+          blob=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+          assert blob=='e0aed20ef398fc05003987a731cf9c042b62f369', blob
+          pathlib.Path('snapshot/source_manifest.json').write_text(json.dumps({'source':'source/HUMH.Api/wwwroot/V3_social.html','git_blob_sha1':blob,'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b),'scope':'ENGINEERING_SOURCE_ONLY'},indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deffuant-v3-source-snapshot
+          path: snapshot/
+          retention-days: 7
