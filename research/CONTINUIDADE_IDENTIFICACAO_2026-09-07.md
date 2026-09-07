@@ -8,6 +8,8 @@ A HUMH é uma metateoria funcional. O objetivo do programa computacional único 
 
 A V3 permanece candidata C1, não deve ser descartada pelo bloqueio de uma configuração anterior. NormAN permanece candidato externo independente, sem promoção automática a C2 por um port JavaScript. A escolha deve decorrer de mecanismo, identificação e protocolo prospectivo, não da direção dos resultados. Preservar resultados negativos e inconclusivos. Não iniciar nova sequência de demonstrações de convergência ou renomear o experimento único para contornar bloqueios.
 
+A V3 histórica também contém Deffuant e Hegselmann–Krause (HK) como modelos comparadores. Portanto, a comparação do programa não se limita a V3 versus NormAN: é necessário distinguir o mecanismo HUMH implementado na V3, os comparadores Deffuant/HK e o substrato externo NormAN. A presença de comparadores não torna a V3 um substrato independente da HUMH nem valida automaticamente a metateoria.
+
 ## 2. Autoridade e referentes
 
 - Teoria canônica: SHA-256 `3ce6c097a11c7c33cc94439e44d2ec2821b60affbfedec8401cc9572d58bf23b`.
@@ -21,13 +23,19 @@ A V3 permanece candidata C1, não deve ser descartada pelo bloqueio de uma confi
 
 ## 3. O que cada substrato oferece
 
-### V3
+### V3 e seus comparadores
 
-A regra histórica é uma atualização em direção a média ponderada de sinais, com taxa por tipo. A extensão v0.2.1 acrescenta instrumentação, filas, capacidade, deadlines e canais. A R12 verificou que a inclinação individual recupera a taxa nativa constante; portanto esse estimador não identifica contribuição independente de EH. O matching de A1b é instrumentalmente viável, mas o conteúdo coletivo independente ainda não está estabelecido. Não interpretar quantidade de updates, inclinação nativa ou resultado exploratório como confirmação.
+A V3 histórica é uma página comparativa de HUMH, Deffuant e Hegselmann–Krause. A regra HUMH é uma atualização em direção a média ponderada de sinais, com taxa por tipo. Deffuant usa confiança limitada por pares e parâmetro μ; HK usa média de agentes elegíveis segundo limiar ε, aplicada de forma síncrona. O código histórico também oferece heterogeneidade compartilhada e parâmetros específicos por modelo. É necessário auditar as adaptações efetivamente implementadas antes de chamá-las de versões canônicas independentes de Deffuant ou HK. Os rótulos de superioridade, equivalência e validação científica presentes na interface histórica não são, por si, evidência confirmatória da HUMH.
+
+A extensão V3 v0.2.1 acrescenta instrumentação, filas, capacidade, deadlines e canais. A R12 verificou que a inclinação individual recupera a taxa nativa constante; portanto esse estimador não identifica contribuição independente de EH. O matching de A1b é instrumentalmente viável, mas o conteúdo coletivo independente ainda não está estabelecido. Não interpretar quantidade de updates, inclinação nativa ou resultado exploratório como confirmação. Verificar na fonte da extensão quais comparadores e componentes históricos foram preservados antes de atribuir-lhe integralmente a interface V3 histórica.
 
 ### NormAN
 
 O modelo original usa inferência bayesiana sobre evidências, comunicação entre agentes e memória de recência. Evidência conhecida pode ser recebida novamente e atualizar recência sem recalcular o posterior. O port R18 reproduz a configuração Vole em JS com inferência exata, mas não o fluxo aleatório bit a bit nem toda a implementação NetLogo/R. Não contém atenção HUMH, κ, ω ou ι_obs explicitamente. Isso não exclui uma ponte metateórica; exige estabelecê-la. O posterior de outro agente, o consenso e o posterior completo do mundo não podem ser declarados automaticamente `p_target` da A1.
+
+### Papel dos comparadores
+
+Deffuant e HK são alternativas mecanísticas úteis para verificar se uma previsão atribuída à HUMH também decorre de regras clássicas de interação. Não presumir que qualquer um deles seja um padrão-ouro universal, que menor EH represente verdade externa ou que ausência de diferença estatisticamente significativa prove equivalência. Comparações devem usar medidas, condições, parâmetros e critérios prospectivos adequados à pergunta. A implementação comparativa original pode continuar servindo como referência de engenharia, sem promover automaticamente seus resultados ou rótulos históricos.
 
 ## 4. Resultado analítico de identificabilidade — não é estimação empírica
 
@@ -41,22 +49,22 @@ O quociente `b/a=κ/(1+ι)` e a redução relativa `s=1-η(h_b)/η(h_a)=b(h_b-h_
 
 ## 5. Matriz de trabalho
 
-| Alvo | V3 | NormAN | Identificação/pendência |
+| Alvo | V3 / Deffuant / HK | NormAN | Identificação/pendência |
 | --- | --- | --- | --- |
-| A0, A_i=U_i/D_i | Instrumento e contadores já implementados na v0.2.1 | Necessita contrato de demandas exógenas, conclusões e deadlines; mensagens nativas são endógenas | Separar demanda, oportunidade, capacidade e taxa de crença; respeitar A0 e ANBC0 |
-| ω, ι_obs | Taxas por tipo recuperáveis, mas resistência nativa não equivale automaticamente a ι canônico | Posteriores e respostas a evidências podem caracterizar dinâmica basal efetiva | Definir alvo/drive e escala independente; não declarar parâmetros individuais sem identificação |
-| κ / N1a | Inclinação local constante; projeção agregada anterior não identifica EH | Inferência bayesiana permite caracterizar resposta, mas não há κ nativo | Definir dinâmica coletiva emergente e previsão independente; comparar M0 κ=0 com M1 e testar fora da amostra |
-| N1b | Estados com mesma EH e D diferente precisam ser controlados | Evidências compartilhadas podem produzir estados semelhantes em média com diferentes distribuições individuais | Comparar suficiência de EH com alternativa pré-especificada, conforme núcleo 1.9-A |
-| N2 | Tipos e resistências nativas podem fornecer condições, não identificação canônica automática | Evidências e histórico podem alterar resposta por razões probabilísticas distintas | Estimar separadamente componentes do observador e estruturais e prever células cruzadas sem reajuste |
-| A1b | Matching de atenção viável na R12; outcome independente pendente | Instrumento A0 ainda não implementado | Mesma Abar, DA distinto, demanda/estado/topologia/composição preservados; conteúdo coletivo e critérios prospectivos |
+| A0, A_i=U_i/D_i | Instrumento e contadores já implementados na extensão v0.2.1; verificar sua aplicação aos comparadores | Necessita contrato de demandas exógenas, conclusões e deadlines; mensagens nativas são endógenas | Separar demanda, oportunidade, capacidade e taxa de crença; respeitar A0 e ANBC0 |
+| ω, ι_obs | Taxas e resistências nativas recuperáveis conforme a implementação, mas não equivalem automaticamente aos parâmetros canônicos | Posteriores e respostas a evidências podem caracterizar dinâmica basal efetiva | Definir alvo/drive e escala independente; não declarar parâmetros individuais sem identificação |
+| κ / N1a | Inclinação local HUMH constante na V3 auditada; examinar alternativas Deffuant/HK sem inserir EH nas regras | Inferência bayesiana permite caracterizar resposta, mas não há κ nativo | Definir dinâmica coletiva emergente e previsão independente; comparar M0 κ=0 com M1 e testar fora da amostra |
+| N1b | Comparadores podem gerar distribuições distintas com mesma EH; controlar estado e história | Evidências compartilhadas podem produzir estados semelhantes em média com diferentes distribuições individuais | Comparar suficiência de EH com alternativa pré-especificada, conforme núcleo 1.9-A |
+| N2 | Tipos, limiares e resistências nativas podem fornecer condições, não identificação canônica automática | Evidências e histórico podem alterar resposta por razões probabilísticas distintas | Estimar separadamente componentes do observador e estruturais e prever células cruzadas sem reajuste |
+| A1b | Matching de atenção viável na R12; outcome independente pendente; não presumir equivalência da instrumentação entre modelos | Instrumento A0 ainda não implementado | Mesma Abar, DA distinto, demanda/estado/topologia/composição preservados; conteúdo coletivo e critérios prospectivos |
 | Mudança A→B e N3T | Exigem desenho próprio compatível com a hipótese selecionada | O mundo pode ser manipulado apenas por protocolo explícito | Não inserir mudança ou memória para garantir convergência; não abrir A2 nem substituir N3T-K0 |
 
 ## 6. Próxima ação do programa único
 
-Primeiro, auditar os bytes atuais da extensão V3 v0.2.1 e do port NormAN, recuperando fontes completas e seus manifestos. Construir mapa código→observável→referente canônico, marcando lacunas e distinguindo instrumentação de hipótese. Depois, testar identificabilidade estrutural e recuperação sintética sem usar outcomes científicos para escolher parâmetros. Para NormAN, caracterizar a inferência e a identidade de evidências antes de decidir uma ponte para o alvo basal; para V3, aproveitar o instrumento A0 já existente sem promover sua taxa nativa a κ.
+Primeiro, auditar os bytes atuais da extensão V3 v0.2.1, dos comparadores Deffuant/HK e do port NormAN, recuperando fontes completas e seus manifestos. Construir mapa código→observável→referente canônico, marcando lacunas e distinguindo instrumentação de hipótese. Depois, testar identificabilidade estrutural e recuperação sintética sem usar outcomes científicos para escolher parâmetros. Para NormAN, caracterizar a inferência e a identidade de evidências antes de decidir uma ponte para o alvo basal; para V3, aproveitar o instrumento A0 já existente sem promover sua taxa nativa a κ. Os comparadores devem permitir verificar explicações alternativas, não ser tratados como prova automática de superioridade ou confirmação.
 
 A próxima decisão de desenho deve ser prospectiva: verificar se algum substrato permite dinâmica coletiva independente, contraste informativo de EH, estimação de resistência observacional e estrutural e predição retida. Se for necessária uma nova operacionalização, registrar exatamente o que ela acrescenta e revisar a Spec/Trace por sua regra-mãe antes de nova coleta. Não criar um novo Gate científico por conveniência. Manter A1a como demonstração de mecanismo na construção congelada que falhou ANBC0; A1b só avança com seu conteúdo independente. Preservar A2 não autorizado e a classificação histórica de N3T-K0.
 
 ## 7. Uso em novas conversas
 
-Ao retomar o projeto, começar por este objetivo e pelos dois substratos, consultar as fontes atuais e os documentos normativos, e não repetir a sequência de reproduções de convergência como se fosse o objetivo final. Esta nota é memória de continuidade do projeto, não uma atualização forçada da Memória automática do ChatGPT. Não contém novos resultados empíricos nem substitui artefatos normativos.
+Ao retomar o projeto, começar por este objetivo e pelos substratos V3/NormAN, incluindo os comparadores Deffuant/HK, consultar as fontes atuais e os documentos normativos, e não repetir a sequência de reproduções de convergência como se fosse o objetivo final. Esta nota é memória de continuidade do projeto, não uma atualização forçada da Memória automática do ChatGPT. Não contém novos resultados empíricos nem substitui artefatos normativos.
