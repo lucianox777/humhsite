@@ -1,0 +1,49 @@
+name: HUMH NormAN native R18 (technical)
+on:
+  push:
+    branches: [humh-norman-native-r18]
+    paths:
+      - 'research/norman-native-r18/**'
+      - '.github/workflows/humh-norman-native-r18.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: humh-norman-native-r18
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.3'
+          use-public-rspm: true
+      - name: System dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libcurl4-openssl-dev libssl-dev libxml2-dev libgmp3-dev libglpk-dev libgit2-dev libpng-dev libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libtiff5-dev libjpeg-dev zlib1g-dev libbz2-dev liblzma-dev libpcre2-dev libicu-dev libx11-dev libxt-dev
+      - name: Execute original NetLogo model
+        working-directory: research/norman-native-r18
+        run: bash install_and_run.sh
+      - name: Upload native output and failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: humh-norman-r18-native-${{ github.run_id }}
+          path: |
+            research/norman-native-r18/results/
+            research/norman-native-r18/experiments.xml
+            research/norman-native-r18/upstream/base-model.nlogo
+            research/norman-native-r18/upstream/license.md
+            research/norman-native-r18/protocol.json
+          retention-days: 30
+          if-no-files-found: warn
